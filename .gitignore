@@ -427,3 +427,10 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# Agentic rules and settings
+.agents/
+.local_notes/
+.gemini/
+GEMINI.md
+
