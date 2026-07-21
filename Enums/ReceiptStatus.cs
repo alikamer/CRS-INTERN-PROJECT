@@ -1,4 +1,4 @@
-namespace CRS_INTERN_PROJECT.Entities;
+namespace CRS_INTERN_PROJECT.Enums;
 
 public enum ReceiptStatus
 {
