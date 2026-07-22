@@ -5,7 +5,7 @@ public class Tenant
     public Guid Id { get; set; } = Guid.NewGuid();
 
     public string Name { get; set; } = string.Empty;
-    public string SubscriptionTier { get; set; } = "Basic";
+    public string SubscriptionTier { get; set; } = "Basic"; 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     // ilişkileri tanımlayalım one-to-many vs tarzı
