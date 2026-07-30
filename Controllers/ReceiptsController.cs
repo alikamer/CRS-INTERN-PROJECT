@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using CRS_INTERN_PROJECT.DTOs;
 using CRS_INTERN_PROJECT.Services;
 
 namespace CRS_INTERN_PROJECT.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class ReceiptsController : ControllerBase
