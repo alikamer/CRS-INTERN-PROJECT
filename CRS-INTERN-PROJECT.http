@@ -4,3 +4,36 @@ GET {{CRS_INTERN_PROJECT_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
+
+# 1. Kayıt Olma (Register) Testi
+POST {{CRS_INTERN_PROJECT_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "testuser@crssoft.com",
+  "password": "Password123*",
+  "fullName": "Test User",
+  "tenantName": "Test Company"
+}
+
+###
+
+# 2. Giriş Yapma (Login) Testi
+# @name login
+POST {{CRS_INTERN_PROJECT_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "testuser@crssoft.com",
+  "password": "Password123*"
+}
+
+###
+
+# 3. Korumalı Fiş Listesi Testi (Otomatik Token Alır)
+@authToken = {{login.response.body.token}}
+
+GET {{CRS_INTERN_PROJECT_HostAddress}}/api/receipts
+Authorization: Bearer {{authToken}}
+Accept: application/json
+
