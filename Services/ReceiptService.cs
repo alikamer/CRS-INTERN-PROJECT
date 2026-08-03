@@ -15,10 +15,8 @@ public class ReceiptService : IReceiptService
         _context = context;
     }
 
-    public async Task<ReceiptWithReceiptItemsDto> CreateReceiptAsync(CreateReceiptDto dto)
+    public async Task<ReceiptWithReceiptItemsDto> CreateReceiptAsync(CreateReceiptDto dto, Guid userId, Guid tenantId)
     {
-        var (tenantId, userId) = await GetOrCreateDefaultTenantAndUserAsync();
-
         var receipt = new Receipt
         {
             Id = Guid.NewGuid(),
@@ -26,6 +24,7 @@ public class ReceiptService : IReceiptService
             UserId = userId,
             StoreName = dto.StoreName,
             ReceiptDate = dto.ReceiptDate.ToUniversalTime(),
+            ImagePath = dto.ImagePath,
             Status = ReceiptStatus.Pending,
             CreatedAt = DateTime.UtcNow,
             Items = dto.Items.Select(itemDto => new ReceiptItem
@@ -38,7 +37,6 @@ public class ReceiptService : IReceiptService
             }).ToList()
         };
 
-        // Toplam tutarı alt ürün kalemlerinin toplamı olarak hesaplıyoruz
         receipt.TotalAmount = receipt.Items.Sum(item => item.TotalPrice);
 
         _context.Receipts.Add(receipt);
@@ -47,36 +45,42 @@ public class ReceiptService : IReceiptService
         return MapToReceiptWithReceiptItemsDto(receipt);
     }
 
-    public async Task<IEnumerable<ReceiptDto>> GetAllReceiptsAsync()
+    public async Task<PagedResult<ReceiptDto>> GetAllReceiptsAsync(Guid tenantId, int page = 1, int pageSize = 10)
     {
-        var receipts = await _context.Receipts
+        var query = _context.Receipts.Where(r => r.TenantId == tenantId); 
+
+        var totalCount = await query.CountAsync();
+
+        var receipts = await query
             .OrderByDescending(r => r.CreatedAt)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .ToListAsync();
 
-        return receipts.Select(MapToReceiptDto).ToList();
+        return new PagedResult<ReceiptDto>
+        {
+            Items = receipts.Select(MapToReceiptDto).ToList(),
+            TotalCount = totalCount,
+            CurrentPage = page,
+            PageSize = pageSize
+        };
     }
 
-    public async Task<ReceiptWithReceiptItemsDto?> GetReceiptByIdAsync(Guid id)
+    public async Task<ReceiptWithReceiptItemsDto?> GetReceiptByIdAsync(Guid id, Guid tenantId)
     {
         var receipt = await _context.Receipts
             .Include(r => r.Items)
-            .FirstOrDefaultAsync(r => r.Id == id);
+            .FirstOrDefaultAsync(r => r.Id == id && r.TenantId == tenantId);
 
-        if (receipt == null)
-        {
-            return null;
-        }
+        if (receipt == null) return null;
 
         return MapToReceiptWithReceiptItemsDto(receipt);
     }
 
-    public async Task<bool> DeleteReceiptAsync(Guid id)
+    public async Task<bool> DeleteReceiptAsync(Guid id, Guid tenantId)
     {
-        var receipt = await _context.Receipts.FindAsync(id);
-        if (receipt == null)
-        {
-            return false;
-        }
+        var receipt = await _context.Receipts.FirstOrDefaultAsync(r => r.Id == id && r.TenantId == tenantId);
+        if (receipt == null) return false;
 
         _context.Receipts.Remove(receipt);
         await _context.SaveChangesAsync();
@@ -84,43 +88,6 @@ public class ReceiptService : IReceiptService
     }
 
     #region Helper Methods & Mappings
-
-    private async Task<(Guid TenantId, Guid UserId)> GetOrCreateDefaultTenantAndUserAsync()
-    {
-        // JWT Auth entegrasyonu tamamlanana kadar geliştirme ortamında kullanılacak varsayılan Tenant ve User
-        var tenant = await _context.Tenants.FirstOrDefaultAsync();
-        if (tenant == null)
-        {
-            tenant = new Tenant
-            {
-                Id = Guid.NewGuid(),
-                Name = "Default CRS Tenant",
-                SubscriptionTier = "Basic",
-                CreatedAt = DateTime.UtcNow
-            };
-            _context.Tenants.Add(tenant);
-            await _context.SaveChangesAsync();
-        }
-
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.TenantId == tenant.Id);
-        if (user == null)
-        {
-            user = new User
-            {
-                Id = Guid.NewGuid(),
-                TenantId = tenant.Id,
-                Email = "intern@crssoft.com",
-                PasswordHash = "placeholder_hash", // JWT aşamasında güncellenecek
-                FullName = "Intern Developer",
-                Role = UserRole.Admin,
-                CreatedAt = DateTime.UtcNow
-            };
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-        }
-
-        return (tenant.Id, user.Id);
-    }
 
     private static ReceiptWithReceiptItemsDto MapToReceiptWithReceiptItemsDto(Receipt receipt)
     {
