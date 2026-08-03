@@ -7,8 +7,7 @@ using CRS_INTERN_PROJECT.DTOs;
         Task<ReceiptWithReceiptItemsDto> CreateReceiptAsync(CreateReceiptDto dto, Guid
   userId, Guid tenantId);
 
-        Task<PagedResult<ReceiptDto>> GetAllReceiptsAsync(Guid tenantId, int page = 1, int
-  pageSize = 10);
+        Task<IEnumerable<ReceiptDto>> GetAllReceiptsAsync(Guid tenantId);
 
         Task<ReceiptWithReceiptItemsDto?> GetReceiptByIdAsync(Guid id, Guid tenantId);
 

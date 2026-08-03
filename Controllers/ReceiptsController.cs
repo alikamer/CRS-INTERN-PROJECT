@@ -31,9 +31,9 @@ public class ReceiptsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<PagedResult<ReceiptDto>>> GetAllReceipts([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    public async Task<ActionResult<IEnumerable<ReceiptDto>>> GetAllReceipts()
     {
-        var result = await _receiptService.GetAllReceiptsAsync(GetTenantId(), page, pageSize);
+        var result = await _receiptService.GetAllReceiptsAsync(GetTenantId());
         return Ok(result);
     }
 

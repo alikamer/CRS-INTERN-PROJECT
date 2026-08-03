@@ -45,25 +45,15 @@ public class ReceiptService : IReceiptService
         return MapToReceiptWithReceiptItemsDto(receipt);
     }
 
-    public async Task<PagedResult<ReceiptDto>> GetAllReceiptsAsync(Guid tenantId, int page = 1, int pageSize = 10)
+    public async Task<IEnumerable<ReceiptDto>> GetAllReceiptsAsync(Guid tenantId)
     {
         var query = _context.Receipts.Where(r => r.TenantId == tenantId); 
 
-        var totalCount = await query.CountAsync();
-
         var receipts = await query
             .OrderByDescending(r => r.CreatedAt)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
             .ToListAsync();
 
-        return new PagedResult<ReceiptDto>
-        {
-            Items = receipts.Select(MapToReceiptDto).ToList(),
-            TotalCount = totalCount,
-            CurrentPage = page,
-            PageSize = pageSize
-        };
+        return receipts.Select(MapToReceiptDto).ToList();
     }
 
     public async Task<ReceiptWithReceiptItemsDto?> GetReceiptByIdAsync(Guid id, Guid tenantId)
