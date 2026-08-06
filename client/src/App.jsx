@@ -4,6 +4,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import MainLayout from './layouts/MainLayout';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
+import Receipts from './pages/Receipts';
 
 function App() {
   return (
@@ -14,7 +15,7 @@ function App() {
           
           <Route element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
             <Route path="/" element={<Dashboard />} />
-            <Route path="/receipts" element={<div className="bg-white p-6 rounded-xl shadow-sm">Fiş listesi sayfası buraya gelecek.</div>} />
+            <Route path="/receipts" element={<Receipts />} />
             <Route path="/settings" element={<div className="bg-white p-6 rounded-xl shadow-sm">Ayarlar sayfası buraya gelecek.</div>} />
           </Route>
         </Routes>

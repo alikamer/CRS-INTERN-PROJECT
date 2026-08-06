@@ -2,27 +2,37 @@ using CRS_INTERN_PROJECT.Enums;
 
 namespace CRS_INTERN_PROJECT.Entities;
 
+/// <summary>
+/// Vatandaşın yüklediği fişin ana gövdesi. 
+/// Sahtekarlığı önlemek için varsayılan olarak Pending olur, onaylanınca puan verir.
+/// Onaylama işleminin nasıl olacağı ile ilgili kesin bir fikir yok ileride revize edilecek.
+/// yani neye göre onaylanacak veya dolandırıcılık olduğu anlaşılacak
+/// </summary>
 public class Receipt
 {
     public Guid Id { get; set; } = Guid.NewGuid();
-    public Guid TenantId { get; set; }
-    public Guid UserId { get; set; }
+    
+    /// <summary>
+    /// Fişi sisteme sokan vatandaş. (Hesabı silinirse null kalır, fiş silinmez)
+    /// </summary>
+    public Guid? ConsumerProfileId { get; set; }
+    
+    /// <summary>
+    /// Fişin hangi mağazadan/markadan alındığı (Dropdown'dan seçilecek).
+    /// </summary>
+    public Guid BrandId { get; set; }
 
-    public string StoreName { get; set; } = string.Empty;
     public DateTime ReceiptDate { get; set; }
     public decimal TotalAmount { get; set; }
-
+    public string? ImageUrl { get; set; }
+    
+    /// <summary>
+    /// ı önlem: Fiş anında onaylanmaz, önce Pending'e düşer.
+    /// </summary>
     public ReceiptStatus Status { get; set; } = ReceiptStatus.Pending;
-    public string? ImagePath { get; set; }
-
-    public Guid? ReviewedByUserId { get; set; }
-    public DateTime? ReviewedAt { get; set; }
-
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-    public Tenant? Tenant { get; set; }
-    public User? User { get; set; }
-    public User? ReviewedByUser { get; set; }
-
+    public ConsumerProfile? ConsumerProfile { get; set; }
+    public Brand Brand { get; set; } = null!;
     public ICollection<ReceiptItem> Items { get; set; } = new List<ReceiptItem>();
 }

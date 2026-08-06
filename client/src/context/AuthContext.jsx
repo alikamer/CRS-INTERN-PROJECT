@@ -8,10 +8,9 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if token exists on load
     const token = localStorage.getItem('token');
     if (token) {
-      // Decode token or fetch user profile here. For now, we'll just set a mock user.
+      /// Sisteme daha önce girmişsek (token varsa) içeri direkt alıyoruz.
       setUser({ token });
     }
     setLoading(false);
@@ -19,8 +18,8 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      // .NET 8 Backend'e gerçek istek atıyoruz
-      const response = await api.post('/auth/login', { email, password });
+      /// .NET 8 Backend'e (AuthController) gerçek giriş (Login) isteği atıyoruz.
+      const response = await api.post('/Auth/login', { email, password });
       const { token } = response.data;
       
       localStorage.setItem('token', token);
@@ -32,13 +31,28 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const register = async (email, password) => {
+    try {
+      /// Sisteme kayıt olmak (Vatandaş) için istek atıyoruz.
+      const response = await api.post('/Auth/register', { email, password });
+      const { token } = response.data;
+      
+      localStorage.setItem('token', token);
+      setUser({ email, token });
+      return true;
+    } catch (error) {
+      console.error("Register failed", error);
+      return false;
+    }
+  };
+
   const logout = () => {
     localStorage.removeItem('token');
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, register, logout, loading }}>
       {!loading && children}
     </AuthContext.Provider>
   );

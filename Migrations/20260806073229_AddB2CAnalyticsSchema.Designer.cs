@@ -3,6 +3,7 @@ using System;
 using CRS_INTERN_PROJECT.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CRS_INTERN_PROJECT.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260806073229_AddB2CAnalyticsSchema")]
+    partial class AddB2CAnalyticsSchema
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -74,9 +77,6 @@ namespace CRS_INTERN_PROJECT.Migrations
                     b.Property<Guid>("BrandId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("BrandId1")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid>("ConsumerProfileId")
                         .HasColumnType("uuid");
 
@@ -89,8 +89,6 @@ namespace CRS_INTERN_PROJECT.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("BrandId");
-
-                    b.HasIndex("BrandId1");
 
                     b.HasIndex("ConsumerProfileId");
 
@@ -160,7 +158,7 @@ namespace CRS_INTERN_PROJECT.Migrations
                     b.Property<Guid>("BrandId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("ConsumerProfileId")
+                    b.Property<Guid>("ConsumerProfileId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
@@ -253,10 +251,6 @@ namespace CRS_INTERN_PROJECT.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CRS_INTERN_PROJECT.Entities.Brand", null)
-                        .WithMany("Loyalties")
-                        .HasForeignKey("BrandId1");
-
                     b.HasOne("CRS_INTERN_PROJECT.Entities.ConsumerProfile", "ConsumerProfile")
                         .WithMany("Loyalties")
                         .HasForeignKey("ConsumerProfileId")
@@ -309,7 +303,8 @@ namespace CRS_INTERN_PROJECT.Migrations
                     b.HasOne("CRS_INTERN_PROJECT.Entities.ConsumerProfile", "ConsumerProfile")
                         .WithMany("Receipts")
                         .HasForeignKey("ConsumerProfileId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Brand");
 
@@ -346,8 +341,6 @@ namespace CRS_INTERN_PROJECT.Migrations
 
             modelBuilder.Entity("CRS_INTERN_PROJECT.Entities.Brand", b =>
                 {
-                    b.Navigation("Loyalties");
-
                     b.Navigation("Receipts");
                 });
 
