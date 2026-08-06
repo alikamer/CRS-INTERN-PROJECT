@@ -7,17 +7,24 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const { login } = useAuth();
+  const [isLoginMode, setIsLoginMode] = useState(true);
+  const { login, register } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    const success = await login(email, password);
+    
+    let success = false;
+    if (isLoginMode) {
+      success = await login(email, password);
+    } else {
+      success = await register(email, password);
+    }
     if (success) {
       navigate('/');
     } else {
-      setError('Giriş başarısız. Lütfen bilgilerinizi kontrol edin.');
+      setError(isLoginMode ? 'Giriş başarısız. Lütfen bilgilerinizi kontrol edin.' : 'Kayıt başarısız. Bu e-posta zaten kullanılıyor olabilir.');
     }
   };
 
@@ -28,7 +35,9 @@ const Login = () => {
           <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
             <LogIn className="w-8 h-8 text-indigo-600" />
           </div>
-          <h2 className="text-3xl font-bold text-white tracking-tight">Hoş Geldiniz</h2>
+          <h2 className="text-3xl font-bold text-white tracking-tight">
+            {isLoginMode ? 'Hoş Geldiniz' : 'Aramıza Katılın'}
+          </h2>
           <p className="text-white/80 mt-2">B2B Fiş Analiz Platformu</p>
         </div>
 
@@ -65,9 +74,24 @@ const Login = () => {
             type="submit"
             className="w-full py-3 px-4 bg-white text-indigo-600 font-semibold rounded-lg shadow-lg hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-indigo-500 transition-all"
           >
-            Giriş Yap
+            {isLoginMode ? 'Giriş Yap' : 'Kayıt Ol'}
           </button>
         </form>
+
+        <div className="mt-6 text-center">
+          <p className="text-white/80 text-sm">
+            {isLoginMode ? 'Hesabınız yok mu? ' : 'Zaten hesabınız var mı? '}
+            <button
+              onClick={() => {
+                setIsLoginMode(!isLoginMode);
+                setError('');
+              }}
+              className="text-white font-bold hover:underline focus:outline-none"
+            >
+              {isLoginMode ? 'Hemen Kayıt Olun' : 'Giriş Yapın'}
+            </button>
+          </p>
+        </div>
       </div>
     </div>
   );

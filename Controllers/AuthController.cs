@@ -1,42 +1,49 @@
- using Microsoft.AspNetCore.Mvc;
-    using CRS_INTERN_PROJECT.DTOs;
-    using CRS_INTERN_PROJECT.Services;
-    namespace CRS_INTERN_PROJECT.Controllers;
+using CRS_INTERN_PROJECT.DTOs.Auth;
+using CRS_INTERN_PROJECT.Services.Auth;
+using Microsoft.AspNetCore.Mvc;
 
-    [ApiController]
-    [Route("api/[controller]")]
-    public class AuthController : ControllerBase
+namespace CRS_INTERN_PROJECT.Controllers;
+
+/// <summary>
+/// gelen login ve register isteklerini kontrol edip ilgili service'e yönlendiririz.
+/// </summary>
+[Route("api/[controller]")]
+[ApiController]
+public class AuthController : ControllerBase
+{
+    private readonly IAuthService _authService;
+
+    public AuthController(IAuthService authService)
     {
-        private readonly IAuthService _authService;
+        _authService = authService;
+    }
 
-        public AuthController(IAuthService authService)
+    [HttpPost("register")]
+    public async Task<IActionResult> Register([FromBody] RegisterDto dto)
+    {
+        try
         {
-            _authService = authService;
+            var response = await _authService.RegisterAsync(dto);
+            return Ok(response); // 200 OK ile token ve bilgileri dön
         }
-
-        [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterDto dto)
+        catch (Exception ex)
         {
-            try
-            {
-                var result = await _authService.RegisterAsync(dto);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
-        }
-
-        [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginDto dto)
-        {
-            var result = await _authService.LoginAsync(dto);
-            if (result == null)
-            {
-                return Unauthorized(new { message = "E-posta adresi veya şifre hatalı." });
-            }
-
-            return Ok(result);
+           
+            return BadRequest(new { Message = ex.Message });
         }
     }
+
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] LoginDto dto)
+    {
+        try
+        {
+            var response = await _authService.LoginAsync(dto);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            return Unauthorized(new { Message = ex.Message }); // 401 Unauthorized (Geçersiz yetki)
+        }
+    }
+}

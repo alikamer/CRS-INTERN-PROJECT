@@ -1,5 +1,6 @@
 using CRS_INTERN_PROJECT.Data;
-using CRS_INTERN_PROJECT.Services;
+using CRS_INTERN_PROJECT.Services.Auth;
+using CRS_INTERN_PROJECT.Services.Receipts;
 using Microsoft.EntityFrameworkCore;
 //IAuthService dependency ve jwt auth için öğreticez
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -12,7 +13,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IReceiptService, ReceiptService>();
+
 
 builder.Services.AddCors(options =>
 {
@@ -53,7 +56,6 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-builder.Services.AddScoped<IAuthService, AuthService>();
 
 var jwtSecret = builder.Configuration["JwtSettings:Secret"] ?? "CRS_SMART_RECEIPT_VERY_SECRETKEY_3232323232";
 var key = Encoding.UTF8.GetBytes(jwtSecret);
