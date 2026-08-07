@@ -67,8 +67,7 @@ public class ReceiptsController : ControllerBase
     }
 
     [HttpPost("{receiptId}/approve")]
-    // Not: Normalde buraya [Authorize(Roles = "SystemAdmin")] gibi bir rol kısıtı gelir 
-    // ama MVP (test) aşamasında olduğumuz için şimdilik herkes onaylayabilir veya test aracı olarak açık bırakıyoruz.
+
     public async Task<IActionResult> ApproveReceipt(Guid receiptId)
     {
         try

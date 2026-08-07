@@ -9,50 +9,81 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
+    const refreshToken = localStorage.getItem('refreshToken');
+    const role = localStorage.getItem('role') || 'Consumer';
+    const email = localStorage.getItem('email') || '';
+
     if (token) {
-      /// Sisteme daha önce girmişsek (token varsa) içeri direkt alıyoruz.
-      setUser({ token });
+      setUser({ token, refreshToken, email, role });
     }
     setLoading(false);
   }, []);
 
   const login = async (email, password) => {
     try {
-      /// .NET 8 Backend'e (AuthController) gerçek giriş (Login) isteği atıyoruz.
       const response = await api.post('/Auth/login', { email, password });
-      const { token } = response.data;
-      
+      const { token, refreshToken, role } = response.data;
+
       localStorage.setItem('token', token);
-      setUser({ email, token });
-      return true;
+      if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
+      localStorage.setItem('role', role || 'Consumer');
+      localStorage.setItem('email', email);
+
+      setUser({ email, token, refreshToken, role: role || 'Consumer' });
+      return { success: true, role: role || 'Consumer' };
     } catch (error) {
       console.error("Login failed", error);
-      return false;
+      return { success: false, error: error.response?.data?.Message || 'Giriş başarısız' };
     }
   };
 
   const register = async (email, password) => {
     try {
-      /// Sisteme kayıt olmak (Vatandaş) için istek atıyoruz.
       const response = await api.post('/Auth/register', { email, password });
-      const { token } = response.data;
-      
+      const { token, refreshToken, role } = response.data;
+
       localStorage.setItem('token', token);
-      setUser({ email, token });
-      return true;
+      if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
+      localStorage.setItem('role', role || 'Consumer');
+      localStorage.setItem('email', email);
+
+      setUser({ email, token, refreshToken, role: role || 'Consumer' });
+      return { success: true, role: role || 'Consumer' };
     } catch (error) {
       console.error("Register failed", error);
-      return false;
+      return { success: false, error: error.response?.data?.Message || 'Kayıt başarısız' };
     }
   };
 
-  const logout = () => {
+  const switchRoleForTesting = (newRole) => {
+    localStorage.setItem('role', newRole);
+    setUser(prev => prev ? { ...prev, role: newRole } : { role: newRole });
+  };
+
+   //  Kullanıcı giriş yaptığında refreshToken info tutuldu
+   //  Kullanıcı çıktığında  arka planda /api/auth/revoke-token isteği atılarak veritabanındaki token iptal edildi.
+  const logout = async () => {
+    const currentRefreshToken = localStorage.getItem('refreshToken');
+    if (currentRefreshToken) {
+      try {
+        await api.post('/Auth/revoke-token', { refreshToken: currentRefreshToken });
+      } catch (err) {
+        console.error("Revoke token error", err);
+      }
+    }
     localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('role');
+    localStorage.removeItem('email');
     setUser(null);
   };
 
+
+
+
+
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, register, logout, switchRoleForTesting, loading }}>            
       {!loading && children}
     </AuthContext.Provider>
   );
