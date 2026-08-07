@@ -1,8 +1,8 @@
 using CRS_INTERN_PROJECT.Data;
+using CRS_INTERN_PROJECT.Services.Admin;
 using CRS_INTERN_PROJECT.Services.Auth;
 using CRS_INTERN_PROJECT.Services.Receipts;
 using Microsoft.EntityFrameworkCore;
-//IAuthService dependency ve jwt auth için öğreticez
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -15,6 +15,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IReceiptService, ReceiptService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
 
 
 builder.Services.AddCors(options =>

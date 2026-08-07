@@ -28,3 +28,9 @@ Toplanan fişler işlendikten sonra şirketlere satılır:
 3. **Trafik Polisi ve Beyin:** Controller sınıfları sadece istekleri karşılayan trafik polisidir. Veritabanı sorguları, if/else iş kuralları ve tüm beyin işlemleri `Services` klasöründeki dosyalarda yapılır.
 4. **Güvenlik (DTO):** Veritabanı Entity'leri asla dışarıya (Frontend'e) direkt gönderilmez (Circular Reference önlemi). Daima `DTO` (Data Transfer Object) sınıfları kullanılır.
 5. **Giriş (Auth):** Bütün sistem JWT Token ile korunur. `BCrypt` ile şifreler hash'lenir.
+
+## 5. Gelecek / İleride Eklenecek Geliştirmeler Listesi
+*   **Refresh Token Hırsızlık Alarmı (Reuse Detection):** İptal edilmiş bir Refresh Token ile tekrar istek gelirse, o kullanıcıya ait veritabanındaki TÜM aktif Refresh Token'ları anında iptal edip kullanıcıyı tüm cihazlardan çıkış yapmaya (Login) zorlama güvenlik önlemi.
+*   **B2B Analitik Hesaplamaları:** Gelişmiş ciro, ortalama sepet ve pazar payı hesaplama algoritmaları.
+*   **SignalR Bildirimleri:** Canlı fiş onay ve durum bildirimleri.
+*   **MinIO Entegrasyonu:** Fiş fotoğraflarının harici dosya sunucusunda depolanması.
