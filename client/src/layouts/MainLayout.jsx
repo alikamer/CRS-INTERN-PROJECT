@@ -68,30 +68,9 @@ const MainLayout = () => {
         </nav>
 
         <div className="p-4 border-t border-gray-200 space-y-3">
-          {sidebarOpen && (
-            <div className="bg-gray-50 p-3 rounded-xl border border-gray-100 space-y-2">
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Aktif Rol Simülasyonu</p>
-              <div className="flex gap-1">
-                <button
-                  onClick={() => switchRoleForTesting('Consumer')}
-                  className={`text-[10px] font-bold px-2 py-1 rounded transition-colors ${role === 'Consumer' ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-700'}`}
-                >
-                  B2C Vatandaş
-                </button>
-                <button
-                  onClick={() => switchRoleForTesting('CorporateUser')}
-                  className={`text-[10px] font-bold px-2 py-1 rounded transition-colors ${role === 'CorporateUser' ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-700'}`}
-                >
-                  B2B Şirket
-                </button>
-                <button
-                  onClick={() => switchRoleForTesting('SystemAdmin')}
-                  className={`text-[10px] font-bold px-2 py-1 rounded transition-colors ${role === 'SystemAdmin' ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-700'}`}
-                >
-                  Admin
-                </button>
-              </div>
-              <p className="text-xs font-medium text-gray-900 truncate mt-1">{user?.email}</p>
+          {sidebarOpen && user && (
+            <div className="bg-gray-50 p-2.5 rounded-lg border border-gray-200">
+              <p className="text-xs font-semibold text-gray-900 truncate">{user.email}</p>
             </div>
           )}
 
