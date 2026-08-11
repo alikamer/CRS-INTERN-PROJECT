@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LogIn } from 'lucide-react';
+import { LogIn, Receipt } from 'lucide-react';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -15,84 +15,95 @@ const Login = () => {
     e.preventDefault();
     setError('');
     
-    let success = false;
+    let result;
     if (isLoginMode) {
-      success = await login(email, password);
+      result = await login(email, password);
     } else {
-      success = await register(email, password);
+      result = await register(email, password);
     }
-    if (success) {
+    if (result.success) {
       navigate('/');
     } else {
-      setError(isLoginMode ? 'Giriş başarısız. Lütfen bilgilerinizi kontrol edin.' : 'Kayıt başarısız. Bu e-posta zaten kullanılıyor olabilir.');
+      setError(result.error || (isLoginMode ? 'Giriş başarısız.' : 'Kayıt başarısız.'));
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 p-4">
-      <div className="max-w-md w-full bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-8 border border-white/20">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-[#F0F4F9] p-4">
+
+      {/* Login Card */}
+      <div className="max-w-md w-full bg-white rounded-2xl shadow-lg border border-[#E1E3E1] p-8">
+        {/* Branding */}
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-            <LogIn className="w-8 h-8 text-indigo-600" />
+          <div className="w-14 h-14 bg-gradient-to-br from-[#0B57D0] to-[#4285F4] rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-md">
+            <Receipt className="w-7 h-7 text-white" />
           </div>
-          <h2 className="text-3xl font-bold text-white tracking-tight">
+          <h1 className="text-2xl font-bold text-[#1F1F1F] tracking-tight">
             {isLoginMode ? 'Hoş Geldiniz' : 'Aramıza Katılın'}
-          </h2>
-          <p className="text-white/80 mt-2">B2B Fiş Analiz Platformu</p>
+          </h1>
+          <p className="text-[#5E5E5E] mt-1 text-sm">CRS Fiş Analiz Platformu</p>
         </div>
 
+        {/* Error Alert */}
         {error && (
-          <div className="bg-red-500/20 border border-red-500/50 text-white px-4 py-3 rounded-lg mb-6 text-sm">
+          <div className="bg-red-50 text-[#C5221F] border border-red-200 px-4 py-3 rounded-xl mb-6 text-sm">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-white/90 mb-2">E-posta</label>
+            <label className="block text-sm font-medium text-[#1F1F1F] mb-1.5">E-posta</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
+              className="w-full px-4 py-3 bg-[#F0F4F9] border border-[#E1E3E1] rounded-xl text-[#1F1F1F] placeholder-[#747775] focus:outline-none focus:border-[#0B57D0] focus:ring-1 focus:ring-[#0B57D0] transition-all"
               placeholder="ornek@sirket.com"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-white/90 mb-2">Şifre</label>
+            <label className="block text-sm font-medium text-[#1F1F1F] mb-1.5">Şifre</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
+              className="w-full px-4 py-3 bg-[#F0F4F9] border border-[#E1E3E1] rounded-xl text-[#1F1F1F] placeholder-[#747775] focus:outline-none focus:border-[#0B57D0] focus:ring-1 focus:ring-[#0B57D0] transition-all"
               placeholder="••••••••"
               required
             />
           </div>
           <button
             type="submit"
-            className="w-full py-3 px-4 bg-white text-indigo-600 font-semibold rounded-lg shadow-lg hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-indigo-500 transition-all"
+            className="w-full py-3 px-4 bg-[#0B57D0] hover:bg-[#0842A0] text-white rounded-xl font-semibold shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-[#0B57D0] focus:ring-offset-2 transition-all"
           >
             {isLoginMode ? 'Giriş Yap' : 'Kayıt Ol'}
           </button>
         </form>
 
+        {/* Toggle Login/Register */}
         <div className="mt-6 text-center">
-          <p className="text-white/80 text-sm">
+          <p className="text-[#5E5E5E] text-sm">
             {isLoginMode ? 'Hesabınız yok mu? ' : 'Zaten hesabınız var mı? '}
             <button
               onClick={() => {
                 setIsLoginMode(!isLoginMode);
                 setError('');
               }}
-              className="text-white font-bold hover:underline focus:outline-none"
+              className="text-[#0B57D0] hover:text-[#0842A0] font-semibold focus:outline-none transition-colors"
             >
               {isLoginMode ? 'Hemen Kayıt Olun' : 'Giriş Yapın'}
             </button>
           </p>
         </div>
       </div>
+
+      {/* Tagline */}
+      <p className="text-[#747775] text-xs mt-6">
+        CRS Smart Receipt — B2B Fiş Analiz ve CRM Platformu
+      </p>
     </div>
   );
 };
