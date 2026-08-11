@@ -14,10 +14,6 @@ namespace CRS_INTERN_PROJECT.Services.Auth;
 
 
 
-
-
-
-
 public class AuthService : IAuthService
 {
     private readonly AppDbContext _context;
@@ -41,6 +37,9 @@ public class AuthService : IAuthService
 
         var newUser = new AppUser
         {
+            FirstName = dto.FirstName,
+            LastName = dto.LastName,
+            PhoneNumber = dto.PhoneNumber,
             Email = dto.Email,
             PasswordHash = passwordHash,
             Role = UserRole.Consumer
@@ -94,7 +93,9 @@ public class AuthService : IAuthService
     }
 
     /// <summary>
-    /// Süresi dolmuş Access Token yerine gönderilen Refresh Token'ı doğrular ve yeni token ikilisini (Token Rotation) üretir.
+    /// ! TOKEN ROTATION !
+    /// Süresi dolmuş Access Token yerine gönderilen Refresh Token'ı doğrular
+    ///  ve yeni token ikilisini (Token Rotation) üretir.
     /// </summary>
     public async Task<AuthResponseDto> RefreshTokenAsync(RefreshTokenRequestDto dto)
     {
@@ -125,7 +126,8 @@ public class AuthService : IAuthService
     }
 
     /// <summary>
-    /// Kullanıcı çıkış yaptığında Refresh Token'ı veritabanında iptal eder. Tekrar mail+şifre girilmesi gereklidir generate için
+    /// Kullanıcı çıkış yaptığında Refresh Token'ı veritabanında iptal eder.
+    ///  Tekrar mail+şifre girilmesi gereklidir generate için
     /// </summary>
     public async Task<bool> RevokeTokenAsync(string refreshToken)
     {
