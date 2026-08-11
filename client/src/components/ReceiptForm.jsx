@@ -50,69 +50,69 @@ const ReceiptForm = ({ isOpen, onClose, onSuccess }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
       <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-          <h3 className="text-lg font-bold text-gray-900">Yeni Fiş Yükle</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
+        <div className="px-6 py-4 border-b border-[#E1E3E1] flex justify-between items-center bg-[#F0F4F9]">
+          <h3 className="text-lg font-bold text-[#1F1F1F]">Yeni Fiş Yükle</h3>
+          <button onClick={onClose} className="text-[#747775] hover:text-[#5E5E5E] transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
           {error && (
-            <div className="bg-red-50 text-red-600 px-4 py-3 rounded-lg text-sm border border-red-100">
+            <div className="bg-red-50 text-[#C5221F] px-4 py-3 rounded-lg text-sm border border-red-200">
               {error}
             </div>
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Marka ID (Şimdilik Guid)</label>
+            <label className="block text-sm font-medium text-[#1F1F1F] mb-1">Marka ID (Şimdilik Guid)</label>
             <input
               type="text"
               required
               value={brandId}
               onChange={(e) => setBrandId(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+              className="w-full px-4 py-2 border border-[#E1E3E1] rounded-lg focus:ring-2 focus:ring-[#0B57D0] focus:border-[#0B57D0] outline-none transition-all"
               placeholder="00000000-0000-0000-0000-000000000000"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Tarih</label>
+              <label className="block text-sm font-medium text-[#1F1F1F] mb-1">Tarih</label>
               <input
                 type="date"
                 required
                 value={receiptDate}
                 onChange={(e) => setReceiptDate(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                className="w-full px-4 py-2 border border-[#E1E3E1] rounded-lg focus:ring-2 focus:ring-[#0B57D0] focus:border-[#0B57D0] outline-none transition-all"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Tutar (₺)</label>
+              <label className="block text-sm font-medium text-[#1F1F1F] mb-1">Tutar (₺)</label>
               <input
                 type="number"
                 step="0.01"
                 required
                 value={totalAmount}
                 onChange={(e) => setTotalAmount(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
+                className="w-full px-4 py-2 border border-[#E1E3E1] rounded-lg focus:ring-2 focus:ring-[#0B57D0] focus:border-[#0B57D0] outline-none transition-all"
                 placeholder="0.00"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Fiş Fotoğrafı</label>
-            <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-indigo-500 transition-colors">
+            <label className="block text-sm font-medium text-[#1F1F1F] mb-1">Fiş Fotoğrafı</label>
+            <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-[#C6C7C6] border-dashed rounded-lg hover:border-[#0B57D0] transition-colors">
               <div className="space-y-1 text-center">
-                <Upload className="mx-auto h-12 w-12 text-gray-400" />
-                <div className="flex text-sm text-gray-600 justify-center">
-                  <label className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none">
+                <Upload className="mx-auto h-12 w-12 text-[#C6C7C6]" />
+                <div className="flex text-sm text-[#5E5E5E] justify-center">
+                  <label className="relative cursor-pointer bg-white rounded-md font-medium text-[#0B57D0] hover:text-[#0842A0] focus-within:outline-none">
                     <span>Fotoğraf Seç</span>
                     <input type="file" className="sr-only" accept="image/*" onChange={(e) => setImage(e.target.files[0])} required />
                   </label>
                 </div>
-                <p className="text-xs text-gray-500">{image ? image.name : 'PNG, JPG, max 10MB'}</p>
+                <p className="text-xs text-[#747775]">{image ? image.name : 'PNG, JPG, max 10MB'}</p>
               </div>
             </div>
           </div>
@@ -121,14 +121,14 @@ const ReceiptForm = ({ isOpen, onClose, onSuccess }) => {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors"
+              className="flex-1 px-4 py-2 text-[#5E5E5E] bg-[#F0F4F9] hover:bg-[#E1E3E1] rounded-lg font-medium transition-colors"
             >
               İptal
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 px-4 py-2 text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg font-medium transition-colors shadow-lg shadow-indigo-200 disabled:opacity-50"
+              className="flex-1 px-4 py-2 text-white bg-[#0B57D0] hover:bg-[#0842A0] rounded-lg font-medium transition-colors shadow-lg shadow-blue-200 disabled:opacity-50"
             >
               {loading ? 'Yükleniyor...' : 'Fişi Yükle'}
             </button>

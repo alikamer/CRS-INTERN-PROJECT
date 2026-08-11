@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, Search } from 'lucide-react';
 import api from '../services/api';
 import ReceiptForm from '../components/ReceiptForm';
 
@@ -12,22 +12,18 @@ const Receipts = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
-  const pageSize = 5; // Sayfa başına gösterilecek fiş sayısı
+  const pageSize = 5;
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     fetchReceipts();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
 
   const fetchReceipts = async () => {
     setLoading(true);
     try {
-      /// Vatandaşın yüklediği tüm fişleri yeni yazdığımız my-receipts noktasından (Endpoint) çekiyoruz.
       const response = await api.get('/Receipts/my-receipts');
-      
-      /// Gelen veri direkt fiş listemiz, onu State'e (Hafızaya) alıyoruz.
       setReceipts(response.data);
       setTotalCount(response.data.length);
     } catch (error) {
@@ -39,74 +35,73 @@ const Receipts = () => {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    /// Arama işlemi şimdilik frontend'de yapılabilir ama MVP'de filtrelemeyi basit tutuyoruz.
     fetchReceipts();
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-      <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6 gap-4">
+    <div className="ga4-card p-6 space-y-6">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 border-b border-[#E1E3E1] pb-4">
         <div>
-          <h2 className="text-xl font-bold text-gray-900">Fiş Listesi</h2>
-          <p className="text-sm text-gray-500 mt-1">Sisteme yüklenen tüm fişleri buradan görüntüleyebilirsiniz.</p>
+          <h2 className="text-xl font-bold text-[#1F1F1F]">Fiş Listesi Raporu</h2>
+          <p className="text-xs text-[#5E5E5E] mt-0.5">Sisteme kaydedilmiş dijital fişlerin tam dökümü.</p>
         </div>
-        <form onSubmit={handleSearch} className="flex gap-2">
-          <input
-            type="text"
-            placeholder="Mağaza veya Durum ara..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm w-full md:w-64 text-gray-900"
-          />
-          <button type="submit" className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 text-sm font-medium transition-colors">
-            Ara
+        <div className="flex items-center space-x-2">
+          <form onSubmit={handleSearch} className="relative flex-1 md:w-64">
+            <Search className="w-4 h-4 text-[#747775] absolute left-3 top-2.5" />
+            <input
+              type="text"
+              placeholder="Fiş veya Mağaza ara..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-9 pr-4 py-1.5 border border-[#E1E3E1] rounded-full focus:outline-none focus:border-[#0B57D0] text-xs bg-[#F0F4F9]"
+            />
+          </form>
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="flex items-center px-4 py-2 bg-[#0B57D0] text-white rounded-full hover:bg-[#0842A0] text-xs font-bold transition-all shadow-xs shrink-0"
+          >
+            <Plus className="w-4 h-4 mr-1.5" /> Yeni Fiş Ekle
           </button>
-        </form>
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm font-medium transition-colors shadow-sm whitespace-nowrap"
-        >
-          <Plus className="w-4 h-4 mr-2" /> Yeni Fiş Ekle
-        </button>
+        </div>
       </div>
 
       {loading ? (
         <div className="flex justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+          <div className="animate-spin rounded-full h-7 w-7 border-b-2 border-[#0B57D0]"></div>
         </div>
       ) : (
         <>
-          <div className="overflow-x-auto border border-gray-100 rounded-lg">
+          <div className="overflow-x-auto border border-[#E1E3E1] rounded-2xl">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-gray-50 border-b border-gray-200 text-sm">
-                  <th className="py-3 px-4 font-semibold text-gray-600">Mağaza</th>
-                  <th className="py-3 px-4 font-semibold text-gray-600">Tarih</th>
-                  <th className="py-3 px-4 font-semibold text-gray-600">Tutar</th>
-                  <th className="py-3 px-4 font-semibold text-gray-600">Durum</th>
+                <tr className="bg-[#F0F4F9] border-b border-[#E1E3E1] text-xs font-bold text-[#5E5E5E]">
+                  <th className="py-3 px-4">Fiş No</th>
+                  <th className="py-3 px-4">Tarih</th>
+                  <th className="py-3 px-4">Tutar</th>
+                  <th className="py-3 px-4">Durum</th>
                 </tr>
               </thead>
-              <tbody className="text-sm">
+              <tbody className="text-xs">
                 {receipts.length > 0 ? (
                   receipts.map((receipt) => (
-                    <tr key={receipt.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                      <td className="py-3 px-4 font-medium text-gray-900">{receipt.brandId}</td>
-                      <td className="py-3 px-4 text-gray-500">{new Date(receipt.receiptDate).toLocaleDateString('tr-TR')}</td>
-                      <td className="py-3 px-4 text-gray-900 font-medium">₺{receipt.totalAmount.toFixed(2)}</td>
+                    <tr key={receipt.id} className="border-b border-[#E1E3E1] hover:bg-[#F8F9FA] transition-colors">
+                      <td className="py-3 px-4 font-bold text-[#1F1F1F]">#{receipt.id.substring(0, 8)}</td>
+                      <td className="py-3 px-4 text-[#5E5E5E]">{new Date(receipt.receiptDate).toLocaleDateString('tr-TR')}</td>
+                      <td className="py-3 px-4 text-[#1F1F1F] font-bold font-mono">₺{receipt.totalAmount.toFixed(2)}</td>
                       <td className="py-3 px-4">
-                        <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-                          receipt.status === 'Approved' ? 'bg-green-100 text-green-700' :
-                          receipt.status === 'Pending' ? 'bg-orange-100 text-orange-700' :
-                          'bg-red-100 text-red-700'
+                        <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                          receipt.status === 'Approved' ? 'ga4-badge-green' :
+                          receipt.status === 'Pending' ? 'ga4-badge-amber' :
+                          'bg-red-50 text-red-700 border border-red-200'
                         }`}>
-                          {receipt.status}
+                          {receipt.status === 'Approved' ? 'Onaylandı' : receipt.status === 'Pending' ? 'Beklemede' : 'Reddedildi'}
                         </span>
                       </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="4" className="py-12 text-center text-gray-500">
+                    <td colSpan="4" className="py-10 text-center text-[#747775] text-xs">
                       {searchTerm ? 'Arama kriterlerinize uygun fiş bulunamadı.' : 'Henüz hiç fiş eklenmemiş.'}
                     </td>
                   </tr>
@@ -116,25 +111,25 @@ const Receipts = () => {
           </div>
 
           {/* Pagination */}
-          <div className="flex flex-col sm:flex-row justify-between items-center mt-6 gap-4">
-            <div className="text-sm text-gray-500">
-              Toplam <span className="font-medium text-gray-900">{totalCount}</span> kayıttan <span className="font-medium text-gray-900">{totalCount === 0 ? 0 : (currentPage - 1) * pageSize + 1}</span> - <span className="font-medium text-gray-900">{Math.min(currentPage * pageSize, totalCount)}</span> arası gösteriliyor
+          <div className="flex flex-col sm:flex-row justify-between items-center mt-4 gap-4 text-xs">
+            <div className="text-[#5E5E5E]">
+              Toplam <span className="font-bold text-[#1F1F1F]">{totalCount}</span> kayıttan gösteriliyor
             </div>
             <div className="flex gap-1">
               <button
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                className="px-3 py-1.5 border border-gray-200 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 text-sm font-medium text-gray-700 transition-colors"
+                className="px-3 py-1 border border-[#E1E3E1] rounded-full disabled:opacity-50 hover:bg-[#F0F4F9] text-xs font-semibold text-[#1F1F1F]"
               >
                 Önceki
               </button>
-              <div className="flex items-center justify-center px-4 py-1.5 bg-gray-50 text-gray-900 rounded-md text-sm font-medium border border-gray-200">
+              <div className="flex items-center justify-center px-3 py-1 bg-[#F0F4F9] text-[#1F1F1F] rounded-full text-xs font-bold">
                 {currentPage} / {totalPages || 1}
               </div>
               <button
                 disabled={currentPage === totalPages || totalPages === 0}
                 onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                className="px-3 py-1.5 border border-gray-200 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 text-sm font-medium text-gray-700 transition-colors"
+                className="px-3 py-1 border border-[#E1E3E1] rounded-full disabled:opacity-50 hover:bg-[#F0F4F9] text-xs font-semibold text-[#1F1F1F]"
               >
                 Sonraki
               </button>
@@ -146,7 +141,7 @@ const Receipts = () => {
       <ReceiptForm 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
-        onSuccess={() => fetchReceipts(searchTerm, currentPage)} 
+        onSuccess={() => fetchReceipts()} 
       />
     </div>
   );
