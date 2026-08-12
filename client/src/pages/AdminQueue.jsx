@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
 import { Check, Plus, AlertCircle, Image as ImageIcon } from 'lucide-react';
-import AdminAllReceiptsTable from '../components/AdminAllReceiptsTable';
 
 const AdminQueue = () => {
   const [pendingReceipts, setPendingReceipts] = useState([]);
@@ -107,7 +106,7 @@ const AdminQueue = () => {
                       <p className="font-bold text-xs text-[#1F1F1F]">{r.brandName}</p>
                       <p className="text-[11px] text-[#747775]">{new Date(r.receiptDate).toLocaleDateString('tr-TR')}</p>
                     </div>
-                    <span className="font-bold text-xs text-[#0B57D0] font-mono">₺{r.totalAmount.toFixed(2)}</span>
+                    <span className="font-bold text-xs text-[#0B57D0]">₺{r.totalAmount.toFixed(2)}</span>
                   </div>
                 </div>
               ))}
@@ -131,7 +130,7 @@ const AdminQueue = () => {
                 </div>
                 <button
                   onClick={() => handleApprove(selectedReceipt.id)}
-                  className="bg-[#137333] hover:bg-[#0F5C29] text-white px-4 py-2 rounded-full font-bold text-xs transition-all flex items-center gap-1.5 shadow-xs"
+                  className="bg-[#137333] hover:bg-[#0F5C29] text-white px-4 py-2 rounded-full font-bold text-xs transition-all flex items-center gap-1.5"
                 >
                   <Check className="w-4 h-4" /> Fişi Onayla & Puan Yükle
                 </button>
@@ -219,9 +218,6 @@ const AdminQueue = () => {
           )}
         </div>
       </div>
-
-      {/* TÜM FİŞLER SAYFALANMIŞ TABLOSU */}
-      <AdminAllReceiptsTable />
     </div>
   );
 };

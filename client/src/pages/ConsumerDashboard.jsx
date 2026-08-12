@@ -39,7 +39,7 @@ const ConsumerDashboard = () => {
         </div>
         <div className="text-right shrink-0">
           <p className="text-xs text-[#747775] uppercase font-semibold tracking-wider">Sadakat Puanınız</p>
-          <p className="text-3xl font-bold text-[#0B57D0] font-mono tracking-tight">{totalPoints.toFixed(0)}</p>
+          <p className="text-3xl font-bold text-[#0B57D0] tracking-tight">{totalPoints.toFixed(0)}</p>
         </div>
       </div>
 
@@ -83,7 +83,7 @@ const ConsumerDashboard = () => {
                   <p className="text-xs text-[#747775]">{new Date(receipt.receiptDate).toLocaleDateString('tr-TR')}</p>
                 </div>
                 <div className="text-right">
-                  <p className="font-bold text-sm text-[#1F1F1F] font-mono">₺{receipt.totalAmount.toFixed(2)}</p>
+                  <p className="font-bold text-sm text-[#1F1F1F]">₺{receipt.totalAmount.toFixed(2)}</p>
                   <span className={`text-[11px] font-medium ${
                     receipt.status === 'Approved' ? 'text-[#137333]' : 'text-[#B06000]'
                   }`}>

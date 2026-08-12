@@ -36,7 +36,7 @@ const CorporateAnalytics = () => {
 
   if (error) {
     return (
-      <div className="ga4-card p-6 border-l-4 border-l-red-500 flex items-start gap-4">
+      <div className="ga4-card p-6 flex items-start gap-4">
         <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
         <div className="flex-1">
           <h3 className="font-bold text-sm text-[#1F1F1F]">Rapor Yüklenemedi</h3>
@@ -106,7 +106,7 @@ const CorporateAnalytics = () => {
                 <div key={idx} className="space-y-1.5">
                   <div className="flex justify-between text-sm">
                     <span className="font-medium text-[#1F1F1F]">{cat.categoryName}</span>
-                    <span className="font-mono text-[#1F1F1F]">
+                    <span className="text-[#1F1F1F]">
                       ₺{Number(cat.totalAmount).toLocaleString('tr-TR', { minimumFractionDigits: 2 })}
                       <span className="text-[#747775] text-xs ml-1.5">%{cat.percentage}</span>
                     </span>
@@ -147,7 +147,7 @@ const CorporateAnalytics = () => {
                         <span className="text-[11px] text-[#0B57D0]">· sizin markanız</span>
                       )}
                     </div>
-                    <span className="font-mono text-[#1F1F1F]">%{item.marketSharePercentage}</span>
+                    <span className="text-[#1F1F1F]">%{item.marketSharePercentage}</span>
                   </div>
                   <div className="w-full bg-[#F0F4F9] h-1.5 rounded-full overflow-hidden">
                     <div 

@@ -2,8 +2,25 @@ import { useState, useEffect } from 'react';
 import { Plus, Search } from 'lucide-react';
 import api from '../services/api';
 import ReceiptForm from '../components/ReceiptForm';
+import AdminAllReceiptsTable from '../components/AdminAllReceiptsTable';
+import { useAuth } from '../context/AuthContext';
 
 const Receipts = () => {
+  const { user } = useAuth();
+  const role = user?.role || 'Consumer';
+
+  if (role === 'SystemAdmin') {
+    return (
+      <div className="space-y-4">
+        <div>
+          <h1 className="text-xl font-bold text-[#1F1F1F] tracking-tight">Tüm Fiş Kayıtları</h1>
+          <p className="text-sm text-[#5E5E5E] mt-1">Sistemdeki tüm fişleri görüntüleyin ve filtreleyin.</p>
+        </div>
+        <AdminAllReceiptsTable />
+      </div>
+    );
+  }
+
   const [receipts, setReceipts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -87,7 +104,7 @@ const Receipts = () => {
                     <tr key={receipt.id} className="border-b border-[#E1E3E1] hover:bg-[#F8F9FA] transition-colors">
                       <td className="py-3 px-4 font-bold text-[#1F1F1F]">#{receipt.id.substring(0, 8)}</td>
                       <td className="py-3 px-4 text-[#5E5E5E]">{new Date(receipt.receiptDate).toLocaleDateString('tr-TR')}</td>
-                      <td className="py-3 px-4 text-[#1F1F1F] font-bold font-mono">₺{receipt.totalAmount.toFixed(2)}</td>
+                      <td className="py-3 px-4 text-[#1F1F1F] font-bold">₺{receipt.totalAmount.toFixed(2)}</td>
                       <td className="py-3 px-4">
                         <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
                           receipt.status === 'Approved' ? 'ga4-badge-green' :
