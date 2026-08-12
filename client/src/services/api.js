@@ -77,4 +77,18 @@ api.interceptors.response.use(
   }
 );
 
+/*  1
+  API CALL
+  Burada yazdığımız yeni getAllReceipts fonksiyonu, URL sonuna query stringleri 
+  (pageNumber, pageSize, status) ekleyerek backend'e istek atıyor.
+ */
+export const getAllReceipts = async (pageNumber = 1, pageSize = 10, status = '') => {
+  let url = `/Receipts/all?pageNumber=${pageNumber}&pageSize=${pageSize}`;
+  if (status) {
+    url += `&status=${status}`;
+  }
+  const response = await api.get(url);
+  return response.data;
+};
+
 export default api;

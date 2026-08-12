@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
 import { Check, Plus, AlertCircle, Image as ImageIcon } from 'lucide-react';
+import AdminAllReceiptsTable from '../components/AdminAllReceiptsTable';
 
 const AdminQueue = () => {
   const [pendingReceipts, setPendingReceipts] = useState([]);
@@ -218,6 +219,9 @@ const AdminQueue = () => {
           )}
         </div>
       </div>
+
+      {/* TÜM FİŞLER SAYFALANMIŞ TABLOSU */}
+      <AdminAllReceiptsTable />
     </div>
   );
 };

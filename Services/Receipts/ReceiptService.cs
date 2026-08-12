@@ -1,5 +1,7 @@
 using CRS_INTERN_PROJECT.Data;
+using CRS_INTERN_PROJECT.DTOs.Common;
 using CRS_INTERN_PROJECT.DTOs.Receipt;
+using CRS_INTERN_PROJECT.Entities;
 using CRS_INTERN_PROJECT.Enums;
 using Microsoft.EntityFrameworkCore;
 
@@ -137,4 +139,66 @@ public class ReceiptService : IReceiptService
         await _context.SaveChangesAsync();
         return true;
     }
+
+    public async Task<PagedResult<ReceiptDto>> GetAllReceiptAsync(ReceiptFilterDto filter)
+    {
+        var query = _context.Receipts.AsQueryable();
+
+        /* frontend'den dolu bir status gelmişse approved,pending var mı konrolu 
+        varsa -> gelen string ReceiptStatus Enum'a çevirilir. 
+        */
+
+        if(!string.IsNullOrEmpty(filter.Status))
+        {
+            if(Enum.TryParse<ReceiptStatus>(filter.Status,true,out var parsedStatus))
+            {
+                query = query.Where(r => r.Status == parsedStatus);
+
+            }
+        }        
+            /* Pagination işlemi,
+            AsQueryAble()  kullanmak şart burda 
+            
+            PageNumber=5 ve PageSize=10 istendi diyelim
+            skip((5-1)*10) yani skip(40) yapar
+            SQL ilk 40 kaydı atlar
+            Take(10) sonraki 10 kaydı getirir
+
+            5. sayfa istenirse ilk 4 sayfa skiplenir take
+
+
+            */
+        var TotalCount = await query.CountAsync();
+
+        var items = await query
+        .OrderByDescending(r => r.ReceiptDate)
+        .Skip((filter.PageNumber - 1) * filter.PageSize)
+        .Take(filter.PageSize) 
+        .Select(r => new ReceiptDto
+        {
+            Id = r.Id,
+            BrandId = r.BrandId,
+            ReceiptDate = r.ReceiptDate,
+            TotalAmount = r.TotalAmount,
+            Status = r.Status.ToString(),
+            ImageUrl = r.ImageUrl
+        }).ToListAsync();
+
+        return new PagedResult<ReceiptDto>
+        {
+            Items = items,
+            TotalCount = TotalCount,
+            PageNumber = filter.PageNumber,
+            PageSize = filter.PageSize
+        };
+    }
+
+
+
+
+
+
+
+
+
 }

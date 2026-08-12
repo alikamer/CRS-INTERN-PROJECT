@@ -80,4 +80,59 @@ public class ReceiptsController : ControllerBase
             return BadRequest(new { Message = ex.Message });
         }
     }
+
+
+ //Pagination güncellemesi
+
+    [HttpGet("all")]
+    [Authorize(Roles = "SystemAdmin")] // Sadece admin yetkisi ile all receipts getirilebilir !! 
+/*
+FromQuery !! , URL deki parametreleri oto okur ve  tür dönüşümlerini yapar
+string-intvs. new ReceiptFilterDto() oto oluşturup içine değerleri doldurur .
+
+*/
+    public async Task<IActionResult> GetAllReceipts([FromQuery] ReceiptFilterDto filter)
+    {
+        try
+        {
+            var pagedReceipts = await _receiptService.GetAllReceiptAsync(filter);
+            return Ok(pagedReceipts);
+
+        } 
+        catch (Exception ex)
+        {
+            return BadRequest(new{Message =ex.Message});
+        }
+
+
+
+
+
+
+
+
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
