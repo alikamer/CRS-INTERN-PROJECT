@@ -13,6 +13,29 @@ public class ConsumerService : IConsumerService
         _context = context;
     }
 
+    public async Task<ConsumerFullProfileDto?> GetProfileAsync(Guid appUserId)
+    {
+        var user = await _context.Users
+            .AsNoTracking()
+            .Include(u => u.ConsumerProfile)
+            .FirstOrDefaultAsync(u => u.Id == appUserId);
+
+        if (user == null)
+            return null;
+
+        return new ConsumerFullProfileDto
+        {
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Email = user.Email,
+            PhoneNumber = user.PhoneNumber,
+            DateOfBirth = user.ConsumerProfile?.DateOfBirth,
+            Gender = user.ConsumerProfile?.Gender,
+            City = user.ConsumerProfile?.City,
+            IncomeLevel = user.ConsumerProfile?.IncomeLevel
+        };
+    }
+
     public async Task<bool> UpdateProfileAsync(Guid appUserId, UpdateConsumerProfileDto dto)
     {
         // kaydı var mı kontrol (consumre)

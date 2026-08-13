@@ -7,6 +7,7 @@ import ConsumerDashboard from './pages/ConsumerDashboard';
 import CorporateAnalytics from './pages/CorporateAnalytics';
 import AdminQueue from './pages/AdminQueue';
 import Receipts from './pages/Receipts';
+import Settings from './pages/Settings';
 
 const RoleBasedHome = () => {
   const { user } = useAuth();
@@ -33,7 +34,7 @@ function App() {
           <Route element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
             <Route path="/" element={<RoleBasedHome />} />
             <Route path="/receipts" element={<Receipts />} />
-            <Route path="/settings" element={<div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100"><h3 className="font-semibold text-gray-800">Hesap & Rol Ayarları</h3><p className="text-gray-500 text-sm mt-2">Mevcut oturum rolünüzü sol menüdeki geçiş simülatöründen değiştirebilir veya test edebilirsiniz.</p></div>} />
+            <Route path="/settings" element={<Settings />} />
           </Route>
         </Routes>
       </BrowserRouter>

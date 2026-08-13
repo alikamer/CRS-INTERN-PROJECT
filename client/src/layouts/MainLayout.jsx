@@ -17,21 +17,38 @@ import {
   SlidersHorizontal,
   Building
 } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 const MainLayout = () => {
   const { logout, user, switchRoleForTesting } = useAuth();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const role = user?.role || 'Consumer';
 
-  // Sadece Consumer (Vatandaş) rolü için profil uyarısı
   useEffect(() => {
-    if (role === 'Consumer' && !localStorage.getItem('profileCompleted')) {
-      const timer = setTimeout(() => setShowProfileModal(true), 1500);
-      return () => clearTimeout(timer);
+    if (role === 'Consumer') {
+      import('../services/api').then(({ getConsumerProfile }) => {
+        getConsumerProfile().then(profile => {
+          if (profile && (!profile.city || !profile.gender || !profile.dateOfBirth)) {
+            const timer = setTimeout(() => setShowProfileModal(true), 1500);
+            return () => clearTimeout(timer);
+          }
+        }).catch(err => console.error("Profil kontrolü başarısız:", err));
+      });
     }
   }, [role]);
 
@@ -200,15 +217,41 @@ const MainLayout = () => {
               <Bell className="w-4 h-4" />
               <span className="w-2 h-2 bg-[#0B57D0] rounded-full absolute top-1.5 right-1.5"></span>
             </button>
-            <button 
-              onClick={() => role === 'Consumer' && setShowProfileModal(true)}
-              className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs shadow-xs transition-transform hover:scale-105 ${
-                role === 'Consumer' ? 'bg-[#0B57D0] text-white cursor-pointer ring-2 ring-transparent hover:ring-[#4285F4]' : 'bg-[#0B57D0] text-white'
-              }`}
-              title={role === 'Consumer' ? 'Profilimi Tamamla' : 'Profil'}
-            >
-              {user?.name ? user.name[0] : 'A'}
-            </button>
+            <div ref={dropdownRef} className="relative">
+              <button
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+                className="w-8 h-8 rounded-full bg-[#0B57D0] text-white flex items-center justify-center font-bold text-xs shadow-xs transition-transform hover:scale-105 hover:ring-2 hover:ring-[#4285F4]"
+                title="Profil & Ayarlar"
+              >
+                {user?.name ? user.name[0].toUpperCase() : 'A'}
+              </button>
+
+              {dropdownOpen && (
+                <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden z-50 animate-fade-in-up">
+                  <div className="px-4 py-3 border-b border-slate-100 bg-slate-50">
+                    <p className="text-sm font-semibold text-slate-800 truncate">{user?.name || 'Kullanıcı'}</p>
+                    <p className="text-xs text-slate-500 truncate mt-0.5">{user?.email}</p>
+                  </div>
+                  <div className="py-1">
+                    <Link
+                      to="/settings"
+                      onClick={() => setDropdownOpen(false)}
+                      className="flex items-center space-x-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
+                    >
+                      <Settings className="w-4 h-4 text-slate-400" />
+                      <span>Profil Ayarları</span>
+                    </Link>
+                    <button
+                      onClick={() => { setDropdownOpen(false); logout(); }}
+                      className="flex items-center space-x-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors w-full text-left"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span>Çıkış Yap</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </header>
 
@@ -218,12 +261,10 @@ const MainLayout = () => {
         </div>
       </main>
 
-      {/* Profile Modal */}
       <ConsumerProfileModal 
         isOpen={showProfileModal} 
         onClose={() => setShowProfileModal(false)}
         onSuccess={() => {
-          localStorage.setItem('profileCompleted', 'true');
           setShowProfileModal(false);
         }}
       />

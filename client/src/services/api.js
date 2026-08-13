@@ -91,7 +91,12 @@ export const getAllReceipts = async (pageNumber = 1, pageSize = 10, status = '')
   return response.data;
 };
 
-// Consumer Profile Güncelleme Endpoint'i
+// Consumer Profile Endpoint'leri
+export const getConsumerProfile = async () => {
+  const response = await api.get('/Consumer/profile');
+  return response.data;
+};
+
 export const updateConsumerProfile = async (profileData) => {
   const response = await api.put('/Consumer/profile', profileData);
   return response.data;

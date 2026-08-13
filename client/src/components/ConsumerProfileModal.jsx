@@ -71,10 +71,9 @@ const ConsumerProfileModal = ({ isOpen, onClose, onSuccess }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/20 backdrop-blur-md p-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-fade-in-up">
         
-        {/* Header */}
         <div className="bg-slate-50 border-b px-6 py-4 flex justify-between items-center">
           <div>
             <h2 className="text-xl font-bold text-slate-800">Profilini Tamamla</h2>
@@ -82,7 +81,6 @@ const ConsumerProfileModal = ({ isOpen, onClose, onSuccess }) => {
           </div>
         </div>
 
-        {/* Body Form */}
         <div className="p-6">
           {error && (
             <div className="mb-4 p-3 bg-red-50 text-red-600 text-sm rounded-lg border border-red-100">
@@ -92,7 +90,6 @@ const ConsumerProfileModal = ({ isOpen, onClose, onSuccess }) => {
           
           <form id="profileForm" onSubmit={handleSubmit} className="space-y-5">
             
-            {/* Doğum Tarihi */}
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Doğum Tarihi</label>
               <input 
@@ -103,7 +100,6 @@ const ConsumerProfileModal = ({ isOpen, onClose, onSuccess }) => {
               />
             </div>
 
-            {/* Modern Cinsiyet Seçimi (Toggle/Pill tarzı) */}
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Cinsiyet</label>
               <div className="grid grid-cols-2 gap-3">
@@ -132,7 +128,6 @@ const ConsumerProfileModal = ({ isOpen, onClose, onSuccess }) => {
               </div>
             </div>
 
-            {/* Arama Özellikli Şehir Seçimi */}
             <div ref={cityDropdownRef} className="relative">
               <label className="block text-sm font-medium text-slate-700 mb-1">Şehir</label>
               <div 
@@ -153,7 +148,6 @@ const ConsumerProfileModal = ({ isOpen, onClose, onSuccess }) => {
                 <span className="text-slate-400 text-xs">▼</span>
               </div>
               
-              {/* Şehir Listesi Dropdown */}
               {isCityDropdownOpen && (
                 <div className="absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
                   {filteredCities.length > 0 ? (
@@ -177,7 +171,6 @@ const ConsumerProfileModal = ({ isOpen, onClose, onSuccess }) => {
               )}
             </div>
 
-            {/* Gelir Seviyesi */}
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Aylık Gelir Seviyesi</label>
               <select 
@@ -196,7 +189,6 @@ const ConsumerProfileModal = ({ isOpen, onClose, onSuccess }) => {
           </form>
         </div>
 
-        {/* Footer (Buttons) */}
         <div className="border-t bg-slate-50 px-6 py-4 flex items-center justify-end space-x-3">
           <button
             type="button"

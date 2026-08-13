@@ -18,6 +18,26 @@ public class ConsumerController : ControllerBase
         _consumerService = consumerService;
     }
 
+    [HttpGet("profile")]
+    public async Task<IActionResult> GetProfile()
+    {
+        var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        
+        if (string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out var appUserId))
+        {
+            return Unauthorized("Kullanıcı kimliği doğrulanamadı.");
+        }
+
+        var profile = await _consumerService.GetProfileAsync(appUserId);
+        
+        if (profile == null)
+        {
+            return NotFound("Profil bulunamadı.");
+        }
+
+        return Ok(profile);
+    }
+
     [HttpPut("profile")]
     public async Task<IActionResult> UpdateProfile([FromBody] UpdateConsumerProfileDto dto)
     {
