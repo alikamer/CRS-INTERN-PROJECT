@@ -194,7 +194,7 @@ const MainLayout = () => {
             <div className="hidden sm:flex items-center space-x-2 bg-[#F0F4F9] text-[#1F1F1F] px-3.5 py-1.5 rounded-full border border-[#C6C7C6]/60">
               <Building className="w-4 h-4 text-[#0B57D0]" />
               <span className="text-xs font-semibold truncate">
-                {role === 'CorporateUser' ? 'Zara Tekstil A.Ş.' : role === 'SystemAdmin' ? 'CRS Admin Konsol' : 'Vatandaş Hesabı'}
+                {role === 'CorporateUser' ? (user?.companyName || 'Şirket Hesabı') : role === 'SystemAdmin' ? 'CRS Admin Konsol' : 'Vatandaş Hesabı'}
               </span>
             </div>
 

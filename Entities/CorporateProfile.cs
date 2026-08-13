@@ -1,3 +1,5 @@
+    using CRS_INTERN_PROJECT.Enums;
+
     namespace CRS_INTERN_PROJECT.Entities;
 
 /// <summary>
@@ -8,14 +10,20 @@ public class CorporateProfile
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     public Guid AppUserId { get; set; }
-    
+
     /// <summary>
     /// Bu çalışanın hangi şirkete (Müşterimize) ait olduğunu gösteren bağ.
     /// </summary>
     public Guid TenantId { get; set; }
-    
+
+    /// <summary>
+    /// Owner ekip üyesi ekleyip çıkarabilir, Member sadece analizlere bakar.
+    /// Tenant'ı self-servis kaydeden ilk kişi otomatik Owner olur.
+    /// </summary>
+    public TenantRole Role { get; set; } = TenantRole.Member;
+
     public string? Department { get; set; }
-    
+
     public AppUser AppUser { get; set; } = null!;
     public Tenant Tenant { get; set; } = null!;
 }

@@ -13,9 +13,10 @@ export const AuthProvider = ({ children }) => {
     const role = localStorage.getItem('role') || 'Consumer';
     const email = localStorage.getItem('email') || '';
     const name = localStorage.getItem('name') || '';
+    const companyName = localStorage.getItem('companyName') || '';
 
     if (token) {
-      setUser({ token, refreshToken, email, role, name });
+      setUser({ token, refreshToken, email, role, name, companyName });
     }
     setLoading(false);
   }, []);
@@ -23,15 +24,16 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       const response = await api.post('/Auth/login', { email, password });
-      const { token, refreshToken, role, firstName } = response.data;
+      const { token, refreshToken, role, firstName, companyName } = response.data;
 
       localStorage.setItem('token', token);
       if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
       localStorage.setItem('role', role || 'Consumer');
       localStorage.setItem('email', email);
       if (firstName) localStorage.setItem('name', firstName);
+      if (companyName) localStorage.setItem('companyName', companyName);
 
-      setUser({ email, token, refreshToken, role: role || 'Consumer', name: firstName || '' });
+      setUser({ email, token, refreshToken, role: role || 'Consumer', name: firstName || '', companyName: companyName || '' });
       return { success: true, role: role || 'Consumer' };
     } catch (error) {
       console.error("Login failed", error);
@@ -49,15 +51,16 @@ export const AuthProvider = ({ children }) => {
       lastName,
     firstName
    });
-      const { token, refreshToken, role, firstName } = response.data;
+      const { token, refreshToken, role, firstName, companyName } = response.data;
 
       localStorage.setItem('token', token);
       if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
       localStorage.setItem('role', role || 'Consumer');
       localStorage.setItem('email', email);
       if (firstName) localStorage.setItem('name', firstName);
+      if (companyName) localStorage.setItem('companyName', companyName);
 
-      setUser({ email, token, refreshToken, role: role || 'Consumer', name: firstName || '' });
+      setUser({ email, token, refreshToken, role: role || 'Consumer', name: firstName || '', companyName: companyName || '' });
       return { success: true, role: role || 'Consumer' };
     } catch (error) {
       console.error("Register failed", error);
@@ -103,6 +106,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('role');
     localStorage.removeItem('email');
     localStorage.removeItem('name');
+    localStorage.removeItem('companyName');
     setUser(null);
   };
 

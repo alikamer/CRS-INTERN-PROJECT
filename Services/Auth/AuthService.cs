@@ -41,17 +41,39 @@ public class AuthService : IAuthService
             LastName = dto.LastName,
             PhoneNumber = dto.PhoneNumber,
             Email = dto.Email,
-            PasswordHash = passwordHash,
-            Role = UserRole.Consumer
+            PasswordHash = passwordHash
         };
 
-        var consumerProfile = new ConsumerProfile
+        /* Owner tarafından daveti bekleyen bir mail ise, bu kişi vatandaş değil
+         doğrudan davet edildiği şirketin CorporateUser'ı olarak sisteme katılır. */
+        var pendingInvite = await _context.TenantInvites.FirstOrDefaultAsync(ti => ti.Email == dto.Email);
+
+        if (pendingInvite != null)
         {
-            AppUserId = newUser.Id
-        };
+            newUser.Role = UserRole.CorporateUser;
+            var corporateProfile = new CorporateProfile
+            {
+                AppUserId = newUser.Id,
+                TenantId = pendingInvite.TenantId,
+                Role = TenantRole.Member
+            };
 
-        _context.Users.Add(newUser);
-        _context.ConsumerProfiles.Add(consumerProfile);
+            _context.Users.Add(newUser);
+            _context.CorporateProfiles.Add(corporateProfile);
+            _context.TenantInvites.Remove(pendingInvite);
+        }
+        else
+        {
+            newUser.Role = UserRole.Consumer;
+            var consumerProfile = new ConsumerProfile
+            {
+                AppUserId = newUser.Id
+            };
+
+            _context.Users.Add(newUser);
+            _context.ConsumerProfiles.Add(consumerProfile);
+        }
+
         await _context.SaveChangesAsync();
 
         var accessToken = GenerateJwtToken(newUser);
@@ -63,7 +85,8 @@ public class AuthService : IAuthService
             RefreshToken = refreshToken.Token,
             Email = newUser.Email,
             Role = newUser.Role.ToString(),
-            FirstName = newUser.FirstName
+            FirstName = newUser.FirstName,
+            CompanyName = await GetCompanyNameAsync(newUser)
         };
     }
 
@@ -100,7 +123,8 @@ public class AuthService : IAuthService
         var corporateProfile = new CorporateProfile
         {
             AppUserId = newUser.Id,
-            TenantId = tenant.Id
+            TenantId = tenant.Id,
+            Role = TenantRole.Owner
         };
 
         _context.Tenants.Add(tenant);
@@ -157,7 +181,8 @@ public class AuthService : IAuthService
             RefreshToken = refreshToken.Token,
             Email = user.Email,
             Role = user.Role.ToString(),
-            FirstName = user.FirstName
+            FirstName = user.FirstName,
+            CompanyName = user.CorporateProfile?.Tenant.CompanyName
         };
     }
 
@@ -191,7 +216,8 @@ public class AuthService : IAuthService
             RefreshToken = newRefreshToken.Token,
             Email = user.Email,
             Role = user.Role.ToString(),
-            FirstName = user.FirstName
+            FirstName = user.FirstName,
+            CompanyName = await GetCompanyNameAsync(user)
         };
     }
 
@@ -213,6 +239,23 @@ public class AuthService : IAuthService
         await _context.SaveChangesAsync();
 
         return true;
+    }
+
+    /// <summary>
+    /// CorporateUser değilse null döner, kullanıcının header'da göstereceği şirket adını çeker.
+    /// </summary>
+    private async Task<string?> GetCompanyNameAsync(AppUser user)
+    {
+        if (user.Role != UserRole.CorporateUser)
+        {
+            return null;
+        }
+
+        var corporateProfile = await _context.CorporateProfiles
+            .Include(cp => cp.Tenant)
+            .FirstOrDefaultAsync(cp => cp.AppUserId == user.Id);
+
+        return corporateProfile?.Tenant.CompanyName;
     }
 
     /// <summary>

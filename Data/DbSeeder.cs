@@ -62,6 +62,7 @@ namespace CRS_INTERN_PROJECT.Data
             {
                 AppUserId = zaraUser.Id,
                 TenantId = zaraTenant.Id,
+                Role = TenantRole.Owner,
                 Department = "Pazar Araştırma & Satış"
             };
 
@@ -76,6 +77,7 @@ namespace CRS_INTERN_PROJECT.Data
             {
                 AppUserId = maviUser.Id,
                 TenantId = maviTenant.Id,
+                Role = TenantRole.Owner,
                 Department = "Genel Yönetim"
             };
 

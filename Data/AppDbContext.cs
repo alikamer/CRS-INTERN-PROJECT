@@ -16,6 +16,7 @@ public class AppDbContext : DbContext
     public DbSet<ReceiptItem> ReceiptItems { get; set; } = null!;
     public DbSet<ConsumerLoyalty> ConsumerLoyalties { get; set; } = null!;
     public DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
+    public DbSet<TenantInvite> TenantInvites { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -83,6 +84,12 @@ public class AppDbContext : DbContext
             .HasMany(b => b.Loyalties)
             .WithOne(cl => cl.Brand)
             .HasForeignKey(cl => cl.BrandId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Tenant>()
+            .HasMany<TenantInvite>()
+            .WithOne(ti => ti.Tenant)
+            .HasForeignKey(ti => ti.TenantId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

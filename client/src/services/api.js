@@ -125,4 +125,14 @@ export const rejectTenant = async (tenantId) => {
   return response.data;
 };
 
+export const getTeam = async () => {
+  const response = await api.get('/Corporate/team');
+  return response.data;
+};
+
+export const inviteTeamMember = async (email) => {
+  const response = await api.post('/Corporate/team/invite', { email });
+  return response.data;
+};
+
 export default api;

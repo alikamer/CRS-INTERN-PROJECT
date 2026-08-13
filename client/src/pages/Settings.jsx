@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { getConsumerProfile, updateConsumerProfile } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { Edit2, Check, X } from 'lucide-react';
+import CorporateTeamPanel from '../components/CorporateTeamPanel';
 
 const CITIES = [
   "Adana","Adıyaman","Afyonkarahisar","Ağrı","Amasya","Ankara","Antalya","Artvin","Aydın","Balıkesir",
@@ -117,6 +118,10 @@ const Settings = () => {
   };
 
   if (loading) return <div className="p-8 text-slate-400 text-sm">Yükleniyor...</div>;
+
+  if (role === 'CorporateUser') {
+    return <CorporateTeamPanel />;
+  }
 
   if (role !== 'Consumer') {
     return (
