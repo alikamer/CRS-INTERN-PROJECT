@@ -9,7 +9,7 @@ using System.Text;
 
 
 using CRS_INTERN_PROJECT.Services.Analytics;
-
+using CRS_INTERN_PROJECT.Services.Consumer;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -19,6 +19,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IReceiptService, ReceiptService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
+builder.Services.AddScoped<IConsumerService, ConsumerService>(); //
 
 
 builder.Services.AddCors(options =>

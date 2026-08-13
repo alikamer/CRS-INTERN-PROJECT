@@ -1,5 +1,6 @@
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import ConsumerProfileModal from '../components/ConsumerProfileModal';
 import { 
   BarChart3, 
   Receipt, 
@@ -16,14 +17,23 @@ import {
   SlidersHorizontal,
   Building
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const MainLayout = () => {
   const { logout, user, switchRoleForTesting } = useAuth();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [showProfileModal, setShowProfileModal] = useState(false);
 
   const role = user?.role || 'Consumer';
+
+  // Sadece Consumer (Vatandaş) rolü için profil uyarısı
+  useEffect(() => {
+    if (role === 'Consumer' && !localStorage.getItem('profileCompleted')) {
+      const timer = setTimeout(() => setShowProfileModal(true), 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [role]);
 
   const getNavItems = () => {
     switch (role) {
@@ -190,9 +200,15 @@ const MainLayout = () => {
               <Bell className="w-4 h-4" />
               <span className="w-2 h-2 bg-[#0B57D0] rounded-full absolute top-1.5 right-1.5"></span>
             </button>
-            <div className="w-8 h-8 rounded-full bg-[#0B57D0] text-white flex items-center justify-center font-bold text-xs shadow-xs">
+            <button 
+              onClick={() => role === 'Consumer' && setShowProfileModal(true)}
+              className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs shadow-xs transition-transform hover:scale-105 ${
+                role === 'Consumer' ? 'bg-[#0B57D0] text-white cursor-pointer ring-2 ring-transparent hover:ring-[#4285F4]' : 'bg-[#0B57D0] text-white'
+              }`}
+              title={role === 'Consumer' ? 'Profilimi Tamamla' : 'Profil'}
+            >
               {user?.name ? user.name[0] : 'A'}
-            </div>
+            </button>
           </div>
         </header>
 
@@ -201,6 +217,16 @@ const MainLayout = () => {
           <Outlet />
         </div>
       </main>
+
+      {/* Profile Modal */}
+      <ConsumerProfileModal 
+        isOpen={showProfileModal} 
+        onClose={() => setShowProfileModal(false)}
+        onSuccess={() => {
+          localStorage.setItem('profileCompleted', 'true');
+          setShowProfileModal(false);
+        }}
+      />
     </div>
   );
 };
