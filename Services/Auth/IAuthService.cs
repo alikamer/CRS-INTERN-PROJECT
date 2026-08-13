@@ -8,6 +8,7 @@ namespace CRS_INTERN_PROJECT.Services.Auth;
 public interface IAuthService
 {
     Task<AuthResponseDto> RegisterAsync(RegisterDto dto);
+    Task<TenantRegistrationResponseDto> RegisterTenantAsync(RegisterTenantDto dto);
     Task<AuthResponseDto> LoginAsync(LoginDto dto);
 
     // REFRESHTOKEN------------

@@ -131,4 +131,88 @@ public class AdminService : IAdminService
         await _context.SaveChangesAsync();
         return true;
     }
+
+    /// <summary>
+    /// Onay bekleyen şirket başvurularını, admin telefonla ulaşabilsin diye başvuruyu yapan
+    /// kişinin iletişim bilgileriyle birlikte getirir.
+    /// </summary>
+    public async Task<List<PendingTenantDto>> GetPendingTenantsAsync()
+    {
+        var tenants = await _context.Tenants
+            .Include(t => t.CorporateUsers)
+            .ThenInclude(cp => cp.AppUser)
+            .Where(t => t.Status == TenantStatus.WaitingForApproval)
+            .OrderBy(t => t.CreatedAt)
+            .Select(t => new PendingTenantDto
+            {
+                TenantId = t.Id,
+                CompanyName = t.CompanyName,
+                CreatedAt = t.CreatedAt,
+                ContactFirstName = t.CorporateUsers.First().AppUser.FirstName,
+                ContactLastName = t.CorporateUsers.First().AppUser.LastName,
+                ContactPhoneNumber = t.CorporateUsers.First().AppUser.PhoneNumber,
+                ContactEmail = t.CorporateUsers.First().AppUser.Email
+            })
+            .ToListAsync();
+
+        return tenants;
+    }
+
+    /// <summary>
+    /// Admin, telefonla doğruladıktan sonra şirketi onaylar; marka ve abonelik paketi burada atanır.
+    /// </summary>
+    public async Task<bool> ApproveTenantAsync(Guid tenantId, ApproveTenantDto dto)
+    {
+        var tenant = await _context.Tenants.FirstOrDefaultAsync(t => t.Id == tenantId);
+        if (tenant == null)
+        {
+            throw new Exception("Böyle bir şirket başvurusu bulunamadı.");
+        }
+
+        if (!Enum.TryParse<SubscriptionTier>(dto.SubscriptionTier, true, out var parsedTier))
+        {
+            throw new Exception("Geçersiz abonelik paketi.");
+        }
+
+        var brandExists = await _context.Brands.AnyAsync(b => b.Id == dto.BrandId);
+        if (!brandExists)
+        {
+            throw new Exception("Böyle bir marka bulunamadı.");
+        }
+
+        tenant.BrandId = dto.BrandId;
+        tenant.SubscriptionTier = parsedTier;
+        tenant.Status = TenantStatus.Active;
+
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
+    /// <summary>
+    /// Uygun görülmeyen şirket başvurusunu reddeder.
+    /// </summary>
+    public async Task<bool> RejectTenantAsync(Guid tenantId)
+    {
+        var tenant = await _context.Tenants.FirstOrDefaultAsync(t => t.Id == tenantId);
+        if (tenant == null)
+        {
+            throw new Exception("Böyle bir şirket başvurusu bulunamadı.");
+        }
+
+        tenant.Status = TenantStatus.Rejected;
+
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
+    /// <summary>
+    /// Onay formundaki marka dropdown'ı için sade marka listesi.
+    /// </summary>
+    public async Task<List<BrandOptionDto>> GetBrandsAsync()
+    {
+        return await _context.Brands
+            .OrderBy(b => b.Name)
+            .Select(b => new BrandOptionDto { Id = b.Id, Name = b.Name })
+            .ToListAsync();
+    }
 }

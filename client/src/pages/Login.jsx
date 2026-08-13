@@ -9,25 +9,44 @@ const Login = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [companyName, setCompanyName] = useState('');
+  const [accountType, setAccountType] = useState('bireysel');
   const [error, setError] = useState('');
+  const [pendingMessage, setPendingMessage] = useState('');
   const [isLoginMode, setIsLoginMode] = useState(true);
-  const { login, register } = useAuth();
+  const { login, register, registerTenant } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    
-    let result;
+
     if (isLoginMode) {
-      result = await login(email, password);
-    } else {
-      result = await register(firstName, lastName, phoneNumber, email, password);
+      const result = await login(email, password);
+      if (result.success) {
+        navigate('/');
+      } else {
+        setError(result.error || 'Giriş başarısız.');
+      }
+      return;
     }
+
+    if (accountType === 'kurumsal') {
+      const result = await registerTenant(companyName, firstName, lastName, phoneNumber, email, password);
+      if (result.success) {
+        setPendingMessage(result.message || 'Başvurunuz alındı.');
+        setIsLoginMode(true);
+      } else {
+        setError(result.error || 'Başvuru gönderilemedi.');
+      }
+      return;
+    }
+
+    const result = await register(firstName, lastName, phoneNumber, email, password);
     if (result.success) {
       navigate('/');
     } else {
-      setError(result.error || (isLoginMode ? 'Giriş başarısız.' : 'Kayıt başarısız.'));
+      setError(result.error || 'Kayıt başarısız.');
     }
   };
 
@@ -47,10 +66,35 @@ const Login = () => {
           <p className="text-[#5E5E5E] mt-1 text-sm">CRS Fiş Analiz Platformu</p>
         </div>
 
+        {pendingMessage && (
+          <div className="bg-green-50 text-green-700 border border-green-200 px-4 py-3 rounded-xl mb-6 text-sm">
+            {pendingMessage}
+          </div>
+        )}
+
         {/* Error Alert */}
         {error && (
           <div className="bg-red-50 text-[#C5221F] border border-red-200 px-4 py-3 rounded-xl mb-6 text-sm">
             {error}
+          </div>
+        )}
+
+        {!isLoginMode && (
+          <div className="grid grid-cols-2 gap-3 mb-6">
+            <button
+              type="button"
+              onClick={() => setAccountType('bireysel')}
+              className={`py-2.5 rounded-xl border font-medium text-sm transition-all ${accountType === 'bireysel' ? 'bg-[#0B57D0] text-white border-[#0B57D0]' : 'bg-white text-[#5E5E5E] border-[#E1E3E1] hover:bg-[#F0F4F9]'}`}
+            >
+              Bireysel
+            </button>
+            <button
+              type="button"
+              onClick={() => setAccountType('kurumsal')}
+              className={`py-2.5 rounded-xl border font-medium text-sm transition-all ${accountType === 'kurumsal' ? 'bg-[#0B57D0] text-white border-[#0B57D0]' : 'bg-white text-[#5E5E5E] border-[#E1E3E1] hover:bg-[#F0F4F9]'}`}
+            >
+              Kurumsal
+            </button>
           </div>
         )}
 
@@ -59,6 +103,19 @@ const Login = () => {
           {/* YALNIZCA KAYIT OL (REGISTER) MODUNDAYKEN GÖSTERİLECEK ALANLAR */}
           {!isLoginMode && (
             <>
+              {accountType === 'kurumsal' && (
+                <div>
+                  <label className="block text-sm font-medium text-[#1F1F1F] mb-1.5">Şirket Adı</label>
+                  <input
+                    type="text"
+                    value={companyName}
+                    onChange={(e) => setCompanyName(e.target.value)}
+                    className="w-full px-4 py-3 bg-[#F0F4F9] border border-[#E1E3E1] rounded-xl text-[#1F1F1F] placeholder-[#747775] focus:outline-none focus:border-[#0B57D0] focus:ring-1 focus:ring-[#0B57D0] transition-all"
+                    placeholder="Örnek Tekstil A.Ş."
+                    required
+                  />
+                </div>
+              )}
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-[#1F1F1F] mb-1.5">Ad</label>
@@ -97,7 +154,7 @@ const Login = () => {
             </>
           )}
           <div>
-            
+
             <label className="block text-sm font-medium text-[#1F1F1F] mb-1.5">E-posta</label>
             <input
               type="email"
@@ -123,7 +180,7 @@ const Login = () => {
             type="submit"
             className="w-full py-3 px-4 bg-[#0B57D0] hover:bg-[#0842A0] text-white rounded-xl font-semibold shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-[#0B57D0] focus:ring-offset-2 transition-all"
           >
-            {isLoginMode ? 'Giriş Yap' : 'Kayıt Ol'}
+            {isLoginMode ? 'Giriş Yap' : accountType === 'kurumsal' ? 'Başvuruyu Gönder' : 'Kayıt Ol'}
           </button>
         </form>
 
@@ -135,6 +192,7 @@ const Login = () => {
               onClick={() => {
                 setIsLoginMode(!isLoginMode);
                 setError('');
+                setPendingMessage('');
               }}
               className="text-[#0B57D0] hover:text-[#0842A0] font-semibold focus:outline-none transition-colors"
             >

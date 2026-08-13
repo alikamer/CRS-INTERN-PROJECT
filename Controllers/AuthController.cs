@@ -33,6 +33,24 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
+    /// Bir şirketin "Kurumsal olarak kayıt ol" başvurusunu alır. Hesap Admin onayına düşer,
+    /// token dönmez!!; başvuru onaylanana kadar bu hesapla login olunamaz.
+    /// </summary>
+    [HttpPost("register-tenant")]
+    public async Task<IActionResult> RegisterTenant([FromBody] RegisterTenantDto dto)
+    {
+        try
+        {
+            var response = await _authService.RegisterTenantAsync(dto);
+            return Ok(response);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+    }
+
+    /// <summary>
     /// Kullanıcı e-posta ve şifre doğrulaması yapar, Access ve Refresh token döner.
     /// </summary>
     [HttpPost("login")]

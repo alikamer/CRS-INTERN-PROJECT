@@ -15,7 +15,8 @@ import {
   LayoutDashboard,
   Sparkles,
   SlidersHorizontal,
-  Building
+  Building,
+  Building2
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 
@@ -40,7 +41,8 @@ const MainLayout = () => {
   const role = user?.role || 'Consumer';
 
   useEffect(() => {
-    if (role === 'Consumer') {
+    if (role === 'Consumer' && !sessionStorage.getItem('profileCheckDone')) {
+      sessionStorage.setItem('profileCheckDone', 'true');
       import('../services/api').then(({ getConsumerProfile }) => {
         getConsumerProfile().then(profile => {
           if (profile && (!profile.city || !profile.gender || !profile.dateOfBirth)) {
@@ -62,6 +64,7 @@ const MainLayout = () => {
       case 'SystemAdmin':
         return [
           { path: '/', label: 'Onay Kuyruğu', icon: ShieldCheck, category: 'Admin' },
+          { path: '/tenant-applications', label: 'Şirket Başvuruları', icon: Building2, category: 'Admin' },
           { path: '/receipts', label: 'Tüm Fiş Kayıtları', icon: Receipt, category: 'Admin' },
           { path: '/settings', label: 'Sistem Ayarları', icon: Settings, category: 'Admin' },
         ];
@@ -141,10 +144,10 @@ const MainLayout = () => {
             <div className="p-3 rounded-2xl bg-[#2A3345]/60 border border-[#344155] space-y-2 text-xs">
               <div className="flex items-center space-x-2.5">
                 <div className="w-7 h-7 rounded-full bg-[#1A73E8] text-white flex items-center justify-center text-xs font-bold">
-                  {user.name ? user.name[0] : 'A'}
+                  {user.name ? user.name[0].toUpperCase() : user.email?.[0]?.toUpperCase() || 'U'}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-xs font-semibold text-white truncate">{user.name || 'Kullanıcı'}</p>
+                  <p className="text-xs font-semibold text-white truncate">{user.name || user.email || 'Kullanıcı'}</p>
                   <p className="text-[10px] text-[#A8C7FA] truncate">{user.email}</p>
                 </div>
               </div>
@@ -188,12 +191,11 @@ const MainLayout = () => {
           {/* Property Selector & Search Bar */}
           <div className="flex items-center space-x-4 flex-1 max-w-2xl">
             {/* Account / Property Selector Box */}
-            <div className="hidden sm:flex items-center space-x-2 bg-[#F0F4F9] hover:bg-[#E1E9F5] text-[#1F1F1F] px-3.5 py-1.5 rounded-full border border-[#C6C7C6]/60 cursor-pointer transition-all">
+            <div className="hidden sm:flex items-center space-x-2 bg-[#F0F4F9] text-[#1F1F1F] px-3.5 py-1.5 rounded-full border border-[#C6C7C6]/60">
               <Building className="w-4 h-4 text-[#0B57D0]" />
               <span className="text-xs font-semibold truncate">
                 {role === 'CorporateUser' ? 'Zara Tekstil A.Ş.' : role === 'SystemAdmin' ? 'CRS Admin Konsol' : 'Vatandaş Hesabı'}
               </span>
-              <ChevronDown className="w-3.5 h-3.5 text-[#5E5E5E]" />
             </div>
 
             {/* GA4 Global Search Bar */}
@@ -201,10 +203,10 @@ const MainLayout = () => {
               <Search className="w-4 h-4 text-[#5E5E5E] absolute left-3.5 top-2.5" />
               <input
                 type="text"
-                placeholder="Raporlarda, metriklerde veya fişlerde ara..."
-                className="w-full pl-9 pr-8 py-1.5 text-xs bg-[#F0F4F9] border border-transparent rounded-full focus:bg-white focus:border-[#0B57D0] focus:ring-1 focus:ring-[#0B57D0] outline-none transition-all placeholder-[#747775]"
+                disabled
+                placeholder="Arama (Çok Yakında)"
+                className="w-full pl-9 pr-8 py-1.5 text-xs bg-[#F0F4F9] border border-transparent rounded-full outline-none placeholder-[#747775] cursor-not-allowed opacity-60"
               />
-              <span className="absolute right-3 top-2 text-[10px] text-[#747775] bg-[#E1E3E1] px-1.5 py-0.5 rounded font-mono">/</span>
             </div>
           </div>
 
@@ -213,9 +215,8 @@ const MainLayout = () => {
             <button className="p-2 text-[#5E5E5E] hover:bg-[#F0F4F9] rounded-full transition-colors" title="Yardım">
               <HelpCircle className="w-4 h-4" />
             </button>
-            <button className="p-2 text-[#5E5E5E] hover:bg-[#F0F4F9] rounded-full transition-colors relative" title="Bildirimler">
+            <button className="p-2 text-[#5E5E5E] hover:bg-[#F0F4F9] rounded-full transition-colors opacity-50 cursor-not-allowed" title="Bildirimler (Yakında)">
               <Bell className="w-4 h-4" />
-              <span className="w-2 h-2 bg-[#0B57D0] rounded-full absolute top-1.5 right-1.5"></span>
             </button>
             <div ref={dropdownRef} className="relative">
               <button
@@ -223,13 +224,13 @@ const MainLayout = () => {
                 className="w-8 h-8 rounded-full bg-[#0B57D0] text-white flex items-center justify-center font-bold text-xs shadow-xs transition-transform hover:scale-105 hover:ring-2 hover:ring-[#4285F4]"
                 title="Profil & Ayarlar"
               >
-                {user?.name ? user.name[0].toUpperCase() : 'A'}
+                {user?.name ? user.name[0].toUpperCase() : user?.email?.[0]?.toUpperCase() || 'U'}
               </button>
 
               {dropdownOpen && (
                 <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden z-50 animate-fade-in-up">
                   <div className="px-4 py-3 border-b border-slate-100 bg-slate-50">
-                    <p className="text-sm font-semibold text-slate-800 truncate">{user?.name || 'Kullanıcı'}</p>
+                    <p className="text-sm font-semibold text-slate-800 truncate">{user?.name || user?.email || 'Kullanıcı'}</p>
                     <p className="text-xs text-slate-500 truncate mt-0.5">{user?.email}</p>
                   </div>
                   <div className="py-1">

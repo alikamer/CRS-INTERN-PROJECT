@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
+import { useAuth } from '../context/AuthContext';
 
 const ConsumerDashboard = () => {
+  const { user } = useAuth();
   const [myReceipts, setMyReceipts] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -32,7 +34,9 @@ const ConsumerDashboard = () => {
       {/* Welcome & Points */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-[#1F1F1F] tracking-tight">Hoş Geldiniz</h1>
+          <h1 className="text-xl font-bold text-[#1F1F1F] tracking-tight">
+            {user?.name ? `Hoş Geldiniz, ${user.name}` : 'Hoş Geldiniz'}
+          </h1>
           <p className="text-sm text-[#5E5E5E] mt-1">
             Yüklediğiniz her onaylı fiş tutarının %5'i sadakat puanı olarak hesabınıza tanımlanır.
           </p>
@@ -79,7 +83,9 @@ const ConsumerDashboard = () => {
             {myReceipts.map((receipt) => (
               <div key={receipt.id} className="py-3 flex items-center justify-between">
                 <div>
-                  <p className="font-semibold text-sm text-[#1F1F1F]">Fiş #{receipt.id.substring(0, 8)}</p>
+                  <p className="font-semibold text-sm text-[#1F1F1F]">
+                    {receipt.brandName || 'Fiş'} <span className="font-normal text-[#747775]">#{receipt.id.substring(0, 8)}</span>
+                  </p>
                   <p className="text-xs text-[#747775]">{new Date(receipt.receiptDate).toLocaleDateString('tr-TR')}</p>
                 </div>
                 <div className="text-right">

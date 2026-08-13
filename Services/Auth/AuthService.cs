@@ -62,13 +62,66 @@ public class AuthService : IAuthService
             Token = accessToken,
             RefreshToken = refreshToken.Token,
             Email = newUser.Email,
-            Role = newUser.Role.ToString()
+            Role = newUser.Role.ToString(),
+            FirstName = newUser.FirstName
+        };
+    }
+
+    /// <summary>
+    /// Bir şirket temsilcisinin "Kurumsal olarak kayıt ol" formundan gönderdiği başvuruyu işler.
+    /// Tenant WaitingForApproval statüsünde oluşturulur, marka/paket atanmaz (Admin onayında yapılır)
+    /// ve JWT üretilmez; başvuru onaylanana kadar bu hesapla login olunamaz.
+    /// </summary>
+    public async Task<TenantRegistrationResponseDto> RegisterTenantAsync(RegisterTenantDto dto)
+    {
+        var userExists = await _context.Users.AnyAsync(u => u.Email == dto.Email);
+        if (userExists)
+        {
+            throw new Exception("Bu e-posta adresi zaten kullanılıyor.");
+        }
+
+        var tenant = new Tenant
+        {
+            CompanyName = dto.CompanyName,
+            Status = TenantStatus.WaitingForApproval
+        };
+
+        var passwordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+        var newUser = new AppUser
+        {
+            FirstName = dto.FirstName,
+            LastName = dto.LastName,
+            PhoneNumber = dto.PhoneNumber,
+            Email = dto.Email,
+            PasswordHash = passwordHash,
+            Role = UserRole.CorporateUser
+        };
+
+        var corporateProfile = new CorporateProfile
+        {
+            AppUserId = newUser.Id,
+            TenantId = tenant.Id
+        };
+
+        _context.Tenants.Add(tenant);
+        _context.Users.Add(newUser);
+        _context.CorporateProfiles.Add(corporateProfile);
+        await _context.SaveChangesAsync();
+
+        return new TenantRegistrationResponseDto
+        {
+            TenantId = tenant.Id,
+            CompanyName = tenant.CompanyName,
+            Message = "Başvurunuz alındı. Ekibimiz sizinle iletişime geçip doğruladıktan sonra hesabınız aktif edilecek."
         };
     }
 
     public async Task<AuthResponseDto> LoginAsync(LoginDto dto)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
+        var user = await _context.Users
+            .Include(u => u.CorporateProfile)
+            .ThenInclude(cp => cp!.Tenant)
+            .FirstOrDefaultAsync(u => u.Email == dto.Email);
         if (user == null)
         {
             throw new Exception("Geçersiz e-posta veya şifre.");
@@ -80,6 +133,21 @@ public class AuthService : IAuthService
             throw new Exception("Geçersiz e-posta veya şifre.");
         }
 
+        if (user.Role == UserRole.CorporateUser)
+        {
+            var tenantStatus = user.CorporateProfile?.Tenant.Status;
+
+            if (tenantStatus == TenantStatus.WaitingForApproval)
+            {
+                throw new Exception("Şirket başvurunuz henüz onaylanmadı. Onaylandığında size bilgi verilecek.");
+            }
+
+            if (tenantStatus == TenantStatus.Rejected || tenantStatus == TenantStatus.Inactive)
+            {
+                throw new Exception("Bu şirket hesabı aktif değil. Lütfen bizimle iletişime geçin.");
+            }
+        }
+
         var accessToken = GenerateJwtToken(user);
         var refreshToken = await GenerateRefreshTokenAsync(user);
 
@@ -88,7 +156,8 @@ public class AuthService : IAuthService
             Token = accessToken,
             RefreshToken = refreshToken.Token,
             Email = user.Email,
-            Role = user.Role.ToString()
+            Role = user.Role.ToString(),
+            FirstName = user.FirstName
         };
     }
 
@@ -121,7 +190,8 @@ public class AuthService : IAuthService
             Token = newAccessToken,
             RefreshToken = newRefreshToken.Token,
             Email = user.Email,
-            Role = user.Role.ToString()
+            Role = user.Role.ToString(),
+            FirstName = user.FirstName
         };
     }
 

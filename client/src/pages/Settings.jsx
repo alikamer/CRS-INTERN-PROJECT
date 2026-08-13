@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { getConsumerProfile, updateConsumerProfile } from '../services/api';
 import { useAuth } from '../context/AuthContext';
-import { User, MapPin, Edit2, Check, X } from 'lucide-react';
+import { Edit2, Check, X } from 'lucide-react';
 
 const CITIES = [
   "Adana","Adıyaman","Afyonkarahisar","Ağrı","Amasya","Ankara","Antalya","Artvin","Aydın","Balıkesir",
@@ -28,19 +28,16 @@ const Settings = () => {
   const role = user?.role || 'Consumer';
 
   const [loading, setLoading] = useState(true);
+  const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
 
-  const [accountData, setAccountData] = useState({ firstName: '', lastName: '', email: '', phoneNumber: '' });
-  const [profileData, setProfileData] = useState({ dateOfBirth: '', gender: '', city: '', incomeLevel: '' });
-  const [editProfileData, setEditProfileData] = useState({});
-
-  const [editingAccount, setEditingAccount] = useState(false);
-  const [editingProfile, setEditingProfile] = useState(false);
-
-  const [savingAccount, setSavingAccount] = useState(false);
-  const [savingProfile, setSavingProfile] = useState(false);
-
-  const [profileMessage, setProfileMessage] = useState('');
-  const [profileError, setProfileError] = useState('');
+  const [data, setData] = useState({
+    firstName: '', lastName: '', email: '', phoneNumber: '',
+    dateOfBirth: '', gender: '', city: '', incomeLevel: ''
+  });
+  const [editData, setEditData] = useState({ ...data });
 
   const [isCityDropdownOpen, setIsCityDropdownOpen] = useState(false);
   const [citySearchTerm, setCitySearchTerm] = useState('');
@@ -48,23 +45,21 @@ const Settings = () => {
 
   useEffect(() => {
     if (role === 'Consumer') {
-      getConsumerProfile().then(data => {
-        if (data) {
-          setAccountData({
-            firstName: data.firstName || '',
-            lastName: data.lastName || '',
-            email: data.email || '',
-            phoneNumber: data.phoneNumber || ''
-          });
-          const pd = {
-            dateOfBirth: data.dateOfBirth ? data.dateOfBirth.split('T')[0] : '',
-            gender: data.gender || '',
-            city: data.city || '',
-            incomeLevel: data.incomeLevel || ''
+      getConsumerProfile().then(profile => {
+        if (profile) {
+          const loaded = {
+            firstName: profile.firstName || '',
+            lastName: profile.lastName || '',
+            email: profile.email || '',
+            phoneNumber: profile.phoneNumber || '',
+            dateOfBirth: profile.dateOfBirth ? profile.dateOfBirth.split('T')[0] : '',
+            gender: profile.gender || '',
+            city: profile.city || '',
+            incomeLevel: profile.incomeLevel || ''
           };
-          setProfileData(pd);
-          setEditProfileData(pd);
-          setCitySearchTerm(data.city || '');
+          setData(loaded);
+          setEditData(loaded);
+          setCitySearchTerm(profile.city || '');
         }
       }).catch(console.error).finally(() => setLoading(false));
     } else {
@@ -84,40 +79,44 @@ const Settings = () => {
 
   const filteredCities = CITIES.filter(c => c.toLowerCase().includes(citySearchTerm.toLowerCase()));
 
-  const handleSaveProfile = async () => {
-    setSavingProfile(true);
-    setProfileError('');
-    setProfileMessage('');
+  const handleEdit = () => {
+    setEditData({ ...data });
+    setCitySearchTerm(data.city || '');
+    setEditing(true);
+    setMessage('');
+    setError('');
+  };
+
+  const handleCancel = () => {
+    setEditData({ ...data });
+    setCitySearchTerm(data.city || '');
+    setEditing(false);
+    setError('');
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    setError('');
     try {
-      const payload = {
-        dateOfBirth: editProfileData.dateOfBirth || null,
-        gender: editProfileData.gender || null,
-        city: editProfileData.city || null,
-        incomeLevel: editProfileData.incomeLevel || null
-      };
-      await updateConsumerProfile(payload);
-      setProfileData({ ...editProfileData });
-      setCitySearchTerm(editProfileData.city || '');
-      setEditingProfile(false);
-      setProfileMessage('Profil bilgileri güncellendi.');
-      setTimeout(() => setProfileMessage(''), 3000);
+      await updateConsumerProfile({
+        dateOfBirth: editData.dateOfBirth || null,
+        gender: editData.gender || null,
+        city: editData.city || null,
+        incomeLevel: editData.incomeLevel || null
+      });
+      setData({ ...editData });
+      setCitySearchTerm(editData.city || '');
+      setEditing(false);
+      setMessage('Bilgiler güncellendi.');
+      setTimeout(() => setMessage(''), 3000);
     } catch {
-      setProfileError('Güncelleme sırasında bir hata oluştu.');
+      setError('Güncelleme sırasında bir hata oluştu.');
     } finally {
-      setSavingProfile(false);
+      setSaving(false);
     }
   };
 
-  const handleCancelProfile = () => {
-    setEditProfileData({ ...profileData });
-    setCitySearchTerm(profileData.city || '');
-    setEditingProfile(false);
-    setProfileError('');
-  };
-
-  if (loading) {
-    return <div className="p-8 text-slate-400 text-sm">Yükleniyor...</div>;
-  }
+  if (loading) return <div className="p-8 text-slate-400 text-sm">Yükleniyor...</div>;
 
   if (role !== 'Consumer') {
     return (
@@ -129,219 +128,111 @@ const Settings = () => {
   }
 
   return (
-    <div className="max-w-3xl space-y-6">
-
+    <div className="max-w-3xl">
       <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
         <div className="flex items-center justify-between px-8 py-5 border-b border-slate-100">
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 rounded-full bg-[#EEF3FC] flex items-center justify-center">
-              <User className="w-4 h-4 text-[#0B57D0]" />
-            </div>
-            <div>
-              <h3 className="text-base font-semibold text-slate-800">Hesap Bilgileri</h3>
-              <p className="text-xs text-slate-400 mt-0.5">E-posta adresi değiştirilemez.</p>
-            </div>
+          <div>
+            <h2 className="text-base font-semibold text-slate-800">Hesap &amp; Profil Bilgileri</h2>
+            <p className="text-xs text-slate-400 mt-0.5">E-posta adresi değiştirilemez.</p>
           </div>
-          {!editingAccount && (
+          {!editing ? (
             <button
-              onClick={() => setEditingAccount(true)}
+              onClick={handleEdit}
               className="flex items-center space-x-1.5 text-xs font-medium text-[#0B57D0] hover:bg-[#EEF3FC] px-3 py-1.5 rounded-lg transition-colors"
             >
               <Edit2 className="w-3.5 h-3.5" />
               <span>Düzenle</span>
             </button>
-          )}
-          {editingAccount && (
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={() => setEditingAccount(false)}
-                disabled={savingAccount}
-                className="flex items-center space-x-1.5 text-xs font-medium text-slate-500 hover:bg-slate-100 px-3 py-1.5 rounded-lg transition-colors"
-              >
-                <X className="w-3.5 h-3.5" />
-                <span>İptal</span>
-              </button>
-              <button
-                onClick={() => setEditingAccount(false)}
-                disabled={savingAccount}
-                className="flex items-center space-x-1.5 text-xs font-medium text-white bg-[#0B57D0] hover:bg-[#0842a0] px-3 py-1.5 rounded-lg transition-colors"
-              >
-                <Check className="w-3.5 h-3.5" />
-                <span>Kaydet</span>
-              </button>
-            </div>
-          )}
-        </div>
-
-        <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-          {editingAccount ? (
-            <>
-              <div>
-                <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wide">Ad</label>
-                <input
-                  type="text"
-                  className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-[#0B57D0] transition-colors"
-                  value={accountData.firstName}
-                  onChange={e => setAccountData({ ...accountData, firstName: e.target.value })}
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wide">Soyad</label>
-                <input
-                  type="text"
-                  className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-[#0B57D0] transition-colors"
-                  value={accountData.lastName}
-                  onChange={e => setAccountData({ ...accountData, lastName: e.target.value })}
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wide">Telefon</label>
-                <input
-                  type="tel"
-                  className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-[#0B57D0] transition-colors"
-                  value={accountData.phoneNumber}
-                  onChange={e => setAccountData({ ...accountData, phoneNumber: e.target.value })}
-                />
-              </div>
-              <ReadOnlyField label="E-posta" value={accountData.email} />
-            </>
           ) : (
-            <>
-              <ReadOnlyField label="Ad" value={accountData.firstName} />
-              <ReadOnlyField label="Soyad" value={accountData.lastName} />
-              <ReadOnlyField label="Telefon" value={accountData.phoneNumber} />
-              <ReadOnlyField label="E-posta" value={accountData.email} />
-            </>
-          )}
-        </div>
-      </div>
-
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-        <div className="flex items-center justify-between px-8 py-5 border-b border-slate-100">
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 rounded-full bg-[#EEF3FC] flex items-center justify-center">
-              <MapPin className="w-4 h-4 text-[#0B57D0]" />
-            </div>
-            <div>
-              <h3 className="text-base font-semibold text-slate-800">Profil Bilgileri</h3>
-              <p className="text-xs text-slate-400 mt-0.5">Demografik bilgilerinizi güncelleyebilirsiniz.</p>
-            </div>
-          </div>
-          {!editingProfile && (
-            <button
-              onClick={() => { setEditProfileData({ ...profileData }); setEditingProfile(true); }}
-              className="flex items-center space-x-1.5 text-xs font-medium text-[#0B57D0] hover:bg-[#EEF3FC] px-3 py-1.5 rounded-lg transition-colors"
-            >
-              <Edit2 className="w-3.5 h-3.5" />
-              <span>Düzenle</span>
-            </button>
-          )}
-          {editingProfile && (
             <div className="flex items-center space-x-2">
               <button
-                onClick={handleCancelProfile}
-                disabled={savingProfile}
+                onClick={handleCancel}
+                disabled={saving}
                 className="flex items-center space-x-1.5 text-xs font-medium text-slate-500 hover:bg-slate-100 px-3 py-1.5 rounded-lg transition-colors"
               >
                 <X className="w-3.5 h-3.5" />
                 <span>İptal</span>
               </button>
               <button
-                onClick={handleSaveProfile}
-                disabled={savingProfile}
+                onClick={handleSave}
+                disabled={saving}
                 className="flex items-center space-x-1.5 text-xs font-medium text-white bg-[#0B57D0] hover:bg-[#0842a0] px-3 py-1.5 rounded-lg transition-colors disabled:opacity-70"
               >
                 <Check className="w-3.5 h-3.5" />
-                <span>{savingProfile ? 'Kaydediliyor...' : 'Kaydet'}</span>
+                <span>{saving ? 'Kaydediliyor...' : 'Kaydet'}</span>
               </button>
             </div>
           )}
         </div>
 
         <div className="p-8">
-          {profileMessage && (
-            <div className="mb-5 p-3 bg-green-50 text-green-700 text-sm rounded-xl border border-green-100">{profileMessage}</div>
+          {message && (
+            <div className="mb-6 p-3 bg-green-50 text-green-700 text-sm rounded-xl border border-green-100">{message}</div>
           )}
-          {profileError && (
-            <div className="mb-5 p-3 bg-red-50 text-red-600 text-sm rounded-xl border border-red-100">{profileError}</div>
+          {error && (
+            <div className="mb-6 p-3 bg-red-50 text-red-600 text-sm rounded-xl border border-red-100">{error}</div>
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {editingProfile ? (
+            {editing ? (
               <>
                 <div>
-                  <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wide">Doğum Tarihi</label>
-                  <input
-                    type="date"
-                    className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-[#0B57D0] transition-colors"
-                    value={editProfileData.dateOfBirth}
-                    onChange={e => setEditProfileData({ ...editProfileData, dateOfBirth: e.target.value })}
-                  />
+                  <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wide">Ad</label>
+                  <input type="text" className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-[#0B57D0] transition-colors"
+                    value={editData.firstName} onChange={e => setEditData({ ...editData, firstName: e.target.value })} />
                 </div>
-
+                <div>
+                  <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wide">Soyad</label>
+                  <input type="text" className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-[#0B57D0] transition-colors"
+                    value={editData.lastName} onChange={e => setEditData({ ...editData, lastName: e.target.value })} />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wide">Telefon</label>
+                  <input type="tel" className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-[#0B57D0] transition-colors"
+                    value={editData.phoneNumber} onChange={e => setEditData({ ...editData, phoneNumber: e.target.value })} />
+                </div>
+                <ReadOnlyField label="E-posta" value={data.email} />
+                <div>
+                  <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wide">Doğum Tarihi</label>
+                  <input type="date" className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-[#0B57D0] transition-colors"
+                    value={editData.dateOfBirth} onChange={e => setEditData({ ...editData, dateOfBirth: e.target.value })} />
+                </div>
                 <div>
                   <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wide">Cinsiyet</label>
                   <div className="grid grid-cols-2 gap-3">
                     {['Erkek', 'Kadın'].map(g => (
-                      <button
-                        key={g}
-                        type="button"
-                        onClick={() => setEditProfileData({ ...editProfileData, gender: g })}
-                        className={`py-2.5 rounded-xl border font-medium text-sm transition-all ${
-                          editProfileData.gender === g
-                            ? 'bg-[#0B57D0] text-white border-[#0B57D0] shadow-md shadow-blue-500/20'
-                            : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
-                        }`}
-                      >
+                      <button key={g} type="button"
+                        onClick={() => setEditData({ ...editData, gender: g })}
+                        className={`py-2.5 rounded-xl border font-medium text-sm transition-all ${editData.gender === g ? 'bg-[#0B57D0] text-white border-[#0B57D0]' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}`}>
                         {g}
                       </button>
                     ))}
                   </div>
                 </div>
-
                 <div ref={cityDropdownRef} className="relative">
                   <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wide">Şehir</label>
-                  <div
-                    className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl flex items-center justify-between focus-within:ring-2 focus-within:ring-[#0B57D0] transition-colors cursor-text"
-                    onClick={() => setIsCityDropdownOpen(true)}
-                  >
-                    <input
-                      type="text"
-                      placeholder="Şehir ara..."
-                      className="bg-transparent border-none outline-none w-full text-slate-700 text-sm"
-                      value={citySearchTerm}
-                      onChange={e => { setCitySearchTerm(e.target.value); setIsCityDropdownOpen(true); }}
-                    />
+                  <div className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl flex items-center justify-between focus-within:ring-2 focus-within:ring-[#0B57D0] transition-colors cursor-text"
+                    onClick={() => setIsCityDropdownOpen(true)}>
+                    <input type="text" placeholder="Şehir ara..." className="bg-transparent border-none outline-none w-full text-slate-700 text-sm"
+                      value={citySearchTerm} onChange={e => { setCitySearchTerm(e.target.value); setIsCityDropdownOpen(true); }} />
                     <span className="text-slate-300 text-xs ml-2">▼</span>
                   </div>
                   {isCityDropdownOpen && (
                     <div className="absolute z-10 w-full mt-2 bg-white border border-slate-200 rounded-xl shadow-xl max-h-52 overflow-y-auto py-1">
                       {filteredCities.length > 0 ? filteredCities.map(city => (
-                        <div
-                          key={city}
-                          className={`px-4 py-2 text-sm cursor-pointer hover:bg-slate-50 ${editProfileData.city === city ? 'bg-blue-50 text-[#0B57D0] font-medium' : 'text-slate-700'}`}
-                          onClick={() => {
-                            setEditProfileData({ ...editProfileData, city });
-                            setCitySearchTerm(city);
-                            setIsCityDropdownOpen(false);
-                          }}
-                        >
+                        <div key={city}
+                          className={`px-4 py-2 text-sm cursor-pointer hover:bg-slate-50 ${editData.city === city ? 'bg-blue-50 text-[#0B57D0] font-medium' : 'text-slate-700'}`}
+                          onClick={() => { setEditData({ ...editData, city }); setCitySearchTerm(city); setIsCityDropdownOpen(false); }}>
                           {city}
                         </div>
-                      )) : (
-                        <div className="px-4 py-3 text-sm text-slate-400 text-center">Sonuç bulunamadı</div>
-                      )}
+                      )) : <div className="px-4 py-3 text-sm text-slate-400 text-center">Sonuç bulunamadı</div>}
                     </div>
                   )}
                 </div>
-
                 <div>
                   <label className="block text-xs font-medium text-slate-400 mb-1.5 uppercase tracking-wide">Aylık Gelir</label>
-                  <select
-                    className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-[#0B57D0] transition-colors"
-                    value={editProfileData.incomeLevel}
-                    onChange={e => setEditProfileData({ ...editProfileData, incomeLevel: e.target.value })}
-                  >
+                  <select className="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl text-slate-700 text-sm focus:outline-none focus:ring-2 focus:ring-[#0B57D0] transition-colors"
+                    value={editData.incomeLevel} onChange={e => setEditData({ ...editData, incomeLevel: e.target.value })}>
                     <option value="">Belirtmek İstemiyorum</option>
                     <option value="0-17002">Asgari Ücret ve Altı</option>
                     <option value="17003-30000">17.000 - 30.000 TL</option>
@@ -352,10 +243,14 @@ const Settings = () => {
               </>
             ) : (
               <>
-                <ReadOnlyField label="Doğum Tarihi" value={profileData.dateOfBirth} />
-                <ReadOnlyField label="Cinsiyet" value={profileData.gender} />
-                <ReadOnlyField label="Şehir" value={profileData.city} />
-                <ReadOnlyField label="Aylık Gelir" value={profileData.incomeLevel} />
+                <ReadOnlyField label="Ad" value={data.firstName} />
+                <ReadOnlyField label="Soyad" value={data.lastName} />
+                <ReadOnlyField label="Telefon" value={data.phoneNumber} />
+                <ReadOnlyField label="E-posta" value={data.email} />
+                <ReadOnlyField label="Doğum Tarihi" value={data.dateOfBirth} />
+                <ReadOnlyField label="Cinsiyet" value={data.gender} />
+                <ReadOnlyField label="Şehir" value={data.city} />
+                <ReadOnlyField label="Aylık Gelir" value={data.incomeLevel} />
               </>
             )}
           </div>

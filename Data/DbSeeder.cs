@@ -32,6 +32,7 @@ namespace CRS_INTERN_PROJECT.Data
             var zaraTenant = new Tenant
             {
                 CompanyName = "Zara Tekstil A.Ş.",
+                Status = TenantStatus.Active, // Seed verisi zaten onaylanmış kabul edilir
                 SubscriptionTier = SubscriptionTier.Normal, // Rakip isimleri MASKELİ görecek
                 BrandId = zaraBrand.Id
             };
@@ -39,6 +40,7 @@ namespace CRS_INTERN_PROJECT.Data
             var maviTenant = new Tenant
             {
                 CompanyName = "Mavi Giyim A.Ş.",
+                Status = TenantStatus.Active, // Seed verisi zaten onaylanmış kabul edilir
                 SubscriptionTier = SubscriptionTier.Premium, // Rakiplerin GERÇEK İSİMLERİNİ görecek
                 BrandId = maviBrand.Id
             };
@@ -198,3 +200,7 @@ namespace CRS_INTERN_PROJECT.Data
         }
     }
 }
+
+
+
+

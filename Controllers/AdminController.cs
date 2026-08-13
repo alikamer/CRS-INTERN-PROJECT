@@ -65,4 +65,76 @@ public class AdminController : ControllerBase
             return BadRequest(new { Message = ex.Message });
         }
     }
+
+    /// <summary>
+    /// Onay bekleyen şirket başvurularını, admin telefonla doğrulasın diye iletişim bilgileriyle getirir.
+    /// </summary>
+    [HttpGet("pending-tenants")]
+    [Authorize(Roles = "SystemAdmin")]
+    public async Task<IActionResult> GetPendingTenants()
+    {
+        try
+        {
+            var pendingTenants = await _adminService.GetPendingTenantsAsync();
+            return Ok(pendingTenants);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// Telefonla doğrulanan şirket başvurusunu onaylar; marka ve abonelik paketi burada atanır.
+    /// </summary>
+    [HttpPost("tenants/{tenantId}/approve")]
+    [Authorize(Roles = "SystemAdmin")]
+    public async Task<IActionResult> ApproveTenant(Guid tenantId, [FromBody] ApproveTenantDto dto)
+    {
+        try
+        {
+            await _adminService.ApproveTenantAsync(tenantId, dto);
+            return Ok(new { Message = "Şirket başvurusu onaylandı, hesap aktif edildi." });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// Uygun görülmeyen şirket başvurusunu reddeder.
+    /// </summary>
+    [HttpPost("tenants/{tenantId}/reject")]
+    [Authorize(Roles = "SystemAdmin")]
+    public async Task<IActionResult> RejectTenant(Guid tenantId)
+    {
+        try
+        {
+            await _adminService.RejectTenantAsync(tenantId);
+            return Ok(new { Message = "Şirket başvurusu reddedildi." });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+    }
+
+    /*
+    Onay formundaki marka dropdown'ı için sade marka listesi.
+    */
+    [HttpGet("brands")]
+    [Authorize(Roles = "SystemAdmin")]
+    public async Task<IActionResult> GetBrands()
+    {
+        try
+        {
+            var brands = await _adminService.GetBrandsAsync();
+            return Ok(brands);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { Message = ex.Message });
+        }
+    }
 }

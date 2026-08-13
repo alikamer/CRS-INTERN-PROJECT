@@ -102,4 +102,27 @@ export const updateConsumerProfile = async (profileData) => {
   return response.data;
 };
 
+export const getPendingTenants = async () => {
+  const response = await api.get('/Admin/pending-tenants');
+  return response.data;
+};
+
+export const getBrands = async () => {
+  const response = await api.get('/Admin/brands');
+  return response.data;
+};
+
+export const approveTenant = async (tenantId, brandId, subscriptionTier) => {
+  const response = await api.post(`/Admin/tenants/${tenantId}/approve`, {
+    brandId,
+    subscriptionTier,
+  });
+  return response.data;
+};
+
+export const rejectTenant = async (tenantId) => {
+  const response = await api.post(`/Admin/tenants/${tenantId}/reject`);
+  return response.data;
+};
+
 export default api;

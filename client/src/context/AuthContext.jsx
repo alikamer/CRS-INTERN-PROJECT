@@ -12,9 +12,10 @@ export const AuthProvider = ({ children }) => {
     const refreshToken = localStorage.getItem('refreshToken');
     const role = localStorage.getItem('role') || 'Consumer';
     const email = localStorage.getItem('email') || '';
+    const name = localStorage.getItem('name') || '';
 
     if (token) {
-      setUser({ token, refreshToken, email, role });
+      setUser({ token, refreshToken, email, role, name });
     }
     setLoading(false);
   }, []);
@@ -22,14 +23,15 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       const response = await api.post('/Auth/login', { email, password });
-      const { token, refreshToken, role } = response.data;
+      const { token, refreshToken, role, firstName } = response.data;
 
       localStorage.setItem('token', token);
       if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
       localStorage.setItem('role', role || 'Consumer');
       localStorage.setItem('email', email);
+      if (firstName) localStorage.setItem('name', firstName);
 
-      setUser({ email, token, refreshToken, role: role || 'Consumer' });
+      setUser({ email, token, refreshToken, role: role || 'Consumer', name: firstName || '' });
       return { success: true, role: role || 'Consumer' };
     } catch (error) {
       console.error("Login failed", error);
@@ -47,18 +49,36 @@ export const AuthProvider = ({ children }) => {
       lastName,
     firstName
    });
-      const { token, refreshToken, role } = response.data;
+      const { token, refreshToken, role, firstName } = response.data;
 
       localStorage.setItem('token', token);
       if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
       localStorage.setItem('role', role || 'Consumer');
       localStorage.setItem('email', email);
+      if (firstName) localStorage.setItem('name', firstName);
 
-      setUser({ email, token, refreshToken, role: role || 'Consumer' });
+      setUser({ email, token, refreshToken, role: role || 'Consumer', name: firstName || '' });
       return { success: true, role: role || 'Consumer' };
     } catch (error) {
       console.error("Register failed", error);
       return { success: false, error: error.response?.data?.Message || 'Kayıt başarısız' };
+    }
+  };
+
+  const registerTenant = async (companyName, firstName, lastName, phoneNumber, email, password) => {
+    try {
+      const response = await api.post('/Auth/register-tenant', {
+        companyName,
+        firstName,
+        lastName,
+        phoneNumber,
+        email,
+        password,
+      });
+      return { success: true, message: response.data.message };
+    } catch (error) {
+      console.error("Tenant register failed", error);
+      return { success: false, error: error.response?.data?.Message || 'Başvuru gönderilemedi' };
     }
   };
 
@@ -82,6 +102,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('role');
     localStorage.removeItem('email');
+    localStorage.removeItem('name');
     setUser(null);
   };
 
@@ -89,7 +110,7 @@ export const AuthProvider = ({ children }) => {
 
   
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, switchRoleForTesting, loading }}>            
+    <AuthContext.Provider value={{ user, login, register, registerTenant, logout, switchRoleForTesting, loading }}>
       {!loading && children}
     </AuthContext.Provider>
   );

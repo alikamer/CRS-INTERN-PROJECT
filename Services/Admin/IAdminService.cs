@@ -8,4 +8,9 @@ public interface IAdminService
     Task<List<PendingReceiptDto>> GetPendingReceiptsAsync();
     Task<bool> AddReceiptItemAsync(Guid receiptId, AddReceiptItemDto dto);
     Task<bool> ApproveReceiptAsync(Guid receiptId);
+
+    Task<List<PendingTenantDto>> GetPendingTenantsAsync();
+    Task<bool> ApproveTenantAsync(Guid tenantId, ApproveTenantDto dto);
+    Task<bool> RejectTenantAsync(Guid tenantId);
+    Task<List<BrandOptionDto>> GetBrandsAsync();
 }
