@@ -7,6 +7,8 @@ import ConsumerDashboard from './pages/ConsumerDashboard';
 import CorporateAnalytics from './pages/CorporateAnalytics';
 import AdminQueue from './pages/AdminQueue';
 import TenantApplications from './pages/TenantApplications';
+import TenantManagement from './pages/TenantManagement';
+import BrandManagement from './pages/BrandManagement';
 import Receipts from './pages/Receipts';
 import Settings from './pages/Settings';
 
@@ -35,6 +37,8 @@ function App() {
           <Route element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
             <Route path="/" element={<RoleBasedHome />} />
             <Route path="/tenant-applications" element={<TenantApplications />} />
+            <Route path="/tenant-management" element={<TenantManagement />} />
+            <Route path="/brand-management" element={<BrandManagement />} />
             <Route path="/receipts" element={<Receipts />} />
             <Route path="/settings" element={<Settings />} />
           </Route>

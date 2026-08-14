@@ -16,7 +16,9 @@ import {
   Sparkles,
   SlidersHorizontal,
   Building,
-  Building2
+  Building2,
+  Briefcase,
+  Tag
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 
@@ -65,6 +67,8 @@ const MainLayout = () => {
         return [
           { path: '/', label: 'Onay Kuyruğu', icon: ShieldCheck, category: 'Admin' },
           { path: '/tenant-applications', label: 'Şirket Başvuruları', icon: Building2, category: 'Admin' },
+          { path: '/tenant-management', label: 'Şirket Yönetimi', icon: Briefcase, category: 'Admin' },
+          { path: '/brand-management', label: 'Marka Yönetimi', icon: Tag, category: 'Admin' },
           { path: '/receipts', label: 'Tüm Fiş Kayıtları', icon: Receipt, category: 'Admin' },
           { path: '/settings', label: 'Sistem Ayarları', icon: Settings, category: 'Admin' },
         ];

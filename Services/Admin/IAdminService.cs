@@ -13,4 +13,15 @@ public interface IAdminService
     Task<bool> ApproveTenantAsync(Guid tenantId, ApproveTenantDto dto);
     Task<bool> RejectTenantAsync(Guid tenantId);
     Task<List<BrandOptionDto>> GetBrandsAsync();
+
+    Task<List<TenantOverviewDto>> GetAllTenantsAsync();
+    Task<bool> UpdateTenantSubscriptionAsync(Guid tenantId, UpdateTenantSubscriptionDto dto);
+    Task<bool> DeactivateTenantAsync(Guid tenantId);
+    Task<bool> ActivateTenantAsync(Guid tenantId);
+
+    Task<List<BrandManagementDto>> GetAllBrandsForManagementAsync();
+    Task<BrandManagementDto> CreateBrandAsync(BrandInputDto dto);
+    Task<bool> UpdateBrandAsync(Guid brandId, BrandInputDto dto);
+    Task<bool> DeactivateBrandAsync(Guid brandId);
+    Task<bool> ActivateBrandAsync(Guid brandId);
 }

@@ -87,9 +87,9 @@ public class AdminService : IAdminService
         return true;
     }
 
-    /// <summary>
-    /// Fişi onaylar ve vatandaşa sadakat puanı kazandırır.
-    /// </summary>
+    
+    // Fişi onaylar ve vatandaşa sadakat puanı kazandırır.
+
     public async Task<bool> ApproveReceiptAsync(Guid receiptId)
     {
         var receipt = await _context.Receipts
@@ -134,7 +134,7 @@ public class AdminService : IAdminService
 
     /// <summary>
     /// Onay bekleyen şirket başvurularını, admin telefonla ulaşabilsin diye başvuruyu yapan
-    /// kişinin iletişim bilgileriyle birlikte getirir.
+    /// kişinin iletişim bilgileriyle birlikte getirir. 
     /// </summary>
     public async Task<List<PendingTenantDto>> GetPendingTenantsAsync()
     {
@@ -159,7 +159,8 @@ public class AdminService : IAdminService
     }
 
     /// <summary>
-    /// Admin, telefonla doğruladıktan sonra şirketi onaylar; marka ve abonelik paketi burada atanır.
+    /// Admin, telefonla doğruladıktan sonra  uygun bulunması durumunda 
+    /// şirketi onaylar; marka ve abonelik paketi burada atanır.
     /// </summary>
     public async Task<bool> ApproveTenantAsync(Guid tenantId, ApproveTenantDto dto)
     {
@@ -188,9 +189,9 @@ public class AdminService : IAdminService
         return true;
     }
 
-    /// <summary>
+  
     /// Uygun görülmeyen şirket başvurusunu reddeder.
-    /// </summary>
+   
     public async Task<bool> RejectTenantAsync(Guid tenantId)
     {
         var tenant = await _context.Tenants.FirstOrDefaultAsync(t => t.Id == tenantId);
@@ -206,13 +207,224 @@ public class AdminService : IAdminService
     }
 
     /// <summary>
-    /// Onay formundaki marka dropdown'ı için sade marka listesi.
+    /// Onay formundaki marka dropdown'ı için sade marka listesi. Sadece aktif markalar
+    /// gösterilir; pasife alınmış bir marka yeni bir tenanta atanamamalı.
     /// </summary>
     public async Task<List<BrandOptionDto>> GetBrandsAsync()
     {
         return await _context.Brands
+            .Where(b => b.IsActive)
             .OrderBy(b => b.Name)
             .Select(b => new BrandOptionDto { Id = b.Id, Name = b.Name })
             .ToListAsync();
+    }
+
+    /// <summary>
+    /// Tenant Yönetimi ekranı için durumu ne olursa olsun (Active/Rejected/Inactive/WaitingForApproval)
+    /// tüm şirketleri, marka adı ve üye sayısıyla birlikte listeler.
+    /// </summary>
+    public async Task<List<TenantOverviewDto>> GetAllTenantsAsync()
+    {
+        return await _context.Tenants
+            .Include(t => t.Brand)
+            .Include(t => t.CorporateUsers)
+            .OrderByDescending(t => t.CreatedAt)
+            .Select(t => new TenantOverviewDto
+            {
+                TenantId = t.Id,
+                CompanyName = t.CompanyName,
+                Status = t.Status.ToString(),
+                SubscriptionTier = t.SubscriptionTier.ToString(),
+                BrandName = t.Brand != null ? t.Brand.Name : null,
+                MemberCount = t.CorporateUsers.Count,
+                CreatedAt = t.CreatedAt
+            })
+            .ToListAsync();
+    }
+
+    /// <summary>
+    /// Zaten Active durumdaki bir tenant'ın abonelik paketini sonradan değiştirir
+    /// (örn. satış ekibi Basic'ten Premium'a yükseltme anlaştığında).
+    /// </summary>
+    public async Task<bool> UpdateTenantSubscriptionAsync(Guid tenantId, UpdateTenantSubscriptionDto dto)
+    {
+        var tenant = await _context.Tenants.FirstOrDefaultAsync(t => t.Id == tenantId);
+        if (tenant == null)
+        {
+            throw new Exception("Böyle bir şirket bulunamadı.");
+        }
+
+        if (tenant.Status != TenantStatus.Active)
+        {
+            throw new Exception("Sadece aktif şirketlerin abonelik paketi değiştirilebilir.");
+        }
+
+        if (!Enum.TryParse<SubscriptionTier>(dto.SubscriptionTier, true, out var parsedTier))
+        {
+            throw new Exception("Geçersiz abonelik paketi.");
+        }
+
+        tenant.SubscriptionTier = parsedTier;
+
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
+    /// <summary>
+    /// Aktif bir tenant'ı pasife alır (örn. ödeme kesintisi/kötüye kullanım durumunda).
+    /// Pasife alınan tenant'a bağlı CorporateUser'lar giriş yapamaz hale gelir
+    /// (AuthService'teki login kontrolü Status == Active şartını arıyor).
+    /// </summary>
+    public async Task<bool> DeactivateTenantAsync(Guid tenantId)
+    {
+        var tenant = await _context.Tenants.FirstOrDefaultAsync(t => t.Id == tenantId);
+        if (tenant == null)
+        {
+            throw new Exception("Böyle bir şirket bulunamadı.");
+        }
+
+        if (tenant.Status != TenantStatus.Active)
+        {
+            throw new Exception("Sadece aktif bir şirket pasife alınabilir.");
+        }
+
+        tenant.Status = TenantStatus.Inactive;
+
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
+    /// <summary>
+    /// Daha önce pasife alınmış bir tenant'ı tekrar aktif eder. Reddedilmiş (Rejected) ya
+    /// da henüz onay bekleyen (WaitingForApproval) tenant'lar buradan değil, ApproveTenantAsync
+    /// üzerinden aktif edilir — o akış marka/abonelik atamasını da zorunlu kılıyor.
+    /// </summary>
+    public async Task<bool> ActivateTenantAsync(Guid tenantId)
+    {
+        var tenant = await _context.Tenants.FirstOrDefaultAsync(t => t.Id == tenantId);
+        if (tenant == null)
+        {
+            throw new Exception("Böyle bir şirket bulunamadı.");
+        }
+
+        if (tenant.Status != TenantStatus.Inactive)
+        {
+            throw new Exception("Sadece pasif bir şirket tekrar aktif edilebilir.");
+        }
+
+        tenant.Status = TenantStatus.Active;
+
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
+    /// <summary>
+    /// Marka Yönetimi ekranı için, aktif/pasif ayrımı yapmadan tüm markaları listeler.
+    /// </summary>
+    public async Task<List<BrandManagementDto>> GetAllBrandsForManagementAsync()
+    {
+        return await _context.Brands
+            .OrderBy(b => b.Name)
+            .Select(b => new BrandManagementDto
+            {
+                Id = b.Id,
+                Name = b.Name,
+                LogoUrl = b.LogoUrl,
+                IsActive = b.IsActive
+            })
+            .ToListAsync();
+    }
+
+    /// <summary>
+    /// Yeni bir marka oluşturur (örn. yeni bir müşteri şirket geldiğinde artık DbSeeder'a
+    /// elle yazmak yerine admin panelden ekleniyor).
+    /// </summary>
+    public async Task<BrandManagementDto> CreateBrandAsync(BrandInputDto dto)
+    {
+        if (string.IsNullOrWhiteSpace(dto.Name))
+        {
+            throw new Exception("Marka adı boş olamaz.");
+        }
+
+        var nameExists = await _context.Brands.AnyAsync(b => b.Name == dto.Name);
+        if (nameExists)
+        {
+            throw new Exception("Bu isimde bir marka zaten var.");
+        }
+
+        var brand = new Brand
+        {
+            Name = dto.Name,
+            LogoUrl = dto.LogoUrl
+        };
+
+        _context.Brands.Add(brand);
+        await _context.SaveChangesAsync();
+
+        return new BrandManagementDto { Id = brand.Id, Name = brand.Name, LogoUrl = brand.LogoUrl, IsActive = brand.IsActive };
+    }
+
+    /// <summary>
+    /// Var olan bir markanın adını/logosunu düzenler.
+    /// </summary>
+    public async Task<bool> UpdateBrandAsync(Guid brandId, BrandInputDto dto)
+    {
+        var brand = await _context.Brands.FirstOrDefaultAsync(b => b.Id == brandId);
+        if (brand == null)
+        {
+            throw new Exception("Böyle bir marka bulunamadı.");
+        }
+
+        if (string.IsNullOrWhiteSpace(dto.Name))
+        {
+            throw new Exception("Marka adı boş olamaz.");
+        }
+
+        var nameTaken = await _context.Brands.AnyAsync(b => b.Name == dto.Name && b.Id != brandId);
+        if (nameTaken)
+        {
+            throw new Exception("Bu isimde başka bir marka zaten var.");
+        }
+
+        brand.Name = dto.Name;
+        brand.LogoUrl = dto.LogoUrl;
+
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
+    /// <summary>
+    /// Markayı pasife alır. Silmiyoruz çünkü geçmiş fiş/loyalty kayıtları bu markaya FK ile
+    /// bağlı — pasife alınca sadece yeni tenant onaylarındaki dropdown'dan kaybolur.
+    /// </summary>
+    public async Task<bool> DeactivateBrandAsync(Guid brandId)
+    {
+        var brand = await _context.Brands.FirstOrDefaultAsync(b => b.Id == brandId);
+        if (brand == null)
+        {
+            throw new Exception("Böyle bir marka bulunamadı.");
+        }
+
+        brand.IsActive = false;
+
+        await _context.SaveChangesAsync();
+        return true;
+    }
+
+    /// <summary>
+    /// Pasife alınmış bir markayı tekrar aktif eder.
+    /// </summary>
+    public async Task<bool> ActivateBrandAsync(Guid brandId)
+    {
+        var brand = await _context.Brands.FirstOrDefaultAsync(b => b.Id == brandId);
+        if (brand == null)
+        {
+            throw new Exception("Böyle bir marka bulunamadı.");
+        }
+
+        brand.IsActive = true;
+
+        await _context.SaveChangesAsync();
+        return true;
     }
 }

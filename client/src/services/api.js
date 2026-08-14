@@ -125,6 +125,51 @@ export const rejectTenant = async (tenantId) => {
   return response.data;
 };
 
+export const getAllTenants = async () => {
+  const response = await api.get('/Admin/tenants');
+  return response.data;
+};
+
+export const updateTenantSubscription = async (tenantId, subscriptionTier) => {
+  const response = await api.post(`/Admin/tenants/${tenantId}/subscription`, { subscriptionTier });
+  return response.data;
+};
+
+export const deactivateTenant = async (tenantId) => {
+  const response = await api.post(`/Admin/tenants/${tenantId}/deactivate`);
+  return response.data;
+};
+
+export const activateTenant = async (tenantId) => {
+  const response = await api.post(`/Admin/tenants/${tenantId}/activate`);
+  return response.data;
+};
+
+export const getAllBrandsForManagement = async () => {
+  const response = await api.get('/Admin/brands/all');
+  return response.data;
+};
+
+export const createBrand = async (name, logoUrl) => {
+  const response = await api.post('/Admin/brands', { name, logoUrl });
+  return response.data;
+};
+
+export const updateBrand = async (brandId, name, logoUrl) => {
+  const response = await api.put(`/Admin/brands/${brandId}`, { name, logoUrl });
+  return response.data;
+};
+
+export const deactivateBrand = async (brandId) => {
+  const response = await api.post(`/Admin/brands/${brandId}/deactivate`);
+  return response.data;
+};
+
+export const activateBrand = async (brandId) => {
+  const response = await api.post(`/Admin/brands/${brandId}/activate`);
+  return response.data;
+};
+
 export const getTeam = async () => {
   const response = await api.get('/Corporate/team');
   return response.data;
