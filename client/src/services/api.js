@@ -180,4 +180,14 @@ export const inviteTeamMember = async (email) => {
   return response.data;
 };
 
+export const getMyCoupons = async () => {
+  const response = await api.get('/Coupons/my-coupons');
+  return response.data;
+};
+
+export const redeemCoupon = async (couponId) => {
+  const response = await api.post(`/Coupons/${couponId}/redeem`);
+  return response.data;
+};
+
 export default api;

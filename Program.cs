@@ -11,6 +11,7 @@ using System.Text;
 using CRS_INTERN_PROJECT.Services.Analytics;
 using CRS_INTERN_PROJECT.Services.Consumer;
 using CRS_INTERN_PROJECT.Services.Corporate;
+using CRS_INTERN_PROJECT.Services.Coupon;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -22,6 +23,7 @@ builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
 builder.Services.AddScoped<IConsumerService, ConsumerService>(); //
 builder.Services.AddScoped<ICorporateService, CorporateService>();
+builder.Services.AddScoped<ICouponService, CouponService>();
 
 
 builder.Services.AddCors(options =>

@@ -66,22 +66,6 @@ public class ReceiptsController : ControllerBase
         }
     }
 
-    [HttpPost("{receiptId}/approve")]
-
-    public async Task<IActionResult> ApproveReceipt(Guid receiptId)
-    {
-        try
-        {
-            await _receiptService.ApproveReceiptAsync(receiptId);
-            return Ok(new { Message = "Fiş başarıyla onaylandı ve vatandaşa puanı yüklendi!" });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { Message = ex.Message });
-        }
-    }
-
-
  //Pagination güncellemesi
 
     [HttpGet("all")]

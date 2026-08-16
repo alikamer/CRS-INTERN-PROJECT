@@ -95,51 +95,6 @@ public class ReceiptService : IReceiptService
         return receipts;
     }
 
-    public async Task<bool> ApproveReceiptAsync(Guid receiptId)
-    {
-        // 1. Fişi bulalım
-        var receipt = await _context.Receipts
-            .FirstOrDefaultAsync(r => r.Id == receiptId);
-
-        if (receipt == null) 
-            throw new Exception("Böyle bir fiş bulunamadı.");
-        
-        if (receipt.Status == ReceiptStatus.Approved) 
-            throw new Exception("Bu fiş zaten onaylanmış! İkinci defa puan dağıtamayız.");
-
-        // 2. Fişi onaylayalım (Pending -> Approved)
-        receipt.Status = ReceiptStatus.Approved;
-
-        // 3. Oyunlaştırma (Gamification) - Vatandaşa puan verelim!
-        if (receipt.ConsumerProfileId.HasValue) 
-        {
-            var loyalty = await _context.ConsumerLoyalties
-                .FirstOrDefaultAsync(cl => cl.ConsumerProfileId == receipt.ConsumerProfileId.Value && cl.BrandId == receipt.BrandId);
-
-            if (loyalty == null)
-            {
-                // Vatandaş bu markadan ilk defa fiş onaylatmış, hemen bir sadakat satırı açalım.
-                loyalty = new Entities.ConsumerLoyalty
-                {
-                    ConsumerProfileId = receipt.ConsumerProfileId.Value,
-                    BrandId = receipt.BrandId,
-                    TotalReceiptCount = 0,
-                    TotalPoints = 0
-                };
-                _context.ConsumerLoyalties.Add(loyalty);
-            }
-
-            // 1 fiş eklendi
-            loyalty.TotalReceiptCount += 1;
-            
-            // Fiş tutarının %5'i kadar (Örnek Oran) vatandaşa puan hediye edelim!
-            loyalty.TotalPoints += receipt.TotalAmount * 0.05m;
-        }
-
-        await _context.SaveChangesAsync();
-        return true;
-    }
-
     public async Task<PagedResult<ReceiptDto>> GetAllReceiptAsync(ReceiptFilterDto filter)
     {
         var query = _context.Receipts.AsQueryable();

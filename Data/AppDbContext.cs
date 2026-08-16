@@ -17,6 +17,7 @@ public class AppDbContext : DbContext
     public DbSet<ConsumerLoyalty> ConsumerLoyalties { get; set; } = null!;
     public DbSet<RefreshToken> RefreshTokens { get; set; } = null!;
     public DbSet<TenantInvite> TenantInvites { get; set; } = null!;
+    public DbSet<Coupon> Coupons { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -91,5 +92,18 @@ public class AppDbContext : DbContext
             .WithOne(ti => ti.Tenant)
             .HasForeignKey(ti => ti.TenantId)
             .OnDelete(DeleteBehavior.Cascade);
+
+       
+        modelBuilder.Entity<ConsumerProfile>()
+            .HasMany(cp => cp.Coupons)
+            .WithOne(c => c.ConsumerProfile)
+            .HasForeignKey(c => c.ConsumerProfileId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Coupon>()
+            .HasOne(c => c.Brand)
+            .WithMany()
+            .HasForeignKey(c => c.BrandId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

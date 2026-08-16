@@ -2,6 +2,7 @@ using CRS_INTERN_PROJECT.Data;
 using CRS_INTERN_PROJECT.DTOs.Admin;
 using CRS_INTERN_PROJECT.Entities;
 using CRS_INTERN_PROJECT.Enums;
+using CRS_INTERN_PROJECT.Services.Coupon;
 using Microsoft.EntityFrameworkCore;
 
 namespace CRS_INTERN_PROJECT.Services.Admin;
@@ -13,15 +14,15 @@ namespace CRS_INTERN_PROJECT.Services.Admin;
 public class AdminService : IAdminService
 {
     private readonly AppDbContext _context;
+    private readonly ICouponService _couponService;
 
-    public AdminService(AppDbContext context)
+    public AdminService(AppDbContext context, ICouponService couponService)
     {
         _context = context;
+        _couponService = couponService;
     }
 
-    /// <summary>
-    /// Onay bekleyen (Pending) durumundaki tüm fişleri detayları ve ürün kalemleriyle birlikte getirir.
-    /// </summary>
+ // Pending durumundaki tüm fişleri detayları ve ürün kalemleriyle birlikte getirir.
     public async Task<List<PendingReceiptDto>> GetPendingReceiptsAsync()
     {
         var receipts = await _context.Receipts
@@ -129,6 +130,13 @@ public class AdminService : IAdminService
         }
 
         await _context.SaveChangesAsync();
+
+        
+        if (receipt.ConsumerProfileId.HasValue)
+        {
+            await _couponService.IssueCouponsIfEligibleAsync(receipt.ConsumerProfileId.Value);
+        }
+
         return true;
     }
 
@@ -364,9 +372,9 @@ public class AdminService : IAdminService
         return new BrandManagementDto { Id = brand.Id, Name = brand.Name, LogoUrl = brand.LogoUrl, IsActive = brand.IsActive };
     }
 
-    /// <summary>
-    /// Var olan bir markanın adını/logosunu düzenler.
-    /// </summary>
+    
+    // Var olan bir markanın adını/logosunu düzenler.
+    
     public async Task<bool> UpdateBrandAsync(Guid brandId, BrandInputDto dto)
     {
         var brand = await _context.Brands.FirstOrDefaultAsync(b => b.Id == brandId);
@@ -411,9 +419,9 @@ public class AdminService : IAdminService
         return true;
     }
 
-    /// <summary>
-    /// Pasife alınmış bir markayı tekrar aktif eder.
-    /// </summary>
+    
+    ///Pasife alınmış bir markayı tekrar aktif eder.
+   
     public async Task<bool> ActivateBrandAsync(Guid brandId)
     {
         var brand = await _context.Brands.FirstOrDefaultAsync(b => b.Id == brandId);

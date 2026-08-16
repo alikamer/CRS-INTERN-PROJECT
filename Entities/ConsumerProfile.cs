@@ -21,4 +21,5 @@ public class ConsumerProfile
     public AppUser AppUser { get; set; } = null!;
     public ICollection<Receipt> Receipts { get; set; } = new List<Receipt>();
     public ICollection<ConsumerLoyalty> Loyalties { get; set; } = new List<ConsumerLoyalty>();
+    public ICollection<Coupon> Coupons { get; set; } = new List<Coupon>();
 }

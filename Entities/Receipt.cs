@@ -4,9 +4,10 @@ namespace CRS_INTERN_PROJECT.Entities;
 
 /// <summary>
 /// Vatandaşın yüklediği fişin ana gövdesi. 
-/// Sahtekarlığı önlemek için varsayılan olarak Pending olur, onaylanınca puan verir.
+/// Varasyılan olarak pending olur sonrasında onay verilirse kullanılır
 /// Onaylama işleminin nasıl olacağı ile ilgili kesin bir fikir yok ileride revize edilecek.
-/// yani neye göre onaylanacak veya dolandırıcılık olduğu anlaşılacak
+///fnote->Şuan demo halde onay işleminin otomatikleştirilmesi gerekiyor admin panelden elle yapılamaz.
+/// yani neye göre onaylanacak veya dolandırıcılık olduğu anlaşılacak,(duplicate olrusa oto elenmesi vs gibi )
 /// </summary>
 public class Receipt
 {
@@ -14,6 +15,7 @@ public class Receipt
     
     /// <summary>
     /// Fişi sisteme sokan vatandaş. (Hesabı silinirse null kalır, fiş silinmez)
+    /// temel prensip verileri saklamaktır burada sorun olur mu bilmiyorum kontrol edilsin
     /// </summary>
     public Guid? ConsumerProfileId { get; set; }
     
@@ -26,11 +28,15 @@ public class Receipt
     public decimal TotalAmount { get; set; }
     public string? ImageUrl { get; set; }
     
-    /// <summary>
-    /// ı önlem: Fiş anında onaylanmaz, önce Pending'e düşer.
-    /// </summary>
+//default pending
     public ReceiptStatus Status { get; set; } = ReceiptStatus.Pending;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    /// <summary>
+    /// Bu fiş kupon karar motoru tarafından bir 5'li blokta değerlendirilip kupona
+    /// dönüştürüldü mü?
+    /// </summary>
+    public bool IsRewarded { get; set; }
 
     public ConsumerProfile? ConsumerProfile { get; set; }
     public Brand Brand { get; set; } = null!;
