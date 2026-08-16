@@ -19,7 +19,7 @@ const ConsumerProfileModal = ({ isOpen, onClose, onSuccess }) => {
     city: '',
     incomeLevel: ''
   });
-  
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -39,7 +39,7 @@ const ConsumerProfileModal = ({ isOpen, onClose, onSuccess }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const filteredCities = TURKEY_CITIES.filter(c => 
+  const filteredCities = TURKEY_CITIES.filter(c =>
     c.toLocaleLowerCase('tr-TR').includes(citySearch.toLocaleLowerCase('tr-TR'))
   );
 
@@ -51,7 +51,7 @@ const ConsumerProfileModal = ({ isOpen, onClose, onSuccess }) => {
     setError(null);
 
     try {
-      // Boş stringleri null'a çevir ki backend'de hata döndürmesin 
+      // Boş stringleri null'a çevir ki backend'de hata döndürmesin
       const payload = {
         dateOfBirth: formData.dateOfBirth || null,
         gender: formData.gender || null,
@@ -71,45 +71,45 @@ const ConsumerProfileModal = ({ isOpen, onClose, onSuccess }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/20 backdrop-blur-md p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-fade-in-up">
-        
-        <div className="bg-slate-50 border-b px-6 py-4 flex justify-between items-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+
+        <div className="bg-[#F0F4F9] border-b border-[#E1E3E1] px-6 py-4 flex justify-between items-center">
           <div>
-            <h2 className="text-xl font-bold text-slate-800">Profilini Tamamla</h2>
-            <p className="text-sm text-slate-500 mt-1">Sana özel kampanyalar için seni daha iyi tanıyalım.</p>
+            <h2 className="text-xl font-bold text-[#1F1F1F]">Profilini Tamamla</h2>
+            <p className="text-sm text-[#5E5E5E] mt-1">Sana özel kampanyalar için seni daha iyi tanıyalım.</p>
           </div>
         </div>
 
         <div className="p-6">
           {error && (
-            <div className="mb-4 p-3 bg-red-50 text-red-600 text-sm rounded-lg border border-red-100">
+            <div className="mb-4 p-3 bg-[#FCE8E6] text-[#C5221F] text-sm rounded-xl border border-[#FAD2CF]">
               {error}
             </div>
           )}
-          
+
           <form id="profileForm" onSubmit={handleSubmit} className="space-y-5">
-            
+
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Doğum Tarihi</label>
-              <input 
-                type="date" 
+              <label className="block text-sm font-medium text-[#1F1F1F] mb-1">Doğum Tarihi</label>
+              <input
+                type="date"
                 value={formData.dateOfBirth}
                 onChange={(e) => setFormData({...formData, dateOfBirth: e.target.value})}
-                className="w-full px-4 py-2.5 rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                className="w-full px-4 py-2.5 rounded-xl border border-[#E1E3E1] bg-[#F0F4F9] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#0B57D0] focus:border-[#0B57D0] transition-colors"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Cinsiyet</label>
+              <label className="block text-sm font-medium text-[#1F1F1F] mb-1">Cinsiyet</label>
               <div className="grid grid-cols-2 gap-3">
                 <button
                   type="button"
                   onClick={() => setFormData({...formData, gender: 'Erkek'})}
-                  className={`py-2.5 rounded-lg border font-medium transition-all ${
-                    formData.gender === 'Erkek' 
-                      ? 'bg-blue-50 border-blue-500 text-blue-700 shadow-sm' 
-                      : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                  className={`py-2.5 rounded-xl border font-medium transition-all ${
+                    formData.gender === 'Erkek'
+                      ? 'bg-[#0B57D0] border-[#0B57D0] text-white'
+                      : 'border-[#E1E3E1] bg-white text-[#5E5E5E] hover:bg-[#F0F4F9]'
                   }`}
                 >
                   Erkek
@@ -117,10 +117,10 @@ const ConsumerProfileModal = ({ isOpen, onClose, onSuccess }) => {
                 <button
                   type="button"
                   onClick={() => setFormData({...formData, gender: 'Kadın'})}
-                  className={`py-2.5 rounded-lg border font-medium transition-all ${
-                    formData.gender === 'Kadın' 
-                      ? 'bg-pink-50 border-pink-500 text-pink-700 shadow-sm' 
-                      : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+                  className={`py-2.5 rounded-xl border font-medium transition-all ${
+                    formData.gender === 'Kadın'
+                      ? 'bg-[#0B57D0] border-[#0B57D0] text-white'
+                      : 'border-[#E1E3E1] bg-white text-[#5E5E5E] hover:bg-[#F0F4F9]'
                   }`}
                 >
                   Kadın
@@ -129,9 +129,9 @@ const ConsumerProfileModal = ({ isOpen, onClose, onSuccess }) => {
             </div>
 
             <div ref={cityDropdownRef} className="relative">
-              <label className="block text-sm font-medium text-slate-700 mb-1">Şehir</label>
-              <div 
-                className="w-full px-4 py-2.5 rounded-lg border border-slate-200 bg-slate-50 cursor-text flex items-center justify-between focus-within:ring-2 focus-within:ring-blue-500 focus-within:bg-white transition-colors"
+              <label className="block text-sm font-medium text-[#1F1F1F] mb-1">Şehir</label>
+              <div
+                className="w-full px-4 py-2.5 rounded-xl border border-[#E1E3E1] bg-[#F0F4F9] cursor-text flex items-center justify-between focus-within:ring-1 focus-within:ring-[#0B57D0] focus-within:bg-white transition-colors"
                 onClick={() => setIsCityDropdownOpen(true)}
               >
                 <input
@@ -143,13 +143,13 @@ const ConsumerProfileModal = ({ isOpen, onClose, onSuccess }) => {
                     if(!isCityDropdownOpen) setIsCityDropdownOpen(true);
                   }}
                   onFocus={() => setIsCityDropdownOpen(true)}
-                  className="w-full bg-transparent outline-none text-slate-800"
+                  className="w-full bg-transparent outline-none text-[#1F1F1F]"
                 />
-                <span className="text-slate-400 text-xs">▼</span>
+                <span className="text-[#747775] text-xs">▼</span>
               </div>
-              
+
               {isCityDropdownOpen && (
-                <div className="absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                <div className="absolute z-10 w-full mt-1 bg-white border border-[#E1E3E1] rounded-xl shadow-lg max-h-48 overflow-y-auto">
                   {filteredCities.length > 0 ? (
                     filteredCities.map(city => (
                       <div
@@ -159,24 +159,24 @@ const ConsumerProfileModal = ({ isOpen, onClose, onSuccess }) => {
                           setCitySearch('');
                           setIsCityDropdownOpen(false);
                         }}
-                        className="px-4 py-2 hover:bg-blue-50 hover:text-blue-700 cursor-pointer text-slate-700 transition-colors"
+                        className="px-4 py-2 hover:bg-[#E8F0FE] hover:text-[#0B57D0] cursor-pointer text-[#1F1F1F] transition-colors"
                       >
                         {city}
                       </div>
                     ))
                   ) : (
-                    <div className="px-4 py-3 text-sm text-slate-500 text-center">Şehir bulunamadı</div>
+                    <div className="px-4 py-3 text-sm text-[#5E5E5E] text-center">Şehir bulunamadı</div>
                   )}
                 </div>
               )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Aylık Gelir Seviyesi</label>
-              <select 
+              <label className="block text-sm font-medium text-[#1F1F1F] mb-1">Aylık Gelir Seviyesi</label>
+              <select
                 value={formData.incomeLevel}
                 onChange={(e) => setFormData({...formData, incomeLevel: e.target.value})}
-                className="w-full px-4 py-2.5 rounded-lg border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors appearance-none"
+                className="w-full px-4 py-2.5 rounded-xl border border-[#E1E3E1] bg-[#F0F4F9] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#0B57D0] focus:border-[#0B57D0] transition-colors appearance-none"
               >
                 <option value="" disabled>Seçiniz</option>
                 <option value="Asgari Ücret ve Altı">Asgari Ücret ve Altı</option>
@@ -189,11 +189,11 @@ const ConsumerProfileModal = ({ isOpen, onClose, onSuccess }) => {
           </form>
         </div>
 
-        <div className="border-t bg-slate-50 px-6 py-4 flex items-center justify-end space-x-3">
+        <div className="border-t border-[#E1E3E1] bg-[#F0F4F9] px-6 py-4 flex items-center justify-end space-x-3">
           <button
             type="button"
             onClick={onClose}
-            className="px-5 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 hover:bg-slate-200 rounded-lg transition-colors"
+            className="px-5 py-2 text-sm font-medium text-[#5E5E5E] hover:text-[#1F1F1F] hover:bg-[#E1E3E1] rounded-xl transition-colors"
           >
             Daha Sonra
           </button>
@@ -201,7 +201,7 @@ const ConsumerProfileModal = ({ isOpen, onClose, onSuccess }) => {
             type="submit"
             form="profileForm"
             disabled={loading}
-            className="px-5 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm hover:shadow transition-all disabled:opacity-70 flex items-center"
+            className="px-5 py-2 text-sm font-medium text-white bg-[#0B57D0] hover:bg-[#0842A0] rounded-xl shadow-sm hover:shadow transition-all disabled:opacity-70 flex items-center"
           >
             {loading ? 'Kaydediliyor...' : 'Şimdi Tamamla'}
           </button>

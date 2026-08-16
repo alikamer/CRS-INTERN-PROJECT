@@ -59,7 +59,7 @@ const ConsumerDashboard = () => {
   const couponStatusColor = {
     Active: 'text-[#137333]',
     Redeemed: 'text-[#747775]',
-    Expired: 'text-[#B3261E]',
+    Expired: 'text-[#C5221F]',
   };
 
   const totalPoints = myReceipts

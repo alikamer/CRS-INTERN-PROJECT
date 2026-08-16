@@ -91,8 +91,7 @@ const BrandManagement = () => {
       <div>
         <h1 className="text-xl font-bold text-[#1F1F1F] tracking-tight">Marka Yönetimi</h1>
         <p className="text-sm text-[#5E5E5E] mt-1">
-          Fişlerin bağlı olduğu marka kataloğu. Pasife alınan bir marka, yeni şirket onaylarındaki
-          marka seçim listesinden kalkar; geçmiş fiş kayıtları etkilenmez.
+          Fiş formundaki marka kataloğunu yönetin.
         </p>
       </div>
 
@@ -155,7 +154,7 @@ const BrandManagement = () => {
                           />
                         </td>
                         <td className="py-3 px-4">
-                          <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${b.isActive ? 'ga4-badge-green' : 'bg-slate-100 text-slate-600 border border-slate-200'}`}>
+                          <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${b.isActive ? 'ga4-badge-green' : 'bg-[#F0F4F9] text-[#5E5E5E] border border-[#E1E3E1]'}`}>
                             {b.isActive ? 'Aktif' : 'Pasif'}
                           </span>
                         </td>
@@ -174,7 +173,7 @@ const BrandManagement = () => {
                       <>
                         <td className="py-3 px-4 font-bold text-[#1F1F1F]">{b.name}</td>
                         <td className="py-3 px-4">
-                          <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${b.isActive ? 'ga4-badge-green' : 'bg-slate-100 text-slate-600 border border-slate-200'}`}>
+                          <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${b.isActive ? 'ga4-badge-green' : 'bg-[#F0F4F9] text-[#5E5E5E] border border-[#E1E3E1]'}`}>
                             {b.isActive ? 'Aktif' : 'Pasif'}
                           </span>
                         </td>
@@ -189,7 +188,7 @@ const BrandManagement = () => {
                             {b.isActive ? (
                               <button
                                 onClick={() => handleDeactivate(b.id)}
-                                className="flex items-center gap-1 text-[11px] font-bold text-red-600 hover:bg-red-50 px-2.5 py-1 rounded-full transition-colors"
+                                className="flex items-center gap-1 text-[11px] font-bold text-[#C5221F] hover:bg-[#FCE8E6] px-2.5 py-1 rounded-full transition-colors"
                               >
                                 <Ban className="w-3.5 h-3.5" /> Pasife Al
                               </button>

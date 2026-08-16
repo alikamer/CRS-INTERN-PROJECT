@@ -59,7 +59,7 @@ const ReceiptForm = ({ isOpen, onClose, onSuccess }) => {
 
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
           {error && (
-            <div className="bg-red-50 text-[#C5221F] px-4 py-3 rounded-lg text-sm border border-red-200">
+            <div className="bg-[#FCE8E6] text-[#C5221F] px-4 py-3 rounded-xl text-sm border border-[#FAD2CF]">
               {error}
             </div>
           )}

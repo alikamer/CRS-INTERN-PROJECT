@@ -75,7 +75,13 @@
 .ga4-badge-amber {
   background-color: #FEF7E0;
   color: #B06000;
-  border: 1px solid #FCE8E6;
+  border: 1px solid #FDE293;
+}
+
+.ga4-badge-red {
+  background-color: #FCE8E6;
+  color: #C5221F;
+  border: 1px solid #FAD2CF;
 }
 
 /* GA4 Live Indicator Dot */

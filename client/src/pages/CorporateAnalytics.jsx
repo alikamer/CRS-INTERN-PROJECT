@@ -37,7 +37,7 @@ const CorporateAnalytics = () => {
   if (error) {
     return (
       <div className="ga4-card p-6 flex items-start gap-4">
-        <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+        <AlertCircle className="w-5 h-5 text-[#C5221F] shrink-0 mt-0.5" />
         <div className="flex-1">
           <h3 className="font-bold text-sm text-[#1F1F1F]">Rapor Yüklenemedi</h3>
           <p className="text-sm text-[#5E5E5E] mt-1">{error}</p>

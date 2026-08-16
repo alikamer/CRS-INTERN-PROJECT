@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { X } from 'lucide-react';
 import api, { getAllBrandsForManagement } from '../services/api';
 
 /*
@@ -29,6 +30,8 @@ const AdminAllReceiptsTable = () => {
   const [sortOption, setSortOption] = useState('date_desc');
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [selectedReceipt, setSelectedReceipt] = useState(null);
+  const [imageLightboxOpen, setImageLightboxOpen] = useState(false);
 
   useEffect(() => {
     getAllBrandsForManagement().then(setBrands).catch((err) => console.error('Marka listesi alınamadı', err));
@@ -163,9 +166,13 @@ const AdminAllReceiptsTable = () => {
               <tr><td colSpan="4" className="text-center py-4 text-sm">Kayıt bulunamadı.</td></tr>
             ) : (
               receipts.map((r, i) => (
-                <tr key={r.id || i} className="hover:bg-[#F8F9FA] transition-colors border-b border-[#E1E3E1] last:border-0">
+                <tr
+                  key={r.id || i}
+                  onClick={() => setSelectedReceipt(r)}
+                  className="hover:bg-[#F8F9FA] transition-colors border-b border-[#E1E3E1] last:border-0 cursor-pointer"
+                >
                   <td className="px-4 py-3 text-sm font-medium text-[#1F1F1F]">
-                    {brandName(r.brandId)}
+                    {r.brandName || brandName(r.brandId)}
                   </td>
                   <td className="px-4 py-3 text-sm text-[#444746]">
                     {new Date(r.receiptDate).toLocaleDateString()}
@@ -174,10 +181,10 @@ const AdminAllReceiptsTable = () => {
                     {r.totalAmount?.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}
                   </td>
                   <td className="px-4 py-3 text-sm">
-                    <span className={`px-2 py-1 rounded-full text-xs font-semibold 
-                      ${r.status === 'Approved' ? 'bg-green-100 text-green-700' 
-                      : r.status === 'Pending' ? 'bg-yellow-100 text-yellow-700' 
-                      : 'bg-red-100 text-red-700'}`}>
+                    <span className={`px-2 py-1 rounded-full text-xs font-semibold border
+                      ${r.status === 'Approved' ? 'ga4-badge-green'
+                      : r.status === 'Pending' ? 'ga4-badge-amber'
+                      : 'ga4-badge-red'}`}>
                       {r.status}
                     </span>
                   </td>
@@ -213,6 +220,119 @@ const AdminAllReceiptsTable = () => {
           </button>
         </div>
       </div>
+
+      {selectedReceipt && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+            <button
+              onClick={() => { setSelectedReceipt(null); setImageLightboxOpen(false); }}
+              className="absolute top-5 right-5 text-[#747775] hover:bg-[#F0F4F9] p-1.5 rounded-full transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+
+            <div className="p-10">
+              <div className="flex justify-between items-start gap-6 pb-6 border-b-2 border-[#0B57D0]">
+                <div className="flex items-start gap-4">
+                  {selectedReceipt.imageUrl && (
+                    <button
+                      type="button"
+                      onClick={() => setImageLightboxOpen(true)}
+                      className="shrink-0 rounded-xl overflow-hidden border border-[#E1E3E1] hover:ring-2 hover:ring-[#0B57D0] transition-all"
+                    >
+                      <img
+                        src={selectedReceipt.imageUrl}
+                        alt="Fiş Görseli"
+                        className="w-16 h-16 object-cover"
+                        onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/64?text=Fis'; }}
+                      />
+                    </button>
+                  )}
+                  <div>
+                    <p className="text-[10px] font-semibold text-[#747775] uppercase tracking-widest mb-1">Mağaza</p>
+                    <h3 className="text-2xl font-bold text-[#1F1F1F] leading-tight">
+                      {selectedReceipt.brandName || brandName(selectedReceipt.brandId)}
+                    </h3>
+                  </div>
+                </div>
+                <div className="text-right shrink-0">
+                  <h4 className="text-xl font-extrabold text-[#0B57D0] tracking-wide">FİŞ</h4>
+                  <p className="text-xs text-[#747775] mt-1">No: {selectedReceipt.id.substring(0, 8).toUpperCase()}</p>
+                  <p className="text-xs text-[#747775]">{new Date(selectedReceipt.receiptDate).toLocaleDateString('tr-TR')}</p>
+                </div>
+              </div>
+
+              <div className="flex justify-between items-center py-5">
+                <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold border ${
+                  selectedReceipt.status === 'Approved' ? 'ga4-badge-green'
+                  : selectedReceipt.status === 'Pending' ? 'ga4-badge-amber'
+                  : 'ga4-badge-red'
+                }`}>
+                  {selectedReceipt.status}
+                </span>
+              </div>
+
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-[#E1E3E1] text-[11px] font-bold text-[#747775] uppercase tracking-wider">
+                    <th className="py-2">Ürün Açıklaması</th>
+                    <th className="py-2 text-center">Adet</th>
+                    <th className="py-2 text-right">Fiyat</th>
+                    <th className="py-2 text-right">Toplam</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {selectedReceipt.items?.length > 0 ? selectedReceipt.items.map((item) => (
+                    <tr key={item.id} className="border-b border-[#F0F4F9]">
+                      <td className="py-3">
+                        <span className="text-sm font-medium text-[#1F1F1F]">{item.productName}</span>
+                        <span className="block text-[11px] text-[#747775]">{item.category}</span>
+                      </td>
+                      <td className="py-3 text-center text-sm text-[#5E5E5E]">{item.quantity}</td>
+                      <td className="py-3 text-right text-sm text-[#5E5E5E]">₺{item.unitPrice}</td>
+                      <td className="py-3 text-right text-sm font-semibold text-[#1F1F1F]">₺{item.totalPrice}</td>
+                    </tr>
+                  )) : (
+                    <tr>
+                      <td colSpan="4" className="py-8 text-center text-xs text-[#747775]">Ürün kalemi eklenmemiş.</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+
+              <div className="flex justify-end mt-6">
+                <div className="w-64 flex justify-between items-center pt-4 border-t border-[#E1E3E1]">
+                  <span className="text-sm font-bold text-[#1F1F1F] uppercase tracking-wide">Genel Toplam</span>
+                  <span className="text-lg font-extrabold text-[#0B57D0]">
+                    {selectedReceipt.totalAmount?.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {imageLightboxOpen && (
+            <div
+              className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-md p-4"
+              onClick={() => setImageLightboxOpen(false)}
+            >
+              <button
+                onClick={() => setImageLightboxOpen(false)}
+                className="absolute top-5 right-5 text-white hover:bg-white/10 p-1.5 rounded-full transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+              <img
+                src={selectedReceipt.imageUrl}
+                alt="Fiş Görseli"
+                className="max-w-full max-h-[85vh] object-contain rounded-2xl shadow-2xl"
+                onClick={(e) => e.stopPropagation()}
+                onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/400x500?text=Fis+Gorseli'; }}
+              />
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

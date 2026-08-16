@@ -64,7 +64,7 @@ const TenantApplications = () => {
       <div>
         <h1 className="text-xl font-bold text-[#1F1F1F] tracking-tight">Onay Bekleyen Şirket Başvuruları</h1>
         <p className="text-sm text-[#5E5E5E] mt-1">
-          Başvuruyu yapan kişiyle iletişime geçip doğruladıktan sonra marka ve abonelik paketini atayarak onaylayın.
+          Yeni şirket başvurularını inceleyip onaylayın veya reddedin.
         </p>
       </div>
 
@@ -164,7 +164,7 @@ const TenantApplications = () => {
                 <div className="flex gap-3 pt-1">
                   <button
                     onClick={handleReject}
-                    className="flex-1 bg-white border border-red-200 hover:bg-red-50 text-red-600 px-4 py-2 rounded-full font-bold text-xs transition-all flex items-center justify-center gap-1.5"
+                    className="flex-1 bg-white border border-[#FAD2CF] hover:bg-[#FCE8E6] text-[#C5221F] px-4 py-2 rounded-full font-bold text-xs transition-all flex items-center justify-center gap-1.5"
                   >
                     <X className="w-4 h-4" /> Reddet
                   </button>

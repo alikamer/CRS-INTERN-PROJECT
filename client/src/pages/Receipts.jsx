@@ -109,7 +109,7 @@ const Receipts = () => {
                         <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
                           receipt.status === 'Approved' ? 'ga4-badge-green' :
                           receipt.status === 'Pending' ? 'ga4-badge-amber' :
-                          'bg-red-50 text-red-700 border border-red-200'
+                          'ga4-badge-red'
                         }`}>
                           {receipt.status === 'Approved' ? 'Onaylandı' : receipt.status === 'Pending' ? 'Beklemede' : 'Reddedildi'}
                         </span>

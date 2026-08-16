@@ -67,14 +67,14 @@ const Login = () => {
         </div>
 
         {pendingMessage && (
-          <div className="bg-green-50 text-green-700 border border-green-200 px-4 py-3 rounded-xl mb-6 text-sm">
+          <div className="bg-[#E6F4EA] text-[#137333] border border-[#CEEAD6] px-4 py-3 rounded-xl mb-6 text-sm">
             {pendingMessage}
           </div>
         )}
 
         {/* Error Alert */}
         {error && (
-          <div className="bg-red-50 text-[#C5221F] border border-red-200 px-4 py-3 rounded-xl mb-6 text-sm">
+          <div className="bg-[#FCE8E6] text-[#C5221F] border border-[#FAD2CF] px-4 py-3 rounded-xl mb-6 text-sm">
             {error}
           </div>
         )}

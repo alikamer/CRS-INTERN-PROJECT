@@ -180,7 +180,7 @@ const MainLayout = () => {
 
           <button
             onClick={logout}
-            className="flex items-center space-x-3 px-4 py-2.5 w-full rounded-full text-[#C4C7C5] hover:bg-red-900/30 hover:text-red-300 transition-colors text-xs font-medium"
+            className="flex items-center space-x-3 px-4 py-2.5 w-full rounded-full text-[#C4C7C5] hover:bg-[#3A2530] hover:text-[#F2B8B5] transition-colors text-xs font-medium"
           >
             <LogOut className="w-4 h-4 shrink-0 text-[#8E918F]" />
             {sidebarOpen && <span>Oturumu Kapat</span>}
@@ -232,23 +232,23 @@ const MainLayout = () => {
               </button>
 
               {dropdownOpen && (
-                <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden z-50 animate-fade-in-up">
-                  <div className="px-4 py-3 border-b border-slate-100 bg-slate-50">
-                    <p className="text-sm font-semibold text-slate-800 truncate">{user?.name || user?.email || 'Kullanıcı'}</p>
-                    <p className="text-xs text-slate-500 truncate mt-0.5">{user?.email}</p>
+                <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-[#E1E3E1] overflow-hidden z-50">
+                  <div className="px-4 py-3 border-b border-[#E1E3E1] bg-[#F0F4F9]">
+                    <p className="text-sm font-semibold text-[#1F1F1F] truncate">{user?.name || user?.email || 'Kullanıcı'}</p>
+                    <p className="text-xs text-[#5E5E5E] truncate mt-0.5">{user?.email}</p>
                   </div>
                   <div className="py-1">
                     <Link
                       to="/settings"
                       onClick={() => setDropdownOpen(false)}
-                      className="flex items-center space-x-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
+                      className="flex items-center space-x-3 px-4 py-2.5 text-sm text-[#1F1F1F] hover:bg-[#F0F4F9] transition-colors"
                     >
-                      <Settings className="w-4 h-4 text-slate-400" />
+                      <Settings className="w-4 h-4 text-[#747775]" />
                       <span>Profil Ayarları</span>
                     </Link>
                     <button
                       onClick={() => { setDropdownOpen(false); logout(); }}
-                      className="flex items-center space-x-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors w-full text-left"
+                      className="flex items-center space-x-3 px-4 py-2.5 text-sm text-[#C5221F] hover:bg-[#FCE8E6] transition-colors w-full text-left"
                     >
                       <LogOut className="w-4 h-4" />
                       <span>Çıkış Yap</span>

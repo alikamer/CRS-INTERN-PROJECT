@@ -1,4 +1,5 @@
 using CRS_INTERN_PROJECT.Data;
+using CRS_INTERN_PROJECT.DTOs.Admin;
 using CRS_INTERN_PROJECT.DTOs.Common;
 using CRS_INTERN_PROJECT.DTOs.Receipt;
 using CRS_INTERN_PROJECT.Entities;
@@ -80,16 +81,28 @@ public class ReceiptService : IReceiptService
 
         // Vatandaşın kendi fişlerini, en yeniden en eskiye doğru sıralayıp DTO'ya dönüştürüp çekiyoruz.
         var receipts = await _context.Receipts
+            .Include(r => r.Brand)
+            .Include(r => r.Items)
             .Where(r => r.ConsumerProfileId == consumerProfile.Id)
             .OrderByDescending(r => r.ReceiptDate)
             .Select(r => new ReceiptDto
             {
                 Id = r.Id,
                 BrandId = r.BrandId,
+                BrandName = r.Brand.Name,
                 ReceiptDate = r.ReceiptDate,
                 TotalAmount = r.TotalAmount,
                 Status = r.Status.ToString(),
-                ImageUrl = r.ImageUrl
+                ImageUrl = r.ImageUrl,
+                Items = r.Items.Select(i => new ReceiptItemDto
+                {
+                    Id = i.Id,
+                    ProductName = i.ProductName,
+                    UnitPrice = i.UnitPrice,
+                    Quantity = i.Quantity,
+                    TotalPrice = i.TotalPrice,
+                    Category = i.ProductCategory ?? "Genel"
+                }).ToList()
             }).ToListAsync();
 
         return receipts;
@@ -158,16 +171,28 @@ public class ReceiptService : IReceiptService
         };
 
         var items = await query
+        .Include(r => r.Brand)
+        .Include(r => r.Items)
         .Skip((filter.PageNumber - 1) * filter.PageSize)
-        .Take(filter.PageSize) 
+        .Take(filter.PageSize)
         .Select(r => new ReceiptDto
         {
             Id = r.Id,
             BrandId = r.BrandId,
+            BrandName = r.Brand.Name,
             ReceiptDate = r.ReceiptDate,
             TotalAmount = r.TotalAmount,
             Status = r.Status.ToString(),
-            ImageUrl = r.ImageUrl
+            ImageUrl = r.ImageUrl,
+            Items = r.Items.Select(i => new ReceiptItemDto
+            {
+                Id = i.Id,
+                ProductName = i.ProductName,
+                UnitPrice = i.UnitPrice,
+                Quantity = i.Quantity,
+                TotalPrice = i.TotalPrice,
+                Category = i.ProductCategory ?? "Genel"
+            }).ToList()
         }).ToListAsync();
 
         return new PagedResult<ReceiptDto>
