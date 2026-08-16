@@ -150,8 +150,8 @@ export const getAllBrandsForManagement = async () => {
   return response.data;
 };
 
-export const createBrand = async (name, logoUrl) => {
-  const response = await api.post('/Admin/brands', { name, logoUrl });
+export const createBrand = async (name) => {
+  const response = await api.post('/Admin/brands', { name, logoUrl: null });
   return response.data;
 };
 

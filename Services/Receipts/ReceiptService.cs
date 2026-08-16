@@ -155,7 +155,27 @@ public class ReceiptService : IReceiptService
                 query = query.Where(r => r.Status == parsedStatus);
 
             }
-        }        
+        }
+
+        if (filter.BrandId.HasValue)
+        {
+            query = query.Where(r => r.BrandId == filter.BrandId.Value);
+        }
+
+        if (filter.DateFrom.HasValue)
+        {
+            // Query string'den gelen tarih Kind=Unspecified oluyor; Receipt.ReceiptDate kolonu
+            // "timestamp with time zone" olduğu için Npgsql sadece Kind=Utc kabul ediyor.
+            var dateFromUtc = DateTime.SpecifyKind(filter.DateFrom.Value, DateTimeKind.Utc);
+            query = query.Where(r => r.ReceiptDate >= dateFromUtc);
+        }
+
+        if (filter.DateTo.HasValue)
+        {
+            var dateToUtc = DateTime.SpecifyKind(filter.DateTo.Value, DateTimeKind.Utc);
+            query = query.Where(r => r.ReceiptDate <= dateToUtc);
+        }
+
             /* Pagination işlemi,
             AsQueryAble()  kullanmak şart burda 
             
@@ -170,8 +190,19 @@ public class ReceiptService : IReceiptService
             */
         var TotalCount = await query.CountAsync();
 
+        /* Sıralama: SortBy "amount" ise tutara göre, aksi halde (varsayılan) tarihe göre.
+        SortDescending false gelirse artan sıralama yapılır. */
+        query = filter.SortBy?.ToLower() switch
+        {
+            "amount" => filter.SortDescending
+                ? query.OrderByDescending(r => r.TotalAmount)
+                : query.OrderBy(r => r.TotalAmount),
+            _ => filter.SortDescending
+                ? query.OrderByDescending(r => r.ReceiptDate)
+                : query.OrderBy(r => r.ReceiptDate)
+        };
+
         var items = await query
-        .OrderByDescending(r => r.ReceiptDate)
         .Skip((filter.PageNumber - 1) * filter.PageSize)
         .Take(filter.PageSize) 
         .Select(r => new ReceiptDto

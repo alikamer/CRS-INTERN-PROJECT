@@ -14,11 +14,9 @@ const BrandManagement = () => {
   const [actionMessage, setActionMessage] = useState('');
 
   const [newName, setNewName] = useState('');
-  const [newLogoUrl, setNewLogoUrl] = useState('');
 
   const [editingId, setEditingId] = useState(null);
   const [editName, setEditName] = useState('');
-  const [editLogoUrl, setEditLogoUrl] = useState('');
 
   const fetchBrands = () => {
     getAllBrandsForManagement()
@@ -38,10 +36,9 @@ const BrandManagement = () => {
       return;
     }
     try {
-      await createBrand(newName.trim(), newLogoUrl.trim() || null);
+      await createBrand(newName.trim());
       setActionMessage('Marka oluşturuldu.');
       setNewName('');
-      setNewLogoUrl('');
       fetchBrands();
     } catch (err) {
       setActionMessage(err.response?.data?.Message || 'Marka oluşturma başarısız.');
@@ -51,14 +48,16 @@ const BrandManagement = () => {
   const startEdit = (brand) => {
     setEditingId(brand.id);
     setEditName(brand.name);
-    setEditLogoUrl(brand.logoUrl || '');
   };
 
   const cancelEdit = () => setEditingId(null);
 
   const saveEdit = async (brandId) => {
     try {
-      await updateBrand(brandId, editName.trim(), editLogoUrl.trim() || null);
+      // LogoUrl artık UI'da düzenlenmiyor ama backend alanı hâlâ var (altyapı olarak duruyor);
+      // burada dokunmadan aynen geri gönderiyoruz, yoksa isim düzenlerken var olan logo sıfırlanır.
+      const existingLogoUrl = brands.find((b) => b.id === brandId)?.logoUrl ?? null;
+      await updateBrand(brandId, editName.trim(), existingLogoUrl);
       setActionMessage('Marka güncellendi.');
       setEditingId(null);
       fetchBrands();
@@ -108,19 +107,12 @@ const BrandManagement = () => {
         <h3 className="font-bold text-[#1F1F1F] text-sm mb-3 flex items-center gap-2">
           <Plus className="w-4 h-4 text-[#0B57D0]" /> Yeni Marka Ekle
         </h3>
-        <form onSubmit={handleCreate} className="grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-3">
+        <form onSubmit={handleCreate} className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-3">
           <input
             type="text"
             placeholder="Marka Adı (örn. Boyner)"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
-            className="px-3 py-2 border border-[#E1E3E1] rounded-xl text-xs bg-white outline-none focus:border-[#0B57D0]"
-          />
-          <input
-            type="text"
-            placeholder="Logo URL (opsiyonel)"
-            value={newLogoUrl}
-            onChange={(e) => setNewLogoUrl(e.target.value)}
             className="px-3 py-2 border border-[#E1E3E1] rounded-xl text-xs bg-white outline-none focus:border-[#0B57D0]"
           />
           <button
@@ -146,7 +138,6 @@ const BrandManagement = () => {
               <thead>
                 <tr className="text-[10px] font-bold text-[#747775] uppercase tracking-wider border-b border-[#E1E3E1]">
                   <th className="py-3 px-4">Marka</th>
-                  <th className="py-3 px-4">Logo URL</th>
                   <th className="py-3 px-4">Durum</th>
                   <th className="py-3 px-4">İşlem</th>
                 </tr>
@@ -160,13 +151,6 @@ const BrandManagement = () => {
                           <input
                             value={editName}
                             onChange={(e) => setEditName(e.target.value)}
-                            className="px-2 py-1 border border-[#E1E3E1] rounded-lg text-xs w-full outline-none focus:border-[#0B57D0]"
-                          />
-                        </td>
-                        <td className="py-2 px-4">
-                          <input
-                            value={editLogoUrl}
-                            onChange={(e) => setEditLogoUrl(e.target.value)}
                             className="px-2 py-1 border border-[#E1E3E1] rounded-lg text-xs w-full outline-none focus:border-[#0B57D0]"
                           />
                         </td>
@@ -189,7 +173,6 @@ const BrandManagement = () => {
                     ) : (
                       <>
                         <td className="py-3 px-4 font-bold text-[#1F1F1F]">{b.name}</td>
-                        <td className="py-3 px-4 text-[#5E5E5E] truncate max-w-xs">{b.logoUrl || '—'}</td>
                         <td className="py-3 px-4">
                           <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${b.isActive ? 'ga4-badge-green' : 'bg-slate-100 text-slate-600 border border-slate-200'}`}>
                             {b.isActive ? 'Aktif' : 'Pasif'}

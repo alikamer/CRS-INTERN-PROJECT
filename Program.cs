@@ -93,6 +93,13 @@ using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     await DbSeeder.SeedAsync(dbContext);
+
+    // Büyük sentetik veri seti (RFM/analytics demo'su için) sadece elle istenince üretilir,
+    // DbSeeder'ın aksine her `dotnet run`'da otomatik çalışmaz.
+    if (args.Contains("--seed-bulk"))
+    {
+        await BulkSeeder.SeedAsync(dbContext);
+    }
 }
 
 if (app.Environment.IsDevelopment())

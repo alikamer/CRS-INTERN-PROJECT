@@ -1,35 +1,63 @@
 import { useState, useEffect } from 'react';
-import api from '../services/api';
+import api, { getAllBrandsForManagement } from '../services/api';
 
 /*
   2.
-   tablo component 
+   tablo component
  * Bu bileşen  React statelerini  (page, size, status) tutar
  ve her sayfa değiştiğinde API'yi çağırarak backend'den yeni sayfanın verilerini çeker.
  */
+
+// Sırala dropdown'ındaki tek seçim, backend'in ayrı ayrı istediği sortBy + sortDescending çiftine ayrıştırılıyor
+const SORT_OPTIONS = [
+  { value: 'date_desc', label: 'Tarih (Yeni → Eski)', sortBy: 'date', sortDescending: true },
+  { value: 'date_asc', label: 'Tarih (Eski → Yeni)', sortBy: 'date', sortDescending: false },
+  { value: 'amount_desc', label: 'Tutar (Yüksek → Düşük)', sortBy: 'amount', sortDescending: true },
+  { value: 'amount_asc', label: 'Tutar (Düşük → Yüksek)', sortBy: 'amount', sortDescending: false },
+];
+
 const AdminAllReceiptsTable = () => {
   const [receipts, setReceipts] = useState([]);
+  const [brands, setBrands] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [statusFilter, setStatusFilter] = useState('');
+  const [brandFilter, setBrandFilter] = useState('');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
+  const [sortOption, setSortOption] = useState('date_desc');
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    getAllBrandsForManagement().then(setBrands).catch((err) => console.error('Marka listesi alınamadı', err));
+  }, []);
+
+  useEffect(() => {
     fetchData();
-  }, [page, pageSize, statusFilter]);
+  }, [page, pageSize, statusFilter, brandFilter, dateFrom, dateTo, sortOption]);
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      let url = `/Receipts/all?pageNumber=${page}&pageSize=${pageSize}`;
+      const { sortBy, sortDescending } = SORT_OPTIONS.find((o) => o.value === sortOption);
+      let url = `/Receipts/all?pageNumber=${page}&pageSize=${pageSize}&sortBy=${sortBy}&sortDescending=${sortDescending}`;
       if (statusFilter) {
         url += `&status=${statusFilter}`;
       }
+      if (brandFilter) {
+        url += `&brandId=${brandFilter}`;
+      }
+      if (dateFrom) {
+        url += `&dateFrom=${dateFrom}`;
+      }
+      if (dateTo) {
+        url += `&dateTo=${dateTo}`;
+      }
       const response = await api.get(url);
       const data = response.data;
-      
+
       /*
        * Backend'den dönen data PagedResult<ReceiptDto> olduğu için içinde
        * data.items, data.totalCount, data.pageNumber vb. özellikleri bulunuyor.
@@ -45,6 +73,14 @@ const AdminAllReceiptsTable = () => {
     }
   };
 
+  const brandName = (brandId) => brands.find((b) => b.id === brandId)?.name || `${brandId?.substring(0, 8)}...`;
+
+  // Herhangi bir filtre/sıralama değişince sayfa 1'e dönsün, yoksa örn. 3. sayfadayken filtre değiştirince boş sonuç görünebilir
+  const withPageReset = (setter) => (value) => {
+    setter(value);
+    setPage(1);
+  };
+
   const handleNextPage = () => {
     if (page < totalPages) setPage(page + 1);
   };
@@ -55,30 +91,66 @@ const AdminAllReceiptsTable = () => {
 
   return (
     <div className="ga4-card p-6 mt-6">
-      <div className="flex justify-between items-center mb-4">
-        <div>
-          <h2 className="text-lg font-bold text-[#1F1F1F]">Tüm Fişler (Sayfalı Liste)</h2>
-          <p className="text-xs text-[#5E5E5E]">Sistemdeki tüm fişleri listeleyip filtreleyebilirsiniz.</p>
-        </div>
-        <div>
-          <select 
-            value={statusFilter} 
-            onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-            className="border border-[#E1E3E1] rounded-lg px-3 py-1.5 text-sm outline-none focus:border-[#0B57D0]"
-          >
-            <option value="">Tümü (Filtresiz)</option>
-            <option value="Pending">Bekleyenler</option>
-            <option value="Approved">Onaylananlar</option>
-            <option value="Rejected">Reddedilenler</option>
-          </select>
-        </div>
+      <div className="mb-4">
+        <h2 className="text-lg font-bold text-[#1F1F1F]">Tüm Fişler (Sayfalı Liste)</h2>
+        <p className="text-xs text-[#5E5E5E]">Sistemdeki tüm fişleri listeleyip filtreleyebilirsiniz.</p>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-2.5 mb-4">
+        <select
+          value={brandFilter}
+          onChange={(e) => withPageReset(setBrandFilter)(e.target.value)}
+          className="border border-[#E1E3E1] rounded-lg px-3 py-1.5 text-sm outline-none focus:border-[#0B57D0]"
+        >
+          <option value="">Marka: Tümü</option>
+          {brands.map((b) => (
+            <option key={b.id} value={b.id}>{b.name}</option>
+          ))}
+        </select>
+
+        <select
+          value={statusFilter}
+          onChange={(e) => withPageReset(setStatusFilter)(e.target.value)}
+          className="border border-[#E1E3E1] rounded-lg px-3 py-1.5 text-sm outline-none focus:border-[#0B57D0]"
+        >
+          <option value="">Durum: Tümü</option>
+          <option value="Pending">Bekleyenler</option>
+          <option value="Approved">Onaylananlar</option>
+          <option value="Rejected">Reddedilenler</option>
+        </select>
+
+        <input
+          type="date"
+          value={dateFrom}
+          onChange={(e) => withPageReset(setDateFrom)(e.target.value)}
+          className="border border-[#E1E3E1] rounded-lg px-3 py-1.5 text-sm outline-none focus:border-[#0B57D0]"
+          title="Başlangıç tarihi"
+        />
+        <span className="text-[#5E5E5E] text-sm">—</span>
+        <input
+          type="date"
+          value={dateTo}
+          onChange={(e) => withPageReset(setDateTo)(e.target.value)}
+          className="border border-[#E1E3E1] rounded-lg px-3 py-1.5 text-sm outline-none focus:border-[#0B57D0]"
+          title="Bitiş tarihi"
+        />
+
+        <select
+          value={sortOption}
+          onChange={(e) => withPageReset(setSortOption)(e.target.value)}
+          className="border border-[#E1E3E1] rounded-lg px-3 py-1.5 text-sm outline-none focus:border-[#0B57D0] ml-auto"
+        >
+          {SORT_OPTIONS.map((o) => (
+            <option key={o.value} value={o.value}>{o.label}</option>
+          ))}
+        </select>
       </div>
 
       <div className="overflow-x-auto border border-[#E1E3E1] rounded-xl">
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-[#F0F4F9] text-[#444746] text-xs font-semibold uppercase tracking-wider">
-              <th className="px-4 py-3 border-b border-[#E1E3E1]">ID / Marka</th>
+              <th className="px-4 py-3 border-b border-[#E1E3E1]">Marka</th>
               <th className="px-4 py-3 border-b border-[#E1E3E1]">Tarih</th>
               <th className="px-4 py-3 border-b border-[#E1E3E1]">Tutar</th>
               <th className="px-4 py-3 border-b border-[#E1E3E1]">Durum</th>
@@ -93,7 +165,7 @@ const AdminAllReceiptsTable = () => {
               receipts.map((r, i) => (
                 <tr key={r.id || i} className="hover:bg-[#F8F9FA] transition-colors border-b border-[#E1E3E1] last:border-0">
                   <td className="px-4 py-3 text-sm font-medium text-[#1F1F1F]">
-                    {r.brandId?.substring(0,8)}...
+                    {brandName(r.brandId)}
                   </td>
                   <td className="px-4 py-3 text-sm text-[#444746]">
                     {new Date(r.receiptDate).toLocaleDateString()}
