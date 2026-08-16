@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import api, { getAllBrandsForManagement } from '../services/api';
+import BrandLogo from './BrandLogo';
 
 /*
   2.
@@ -250,9 +251,16 @@ const AdminAllReceiptsTable = () => {
                   )}
                   <div>
                     <p className="text-[10px] font-semibold text-[#747775] uppercase tracking-widest mb-1">Mağaza</p>
-                    <h3 className="text-2xl font-bold text-[#1F1F1F] leading-tight">
-                      {selectedReceipt.brandName || brandName(selectedReceipt.brandId)}
-                    </h3>
+                    <div className="flex items-center gap-2.5">
+                      <BrandLogo
+                        name={selectedReceipt.brandName || brandName(selectedReceipt.brandId)}
+                        logoUrl={brands.find((b) => b.id === selectedReceipt.brandId)?.logoUrl}
+                        size={28}
+                      />
+                      <h3 className="text-2xl font-bold text-[#1F1F1F] leading-tight">
+                        {selectedReceipt.brandName || brandName(selectedReceipt.brandId)}
+                      </h3>
+                    </div>
                   </div>
                 </div>
                 <div className="text-right shrink-0">

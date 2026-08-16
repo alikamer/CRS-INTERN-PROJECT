@@ -7,6 +7,7 @@ import {
   activateBrand,
 } from '../services/api';
 import { Tag, Ban, PlayCircle, Pencil, Plus, X, Check } from 'lucide-react';
+import BrandLogo from '../components/BrandLogo';
 
 const BrandManagement = () => {
   const [brands, setBrands] = useState([]);
@@ -171,7 +172,12 @@ const BrandManagement = () => {
                       </>
                     ) : (
                       <>
-                        <td className="py-3 px-4 font-bold text-[#1F1F1F]">{b.name}</td>
+                        <td className="py-3 px-4 font-bold text-[#1F1F1F]">
+                          <div className="flex items-center gap-2.5">
+                            <BrandLogo name={b.name} logoUrl={b.logoUrl} size={28} />
+                            {b.name}
+                          </div>
+                        </td>
                         <td className="py-3 px-4">
                           <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${b.isActive ? 'ga4-badge-green' : 'bg-[#F0F4F9] text-[#5E5E5E] border border-[#E1E3E1]'}`}>
                             {b.isActive ? 'Aktif' : 'Pasif'}

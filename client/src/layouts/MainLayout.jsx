@@ -92,18 +92,10 @@ const MainLayout = () => {
         <div className={`h-16 flex items-center border-b border-[#2A3345] shrink-0 ${sidebarOpen ? 'justify-between px-5' : 'justify-center'}`}>
           {sidebarOpen && (
             <div className="flex items-center space-x-3 overflow-hidden">
-              {/* CRS Receipt Platform Logo */}
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#0B57D0] to-[#4285F4] flex items-center justify-center shrink-0 shadow-lg shadow-blue-900/30">
-                <Receipt className="w-4 h-4 text-white" />
-              </div>
-              <div className="flex flex-col">
-                <span className="font-semibold text-sm text-white tracking-tight leading-none">
-                  CRS Receipt
-                </span>
-                <span className="text-[11px] text-[#A8C7FA] tracking-wide mt-1 truncate">
-                  Smart Fiş Platformu
-                </span>
-              </div>
+              <img src="/logo-icon.svg" alt="SlipSync" className="w-8 h-8 shrink-0" />
+              <span className="font-semibold text-sm text-white tracking-tight">
+                SlipSync
+              </span>
             </div>
           )}
           <button 

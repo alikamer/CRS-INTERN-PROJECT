@@ -70,6 +70,52 @@ public static class BulkSeeder
         new("Tommy Hilfiger", BrandPriceSegment.Luks, false),
     };
 
+    private static readonly Dictionary<string, string> BrandDomains = new()
+    {
+        ["LC Waikiki"] = "lcwaikiki.com",
+        ["DeFacto"] = "defacto.com.tr",
+        ["Koton"] = "koton.com",
+        ["Penti"] = "penti.com",
+        ["Zara"] = "zara.com",
+        ["Mavi"] = "mavi.com",
+        ["US Polo Assn."] = "uspoloassn.com",
+        ["Nike"] = "nike.com",
+        ["Colin's"] = "colins.com.tr",
+        ["Kiğılı"] = "kigili.com",
+        ["Damat Tween"] = "damat.com.tr",
+        ["Network"] = "network.com.tr",
+        ["H&M"] = "hm.com",
+        ["Pull&Bear"] = "pullandbear.com",
+        ["Bershka"] = "bershka.com",
+        ["Stradivarius"] = "stradivarius.com",
+        ["Puma"] = "puma.com",
+        ["Twist"] = "twist.com.tr",
+        ["Suwen"] = "suwen.com.tr",
+        ["Aeropostale"] = "aeropostale.com",
+        ["Jack & Jones"] = "jackjones.com",
+        ["Mango"] = "mango.com",
+        ["Adidas"] = "adidas.com",
+        ["Levi's"] = "levi.com",
+        ["Beymen"] = "beymen.com",
+        ["Tommy Hilfiger"] = "tommy.com",
+        ["Starbucks"] = "starbucks.com",
+    };
+
+    /// <summary>
+    /// Google favicon servisinden gelen görsel bazı markalarda (bulanık/aşırı yakınlaştırılmış)
+    /// kötü göründüğü için, o markalar için Wikipedia'daki gerçek logo dosyasına doğrudan bağlanıyoruz.
+    /// İpekyol, Machka ve Ekol için Wikipedia'da uygun bir logo bulunamadı; LogoUrl boş kalıp
+    /// BrandLogo.jsx bileşeni baş harf avatarına düşüyor.
+    /// </summary>
+    private static readonly Dictionary<string, string> BrandLogoOverrides = new()
+    {
+        ["Vakko"] = "https://upload.wikimedia.org/wikipedia/en/thumb/2/26/Vakko_Turkish_fashion_company.png/120px-Vakko_Turkish_fashion_company.png",
+        ["US Polo Assn."] = "https://upload.wikimedia.org/wikipedia/commons/d/d2/Uspa_logo2.jpg",
+        ["LC Waikiki"] = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/LC_Waikiki_logo.svg/250px-LC_Waikiki_logo.svg.png",
+        ["Aeropostale"] = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Aeropostale_logo17.svg/250px-Aeropostale_logo17.svg.png",
+        ["İpekyol"] = "https://upload.wikimedia.org/wikipedia/commons/9/91/Ipekyol-logo.svg",
+    };
+
     /// <summary>
     /// Sırayla: 1) markalar + tenant'lar, 2) tüketiciler + fişler + sadakat puanları.
     /// </summary>
@@ -103,7 +149,20 @@ public static class BulkSeeder
                 continue;
             }
 
-            var brand = new Brand { Name = info.Name, IsActive = true };
+            string? logoUrl;
+            if (BrandLogoOverrides.TryGetValue(info.Name, out var overrideUrl))
+            {
+                logoUrl = overrideUrl;
+            }
+            else if (BrandDomains.TryGetValue(info.Name, out var domain))
+            {
+                logoUrl = $"https://www.google.com/s2/favicons?domain={domain}&sz=128";
+            }
+            else
+            {
+                logoUrl = null;
+            }
+            var brand = new Brand { Name = info.Name, IsActive = true, LogoUrl = logoUrl };
             context.Brands.Add(brand);
             brandEntities[info.Name] = brand;
         }

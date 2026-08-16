@@ -1,0 +1,9 @@
+<svg width="220" height="40" viewBox="0 0 220 40" xmlns="http://www.w3.org/2000/svg">
+  <text x="0" y="28" font-family="Roboto, 'Plus Jakarta Sans', sans-serif" font-size="26" font-weight="700" letter-spacing="0.3">
+    <tspan fill="#1F1F1F">Slip</tspan>
+  </text>
+  <circle cx="76" cy="20" r="4" fill="#0B57D0" />
+  <text x="88" y="28" font-family="Roboto, 'Plus Jakarta Sans', sans-serif" font-size="26" font-weight="700" letter-spacing="0.3">
+    <tspan fill="#0B57D0">Sync</tspan>
+  </text>
+</svg>

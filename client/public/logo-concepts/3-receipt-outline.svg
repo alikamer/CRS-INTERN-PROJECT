@@ -1,0 +1,9 @@
+<svg width="320" height="64" viewBox="0 0 320 64" xmlns="http://www.w3.org/2000/svg">
+  <path d="M10,6 L54,6 L54,50 L46.67,58 L39.33,50 L32,58 L24.67,50 L17.33,58 L10,50 Z" fill="none" stroke="#0B57D0" stroke-width="2.5" stroke-linejoin="round" />
+  <line x1="17" y1="17" x2="47" y2="17" stroke="#0B57D0" stroke-width="2" stroke-linecap="round" opacity="0.8" />
+  <line x1="17" y1="25" x2="41" y2="25" stroke="#0B57D0" stroke-width="2" stroke-linecap="round" opacity="0.6" />
+  <line x1="17" y1="33" x2="45" y2="33" stroke="#0B57D0" stroke-width="2" stroke-linecap="round" opacity="0.6" />
+  <text x="76" y="43" font-family="Roboto, 'Plus Jakarta Sans', sans-serif" font-size="32" font-weight="500">
+    <tspan fill="#1F1F1F">Slip</tspan><tspan fill="#0B57D0">Sync</tspan>
+  </text>
+</svg>

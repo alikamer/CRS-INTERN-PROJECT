@@ -1,0 +1,18 @@
+<svg width="320" height="64" viewBox="0 0 320 64" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B57D0" />
+      <stop offset="100%" stop-color="#4285F4" />
+    </linearGradient>
+  </defs>
+  <path d="M10,6 L54,6 L54,50 L46.67,58 L39.33,50 L32,58 L24.67,50 L17.33,58 L10,50 Z" fill="url(#g1)" />
+  <line x1="16" y1="16" x2="48" y2="16" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" />
+  <line x1="16" y1="24" x2="42" y2="24" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" opacity="0.85" />
+  <line x1="16" y1="32" x2="46" y2="32" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" opacity="0.85" />
+  <line x1="16" y1="40" x2="34" y2="40" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" opacity="0.7" />
+  <circle cx="50" cy="45" r="10" fill="#137333" stroke="#FFFFFF" stroke-width="2" />
+  <path d="M45.5,45 L48.5,48.5 L54.5,41.5" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+  <text x="76" y="43" font-family="Roboto, 'Plus Jakarta Sans', sans-serif" font-size="32" font-weight="700">
+    <tspan fill="#1F1F1F">Slip</tspan><tspan fill="#0B57D0">Sync</tspan>
+  </text>
+</svg>

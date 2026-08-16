@@ -18,11 +18,11 @@ namespace CRS_INTERN_PROJECT.Data
             }
 
             // 1. MARKALAR (BRANDS)
-            var zaraBrand = new Brand { Name = "Zara", LogoUrl = "https://logo.clearbit.com/zara.com" };
-            var maviBrand = new Brand { Name = "Mavi", LogoUrl = "https://logo.clearbit.com/mavi.com" };
-            var starbucksBrand = new Brand { Name = "Starbucks", LogoUrl = "https://logo.clearbit.com/starbucks.com" };
-            var lcwBrand = new Brand { Name = "LC Waikiki", LogoUrl = "https://logo.clearbit.com/lcwaikiki.com" };
-            var nikeBrand = new Brand { Name = "Nike", LogoUrl = "https://logo.clearbit.com/nike.com" };
+            var zaraBrand = new Brand { Name = "Zara", LogoUrl = "https://www.google.com/s2/favicons?domain=zara.com&sz=128" };
+            var maviBrand = new Brand { Name = "Mavi", LogoUrl = "https://www.google.com/s2/favicons?domain=mavi.com&sz=128" };
+            var starbucksBrand = new Brand { Name = "Starbucks", LogoUrl = "https://www.google.com/s2/favicons?domain=starbucks.com&sz=128" };
+            var lcwBrand = new Brand { Name = "LC Waikiki", LogoUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/LC_Waikiki_logo.svg/250px-LC_Waikiki_logo.svg.png" };
+            var nikeBrand = new Brand { Name = "Nike", LogoUrl = "https://www.google.com/s2/favicons?domain=nike.com&sz=128" };
 
             var brands = new List<Brand> { zaraBrand, maviBrand, starbucksBrand, lcwBrand, nikeBrand };
             await context.Brands.AddRangeAsync(brands);

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LogIn, Receipt } from 'lucide-react';
+import { LogIn } from 'lucide-react';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -57,13 +57,10 @@ const Login = () => {
       <div className="max-w-md w-full bg-white rounded-2xl shadow-lg border border-[#E1E3E1] p-8">
         {/* Branding */}
         <div className="text-center mb-8">
-          <div className="w-14 h-14 bg-gradient-to-br from-[#0B57D0] to-[#4285F4] rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-md">
-            <Receipt className="w-7 h-7 text-white" />
-          </div>
+          <img src="/logo.svg" alt="SlipSync" className="h-10 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-[#1F1F1F] tracking-tight">
             {isLoginMode ? 'Hoş Geldiniz' : 'Aramıza Katılın'}
           </h1>
-          <p className="text-[#5E5E5E] mt-1 text-sm">CRS Fiş Analiz Platformu</p>
         </div>
 
         {pendingMessage && (
@@ -201,11 +198,6 @@ const Login = () => {
           </p>
         </div>
       </div>
-
-      {/* Tagline */}
-      <p className="text-[#747775] text-xs mt-6">
-        CRS Smart Receipt — B2B Fiş Analiz ve CRM Platformu
-      </p>
     </div>
   );
 };

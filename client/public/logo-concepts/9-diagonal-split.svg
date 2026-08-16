@@ -1,0 +1,14 @@
+<svg width="320" height="64" viewBox="0 0 320 64" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <clipPath id="clip9">
+      <rect x="4" y="4" width="56" height="56" rx="14" />
+    </clipPath>
+  </defs>
+  <g clip-path="url(#clip9)">
+    <polygon points="4,4 60,4 4,60" fill="#0B57D0" />
+    <polygon points="60,4 60,60 4,60" fill="#4285F4" />
+  </g>
+  <text x="76" y="43" font-family="Roboto, 'Plus Jakarta Sans', sans-serif" font-size="32" font-weight="700">
+    <tspan fill="#1F1F1F">Slip</tspan><tspan fill="#0B57D0">Sync</tspan>
+  </text>
+</svg>

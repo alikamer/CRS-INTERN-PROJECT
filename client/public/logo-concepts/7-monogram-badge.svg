@@ -1,0 +1,13 @@
+<svg width="320" height="64" viewBox="0 0 320 64" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g7" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B57D0" />
+      <stop offset="100%" stop-color="#4285F4" />
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="56" height="56" rx="16" fill="url(#g7)" />
+  <text x="32" y="44" font-family="Roboto, 'Plus Jakarta Sans', sans-serif" font-size="36" font-weight="700" fill="#FFFFFF" text-anchor="middle">S</text>
+  <text x="76" y="43" font-family="Roboto, 'Plus Jakarta Sans', sans-serif" font-size="32" font-weight="700">
+    <tspan fill="#1F1F1F">Slip</tspan><tspan fill="#0B57D0">Sync</tspan>
+  </text>
+</svg>
