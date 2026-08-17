@@ -95,6 +95,19 @@ namespace CRS_INTERN_PROJECT.Data
                 Gender = "Erkek"
             };
 
+            var consumerUser2 = new AppUser
+            {
+                Email = "ayse.consumer@gmail.com",
+                PasswordHash = passwordHash,
+                Role = UserRole.Consumer
+            };
+            var consumerProfile2 = new ConsumerProfile
+            {
+                AppUserId = consumerUser2.Id,
+                City = "Ankara",
+                Gender = "Kadın"
+            };
+
             // System Admin
             var adminUser = new AppUser
             {
@@ -103,9 +116,9 @@ namespace CRS_INTERN_PROJECT.Data
                 Role = UserRole.SystemAdmin
             };
 
-            await context.Users.AddRangeAsync(zaraUser, maviUser, consumerUser, adminUser);
+            await context.Users.AddRangeAsync(zaraUser, maviUser, consumerUser, consumerUser2, adminUser);
             await context.CorporateProfiles.AddRangeAsync(zaraCorpProfile, maviCorpProfile);
-            await context.ConsumerProfiles.AddAsync(consumerProfile);
+            await context.ConsumerProfiles.AddRangeAsync(consumerProfile, consumerProfile2);
             await context.SaveChangesAsync();
 
             // 4. 100 ADET RASTGELE TEST FİŞİ ÜRETİMİ

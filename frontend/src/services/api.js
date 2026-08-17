@@ -180,6 +180,19 @@ export const inviteTeamMember = async (email) => {
   return response.data;
 };
 
+export const getCustomerInsights = async ({ brandId, allBrands } = {}) => {
+  const params = new URLSearchParams();
+  if (allBrands) params.set('allBrands', 'true');
+  else if (brandId) params.set('brandId', brandId);
+  const response = await api.get(`/Analytics/customer-insights?${params.toString()}`);
+  return response.data;
+};
+
+export const getInsightsBrands = async () => {
+  const response = await api.get('/Analytics/brands');
+  return response.data;
+};
+
 export const getMyCoupons = async () => {
   const response = await api.get('/Coupons/my-coupons');
   return response.data;

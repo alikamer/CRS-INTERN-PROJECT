@@ -32,6 +32,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('email', email);
       if (firstName) localStorage.setItem('name', firstName);
       if (companyName) localStorage.setItem('companyName', companyName);
+      if (role === 'SystemAdmin') sessionStorage.setItem('adminUnlocked', 'true');
 
       setUser({ email, token, refreshToken, role: role || 'Consumer', name: firstName || '', companyName: companyName || '' });
       return { success: true, role: role || 'Consumer' };
@@ -85,11 +86,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const switchRoleForTesting = (newRole) => {
-    localStorage.setItem('role', newRole);
-    setUser(prev => prev ? { ...prev, role: newRole } : { role: newRole });
-  };
-
    //  Kullanıcı giriş yaptığında refreshToken info tutuldu
    //  Kullanıcı çıktığında  arka planda /api/auth/revoke-token isteği atılarak veritabanındaki token iptal edildi.
   const logout = async () => {
@@ -107,6 +103,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('email');
     localStorage.removeItem('name');
     localStorage.removeItem('companyName');
+    sessionStorage.removeItem('adminUnlocked');
     setUser(null);
   };
 
@@ -114,7 +111,7 @@ export const AuthProvider = ({ children }) => {
 
   
   return (
-    <AuthContext.Provider value={{ user, login, register, registerTenant, logout, switchRoleForTesting, loading }}>
+    <AuthContext.Provider value={{ user, login, register, registerTenant, logout, loading }}>
       {!loading && children}
     </AuthContext.Provider>
   );

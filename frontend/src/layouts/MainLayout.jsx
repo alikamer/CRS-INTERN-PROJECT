@@ -18,17 +18,42 @@ import {
   Building,
   Building2,
   Briefcase,
-  Tag
+  Tag,
+  Users
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 
+const QUICK_LOGIN_PASSWORD = 'Password123!';
+
+const QUICK_LOGIN_ACCOUNTS = {
+  admin: { label: 'Admin', email: 'admin@crs.com' },
+  b2c: [
+    { label: 'Ali (İstanbul)', email: 'ali.consumer@gmail.com' },
+    { label: 'Ayşe (Ankara)', email: 'ayse.consumer@gmail.com' },
+  ],
+  b2b: [
+    { label: 'Zara', email: 'corporate@zara.com' },
+    { label: 'Mavi', email: 'corporate@mavi.com' },
+  ],
+};
+
 const MainLayout = () => {
-  const { logout, user, switchRoleForTesting } = useAuth();
+  const { logout, user, login } = useAuth();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [quickLoginMenu, setQuickLoginMenu] = useState(null);
+  const [adminUnlocked] = useState(() => sessionStorage.getItem('adminUnlocked') === 'true');
   const dropdownRef = useRef(null);
+
+  const handleQuickLogin = async (email) => {
+    setQuickLoginMenu(null);
+    const result = await login(email, QUICK_LOGIN_PASSWORD);
+    if (result.success) {
+      window.location.href = '/';
+    }
+  };
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -61,6 +86,7 @@ const MainLayout = () => {
       case 'CorporateUser':
         return [
           { path: '/', label: 'Rapor Özeti (Analiz)', icon: BarChart3, category: 'Analiz' },
+          { path: '/customer-insights', label: 'Kitle Analizi', icon: Users, category: 'Analiz' },
           { path: '/settings', label: 'Yönetim & Ayarlar', icon: Settings, category: 'Yapılandırma' },
         ];
       case 'SystemAdmin':
@@ -85,7 +111,7 @@ const MainLayout = () => {
   const navItems = getNavItems();
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] text-[#1F1F1F] flex font-sans antialiased">
+    <div className="h-screen overflow-hidden bg-[#F8F9FA] text-[#1F1F1F] flex font-sans antialiased">
       {/* Dark Navigation Rail / Sidebar */}
       <aside className={`ga4-sidebar transition-all duration-300 ${sidebarOpen ? 'w-64' : 'w-20'} flex flex-col z-30 shrink-0 select-none shadow-md overflow-x-hidden`}>
         {/* Logo & Branding */}
@@ -148,25 +174,63 @@ const MainLayout = () => {
                 </div>
               </div>
 
-              {/* Dev Testing Role Switcher */}
-              <div className="pt-2 border-t border-[#344155]">
-                <p className="text-[10px] font-bold text-[#8E918F] uppercase tracking-wider mb-1">Rol Testi</p>
-                <div className="grid grid-cols-3 gap-1">
-                  {['CorporateUser', 'Consumer', 'SystemAdmin'].map((r) => (
+              {adminUnlocked && (
+                <div className="pt-2 border-t border-[#344155]">
+                  <p className="text-[10px] font-bold text-[#8E918F] uppercase tracking-wider mb-1.5">Hızlı Giriş</p>
+                  <div className="grid grid-cols-3 gap-1">
                     <button
-                      key={r}
-                      onClick={() => switchRoleForTesting(r)}
-                      className={`text-[9px] py-1 px-1 rounded-md font-semibold transition-all ${
-                        role === r 
-                          ? 'bg-[#D3E3FD] text-[#041E49]' 
-                          : 'bg-[#1C2433] text-[#C4C7C5] hover:bg-[#344155]'
-                      }`}
+                      onClick={() => handleQuickLogin(QUICK_LOGIN_ACCOUNTS.admin.email)}
+                      className="text-[10px] py-1.5 px-1 rounded-md font-semibold bg-[#1C2433] text-[#C4C7C5] hover:bg-[#344155] transition-all"
                     >
-                      {r === 'CorporateUser' ? 'B2B' : r === 'Consumer' ? 'B2C' : 'Admin'}
+                      Admin
                     </button>
-                  ))}
+
+                    <div className="relative">
+                      <button
+                        onClick={() => setQuickLoginMenu(quickLoginMenu === 'b2c' ? null : 'b2c')}
+                        className="w-full text-[10px] py-1.5 px-1 rounded-md font-semibold bg-[#1C2433] text-[#C4C7C5] hover:bg-[#344155] transition-all"
+                      >
+                        B2C
+                      </button>
+                      {quickLoginMenu === 'b2c' && (
+                        <div className="absolute bottom-full mb-1 left-0 w-32 bg-[#1C2433] border border-[#344155] rounded-lg shadow-lg overflow-hidden z-10">
+                          {QUICK_LOGIN_ACCOUNTS.b2c.map((account) => (
+                            <button
+                              key={account.email}
+                              onClick={() => handleQuickLogin(account.email)}
+                              className="w-full text-left px-3 py-2 text-[11px] text-[#C4C7C5] hover:bg-[#344155] hover:text-white transition-colors"
+                            >
+                              {account.label}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="relative">
+                      <button
+                        onClick={() => setQuickLoginMenu(quickLoginMenu === 'b2b' ? null : 'b2b')}
+                        className="w-full text-[10px] py-1.5 px-1 rounded-md font-semibold bg-[#1C2433] text-[#C4C7C5] hover:bg-[#344155] transition-all"
+                      >
+                        B2B
+                      </button>
+                      {quickLoginMenu === 'b2b' && (
+                        <div className="absolute bottom-full mb-1 right-0 w-32 bg-[#1C2433] border border-[#344155] rounded-lg shadow-lg overflow-hidden z-10">
+                          {QUICK_LOGIN_ACCOUNTS.b2b.map((account) => (
+                            <button
+                              key={account.email}
+                              onClick={() => handleQuickLogin(account.email)}
+                              className="w-full text-left px-3 py-2 text-[11px] text-[#C4C7C5] hover:bg-[#344155] hover:text-white transition-colors"
+                            >
+                              {account.label}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           )}
 

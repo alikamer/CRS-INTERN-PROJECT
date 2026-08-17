@@ -5,6 +5,7 @@ import MainLayout from './layouts/MainLayout';
 import Login from './pages/Login';
 import ConsumerDashboard from './pages/ConsumerDashboard';
 import CorporateAnalytics from './pages/CorporateAnalytics';
+import CustomerInsights from './pages/CustomerInsights';
 import AdminQueue from './pages/AdminQueue';
 import TenantApplications from './pages/TenantApplications';
 import TenantManagement from './pages/TenantManagement';
@@ -36,6 +37,7 @@ function App() {
 
           <Route element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
             <Route path="/" element={<RoleBasedHome />} />
+            <Route path="/customer-insights" element={<CustomerInsights />} />
             <Route path="/tenant-applications" element={<TenantApplications />} />
             <Route path="/tenant-management" element={<TenantManagement />} />
             <Route path="/brand-management" element={<BrandManagement />} />

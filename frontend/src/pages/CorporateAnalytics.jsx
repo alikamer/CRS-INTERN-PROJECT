@@ -130,7 +130,11 @@ const CorporateAnalytics = () => {
           <div className="border-b border-[#E1E3E1] pb-3 flex items-baseline justify-between">
             <h2 className="text-sm font-bold text-[#1F1F1F]">Pazar Payı Kıyaslaması</h2>
             <span className="text-sm text-[#747775]">
-              {data.subscriptionPlan === "Premium" ? "Tüm markalar açık" : "Rakip isimleri maskeli"}
+              {data.subscriptionPlan === "Premium"
+                ? "Tüm markalar açık"
+                : data.subscriptionPlan === "Basic"
+                ? "Sadece kendi markanız"
+                : "Rakip isimleri maskeli"}
             </span>
           </div>
 

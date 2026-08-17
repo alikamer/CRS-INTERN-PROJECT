@@ -25,6 +25,12 @@ builder.Services.AddScoped<IConsumerService, ConsumerService>(); //
 builder.Services.AddScoped<ICorporateService, CorporateService>();
 builder.Services.AddScoped<ICouponService, CouponService>();
 
+builder.Services.AddHttpClient("AnalyticsService", client =>
+{
+    var baseUrl = builder.Configuration["AnalyticsServiceSettings:BaseUrl"] ?? "http://localhost:8000";
+    client.BaseAddress = new Uri(baseUrl);
+});
+
 
 builder.Services.AddCors(options =>
 {
