@@ -434,3 +434,5 @@ FodyWeavers.xsd
 # AI/Agent Notes
 CLAUDE.md
 REVIZE_DURUM.md
+
+.claude/
