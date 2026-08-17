@@ -436,3 +436,5 @@ CLAUDE.md
 REVIZE_DURUM.md
 
 .claude/
+
+backend/wwwroot/uploads/
