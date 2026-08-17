@@ -6,7 +6,7 @@ import {
   deactivateBrand,
   activateBrand,
 } from '../services/api';
-import { Tag, Ban, PlayCircle, Pencil, Plus, X, Check } from 'lucide-react';
+import { X, Check } from 'lucide-react';
 import BrandLogo from '../components/BrandLogo';
 
 const BrandManagement = () => {
@@ -90,7 +90,7 @@ const BrandManagement = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-bold text-[#1F1F1F] tracking-tight">Marka Yönetimi</h1>
+        <h1 className="text-2xl font-bold text-[#1F1F1F] tracking-tight">Marka Yönetimi</h1>
         <p className="text-sm text-[#5E5E5E] mt-1">
           Fiş formundaki marka kataloğunu yönetin.
         </p>
@@ -104,20 +104,20 @@ const BrandManagement = () => {
       )}
 
       <div className="ga4-card p-5">
-        <h3 className="font-bold text-[#1F1F1F] text-sm mb-3 flex items-center gap-2">
-          <Plus className="w-4 h-4 text-[#0B57D0]" /> Yeni Marka Ekle
-        </h3>
+        <h2 className="text-base font-bold text-[#1F1F1F] border-b border-[#E1E3E1] pb-3 mb-4">
+          Yeni Marka Ekle
+        </h2>
         <form onSubmit={handleCreate} className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-3">
           <input
             type="text"
             placeholder="Marka Adı (örn. Boyner)"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
-            className="px-3 py-2 border border-[#E1E3E1] rounded-xl text-xs bg-white outline-none focus:border-[#0B57D0]"
+            className="px-3 py-2 border border-[#E1E3E1] rounded-xl text-sm bg-white outline-none focus:border-[#0B57D0]"
           />
           <button
             type="submit"
-            className="bg-[#0B57D0] hover:bg-[#0842A0] text-white px-4 py-2 rounded-full font-bold text-xs transition-all"
+            className="bg-[#0B57D0] hover:bg-[#0842A0] text-white px-4 py-2 rounded-full font-bold text-sm transition-all"
           >
             Ekle
           </button>
@@ -126,23 +126,23 @@ const BrandManagement = () => {
 
       <div className="ga4-card p-5">
         {loading ? (
-          <p className="text-[#747775] text-xs py-8 text-center">Yükleniyor...</p>
+          <p className="text-[#747775] text-sm py-8 text-center">Yükleniyor...</p>
         ) : brands.length === 0 ? (
-          <div className="py-16 text-center text-[#747775] space-y-3">
-            <Tag className="w-10 h-10 mx-auto text-[#C6C7C6]" />
-            <p className="text-xs font-medium">Henüz kayıtlı marka yok.</p>
+          <div className="text-center py-10">
+            <p className="text-sm text-[#747775]">Henüz kayıtlı marka yok.</p>
+            <p className="text-sm text-[#C6C7C6] mt-1">Yukarıdaki formdan ilk markayı ekleyebilirsiniz.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
-                <tr className="text-[10px] font-bold text-[#747775] uppercase tracking-wider border-b border-[#E1E3E1]">
+                <tr className="text-[12px] font-bold text-[#747775] uppercase tracking-wider border-b border-[#E1E3E1]">
                   <th className="py-3 px-4">Marka</th>
                   <th className="py-3 px-4">Durum</th>
                   <th className="py-3 px-4">İşlem</th>
                 </tr>
               </thead>
-              <tbody className="text-xs">
+              <tbody className="text-sm">
                 {brands.map((b) => (
                   <tr key={b.id} className="border-b border-[#E1E3E1] hover:bg-[#F8F9FA] transition-colors">
                     {editingId === b.id ? (
@@ -151,11 +151,11 @@ const BrandManagement = () => {
                           <input
                             value={editName}
                             onChange={(e) => setEditName(e.target.value)}
-                            className="px-2 py-1 border border-[#E1E3E1] rounded-lg text-xs w-full outline-none focus:border-[#0B57D0]"
+                            className="px-2 py-1 border border-[#E1E3E1] rounded-lg text-sm w-full outline-none focus:border-[#0B57D0]"
                           />
                         </td>
                         <td className="py-3 px-4">
-                          <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${b.isActive ? 'ga4-badge-green' : 'bg-[#F0F4F9] text-[#5E5E5E] border border-[#E1E3E1]'}`}>
+                          <span className={`text-[13px] font-medium ${b.isActive ? 'text-[#137333]' : 'text-[#747775]'}`}>
                             {b.isActive ? 'Aktif' : 'Pasif'}
                           </span>
                         </td>
@@ -174,36 +174,36 @@ const BrandManagement = () => {
                       <>
                         <td className="py-3 px-4 font-bold text-[#1F1F1F]">
                           <div className="flex items-center gap-2.5">
-                            <BrandLogo name={b.name} logoUrl={b.logoUrl} size={28} />
+                            <BrandLogo name={b.name} logoUrl={b.logoUrl} size={36} />
                             {b.name}
                           </div>
                         </td>
                         <td className="py-3 px-4">
-                          <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${b.isActive ? 'ga4-badge-green' : 'bg-[#F0F4F9] text-[#5E5E5E] border border-[#E1E3E1]'}`}>
+                          <span className={`text-[13px] font-medium ${b.isActive ? 'text-[#137333]' : 'text-[#747775]'}`}>
                             {b.isActive ? 'Aktif' : 'Pasif'}
                           </span>
                         </td>
                         <td className="py-3 px-4">
-                          <div className="flex items-center gap-1">
+                          <div className="flex items-center gap-3">
                             <button
                               onClick={() => startEdit(b)}
-                              className="flex items-center gap-1 text-[11px] font-bold text-[#0B57D0] hover:bg-[#E8F0FE] px-2.5 py-1 rounded-full transition-colors"
+                              className="text-[13px] font-medium text-[#0B57D0] hover:underline"
                             >
-                              <Pencil className="w-3.5 h-3.5" /> Düzenle
+                              Düzenle
                             </button>
                             {b.isActive ? (
                               <button
                                 onClick={() => handleDeactivate(b.id)}
-                                className="flex items-center gap-1 text-[11px] font-bold text-[#C5221F] hover:bg-[#FCE8E6] px-2.5 py-1 rounded-full transition-colors"
+                                className="text-[13px] font-medium text-[#C5221F] hover:underline"
                               >
-                                <Ban className="w-3.5 h-3.5" /> Pasife Al
+                                Pasife Al
                               </button>
                             ) : (
                               <button
                                 onClick={() => handleActivate(b.id)}
-                                className="flex items-center gap-1 text-[11px] font-bold text-[#137333] hover:bg-[#E6F4EA] px-2.5 py-1 rounded-full transition-colors"
+                                className="text-[13px] font-medium text-[#137333] hover:underline"
                               >
-                                <PlayCircle className="w-3.5 h-3.5" /> Aktif Et
+                                Aktif Et
                               </button>
                             )}
                           </div>

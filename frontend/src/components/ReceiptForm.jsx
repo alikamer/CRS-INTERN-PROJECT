@@ -112,7 +112,7 @@ const ReceiptForm = ({ isOpen, onClose, onSuccess }) => {
                     <input type="file" className="sr-only" accept="image/*" onChange={(e) => setImage(e.target.files[0])} required />
                   </label>
                 </div>
-                <p className="text-xs text-[#747775]">{image ? image.name : 'PNG, JPG, max 10MB'}</p>
+                <p className="text-sm text-[#747775]">{image ? image.name : 'PNG, JPG, max 10MB'}</p>
               </div>
             </div>
           </div>

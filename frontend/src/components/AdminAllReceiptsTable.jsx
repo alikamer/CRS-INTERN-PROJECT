@@ -1,7 +1,31 @@
 import { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import api, { getAllBrandsForManagement } from '../services/api';
 import BrandLogo from './BrandLogo';
+
+const getPageNumbers = (current, total) => {
+  const delta = 1;
+  const range = [];
+  const withDots = [];
+  let last;
+  for (let i = 1; i <= total; i++) {
+    if (i === 1 || i === total || (i >= current - delta && i <= current + delta)) {
+      range.push(i);
+    }
+  }
+  range.forEach((i) => {
+    if (last) {
+      if (i - last === 2) {
+        withDots.push(last + 1);
+      } else if (i - last !== 1) {
+        withDots.push('...');
+      }
+    }
+    withDots.push(i);
+    last = i;
+  });
+  return withDots;
+};
 
 /*
   2.
@@ -97,63 +121,79 @@ const AdminAllReceiptsTable = () => {
     <div className="ga4-card p-6 mt-6">
       <div className="mb-4">
         <h2 className="text-lg font-bold text-[#1F1F1F]">Tüm Fişler (Sayfalı Liste)</h2>
-        <p className="text-xs text-[#5E5E5E]">Sistemdeki tüm fişleri listeleyip filtreleyebilirsiniz.</p>
+        <p className="text-sm text-[#5E5E5E]">Sistemdeki tüm fişleri listeleyip filtreleyebilirsiniz.</p>
       </div>
 
-      <div className="flex flex-wrap items-center gap-2.5 mb-4">
-        <select
-          value={brandFilter}
-          onChange={(e) => withPageReset(setBrandFilter)(e.target.value)}
-          className="border border-[#E1E3E1] rounded-lg px-3 py-1.5 text-sm outline-none focus:border-[#0B57D0]"
-        >
-          <option value="">Marka: Tümü</option>
-          {brands.map((b) => (
-            <option key={b.id} value={b.id}>{b.name}</option>
-          ))}
-        </select>
+      <div className="bg-[#F8F9FA] border border-[#E1E3E1] rounded-2xl p-4 mb-5">
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-[1fr_1fr_1.4fr_1.2fr] gap-4">
+          <div>
+            <label className="block text-[11px] font-bold text-[#747775] uppercase tracking-wider mb-1.5">Marka</label>
+            <select
+              value={brandFilter}
+              onChange={(e) => withPageReset(setBrandFilter)(e.target.value)}
+              className="w-full bg-white border border-[#E1E3E1] rounded-lg px-3 py-2 text-sm outline-none focus:border-[#0B57D0] transition-colors"
+            >
+              <option value="">Tümü</option>
+              {brands.map((b) => (
+                <option key={b.id} value={b.id}>{b.name}</option>
+              ))}
+            </select>
+          </div>
 
-        <select
-          value={statusFilter}
-          onChange={(e) => withPageReset(setStatusFilter)(e.target.value)}
-          className="border border-[#E1E3E1] rounded-lg px-3 py-1.5 text-sm outline-none focus:border-[#0B57D0]"
-        >
-          <option value="">Durum: Tümü</option>
-          <option value="Pending">Bekleyenler</option>
-          <option value="Approved">Onaylananlar</option>
-          <option value="Rejected">Reddedilenler</option>
-        </select>
+          <div>
+            <label className="block text-[11px] font-bold text-[#747775] uppercase tracking-wider mb-1.5">Durum</label>
+            <select
+              value={statusFilter}
+              onChange={(e) => withPageReset(setStatusFilter)(e.target.value)}
+              className="w-full bg-white border border-[#E1E3E1] rounded-lg px-3 py-2 text-sm outline-none focus:border-[#0B57D0] transition-colors"
+            >
+              <option value="">Tümü</option>
+              <option value="Pending">Bekleyenler</option>
+              <option value="Approved">Onaylananlar</option>
+              <option value="Rejected">Reddedilenler</option>
+            </select>
+          </div>
 
-        <input
-          type="date"
-          value={dateFrom}
-          onChange={(e) => withPageReset(setDateFrom)(e.target.value)}
-          className="border border-[#E1E3E1] rounded-lg px-3 py-1.5 text-sm outline-none focus:border-[#0B57D0]"
-          title="Başlangıç tarihi"
-        />
-        <span className="text-[#5E5E5E] text-sm">—</span>
-        <input
-          type="date"
-          value={dateTo}
-          onChange={(e) => withPageReset(setDateTo)(e.target.value)}
-          className="border border-[#E1E3E1] rounded-lg px-3 py-1.5 text-sm outline-none focus:border-[#0B57D0]"
-          title="Bitiş tarihi"
-        />
+          <div>
+            <label className="block text-[11px] font-bold text-[#747775] uppercase tracking-wider mb-1.5">Tarih Aralığı</label>
+            <div className="flex items-center gap-2">
+              <input
+                type="date"
+                value={dateFrom}
+                onChange={(e) => withPageReset(setDateFrom)(e.target.value)}
+                className="w-full bg-white border border-[#E1E3E1] rounded-lg px-3 py-2 text-sm outline-none focus:border-[#0B57D0] transition-colors"
+                title="Başlangıç tarihi"
+              />
+              <span className="text-[#C6C7C6] shrink-0">–</span>
+              <input
+                type="date"
+                value={dateTo}
+                onChange={(e) => withPageReset(setDateTo)(e.target.value)}
+                className="w-full bg-white border border-[#E1E3E1] rounded-lg px-3 py-2 text-sm outline-none focus:border-[#0B57D0] transition-colors"
+                title="Bitiş tarihi"
+              />
+            </div>
+          </div>
 
-        <select
-          value={sortOption}
-          onChange={(e) => withPageReset(setSortOption)(e.target.value)}
-          className="border border-[#E1E3E1] rounded-lg px-3 py-1.5 text-sm outline-none focus:border-[#0B57D0] ml-auto"
-        >
-          {SORT_OPTIONS.map((o) => (
-            <option key={o.value} value={o.value}>{o.label}</option>
-          ))}
-        </select>
+          <div>
+            <label className="block text-[11px] font-bold text-[#747775] uppercase tracking-wider mb-1.5">Sırala</label>
+            <select
+              value={sortOption}
+              onChange={(e) => withPageReset(setSortOption)(e.target.value)}
+              className="w-full bg-white border border-[#E1E3E1] rounded-lg px-3 py-2 text-sm outline-none focus:border-[#0B57D0] transition-colors"
+            >
+              {SORT_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>{o.label}</option>
+              ))}
+            </select>
+          </div>
+        </div>
       </div>
 
       <div className="overflow-x-auto border border-[#E1E3E1] rounded-xl">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-[#F0F4F9] text-[#444746] text-xs font-semibold uppercase tracking-wider">
+            <tr className="bg-[#F0F4F9] text-[#444746] text-sm font-semibold uppercase tracking-wider">
               <th className="px-4 py-3 border-b border-[#E1E3E1]">Marka</th>
               <th className="px-4 py-3 border-b border-[#E1E3E1]">Tarih</th>
               <th className="px-4 py-3 border-b border-[#E1E3E1]">Tutar</th>
@@ -182,7 +222,7 @@ const AdminAllReceiptsTable = () => {
                     {r.totalAmount?.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}
                   </td>
                   <td className="px-4 py-3 text-sm">
-                    <span className={`px-2 py-1 rounded-full text-xs font-semibold border
+                    <span className={`px-2 py-1 rounded-full text-sm font-semibold border
                       ${r.status === 'Approved' ? 'ga4-badge-green'
                       : r.status === 'Pending' ? 'ga4-badge-amber'
                       : 'ga4-badge-red'}`}>
@@ -196,28 +236,49 @@ const AdminAllReceiptsTable = () => {
         </table>
       </div>
 
-      <div className="flex justify-between items-center mt-4 text-sm text-[#444746]">
+      <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-3 mt-4 text-sm text-[#444746]">
         <div>
-          Toplam <span className="font-bold">{totalCount}</span> kayıttan 
-          <span className="font-bold ml-1">{totalCount === 0 ? 0 : (page - 1) * pageSize + 1}</span> - 
-          <span className="font-bold mx-1">{Math.min(page * pageSize, totalCount)}</span> 
+          Toplam <span className="font-bold">{totalCount}</span> kayıttan
+          <span className="font-bold ml-1">{totalCount === 0 ? 0 : (page - 1) * pageSize + 1}</span> -
+          <span className="font-bold mx-1">{Math.min(page * pageSize, totalCount)}</span>
           arası gösteriliyor.
         </div>
-        <div className="flex items-center space-x-4">
-          <button 
-            onClick={handlePrevPage} 
+        <div className="flex items-center gap-2 flex-wrap lg:justify-end">
+          <button
+            onClick={handlePrevPage}
             disabled={page === 1 || loading}
-            className="px-3 py-1 bg-white border border-[#E1E3E1] rounded-lg disabled:opacity-50 hover:bg-[#F0F4F9] transition-colors font-medium text-[#0B57D0]"
+            className="w-9 h-9 flex items-center justify-center bg-white border border-[#E1E3E1] rounded-full disabled:opacity-40 hover:bg-[#F0F4F9] transition-colors text-[#0B57D0] shrink-0"
+            title="Önceki sayfa"
           >
-            Önceki
+            <ChevronLeft className="w-4 h-4" />
           </button>
-          <span>Sayfa {page} / {totalPages}</span>
-          <button 
-            onClick={handleNextPage} 
+
+          {getPageNumbers(page, totalPages).map((p, idx) =>
+            p === '...' ? (
+              <span key={`dots-${idx}`} className="w-9 h-9 flex items-center justify-center text-[#747775] shrink-0">…</span>
+            ) : (
+              <button
+                key={p}
+                onClick={() => setPage(p)}
+                disabled={loading}
+                className={`w-9 h-9 flex items-center justify-center rounded-full text-sm font-semibold transition-colors shrink-0 ${
+                  p === page
+                    ? 'bg-[#0B57D0] text-white'
+                    : 'bg-white border border-[#E1E3E1] text-[#1F1F1F] hover:bg-[#F0F4F9]'
+                }`}
+              >
+                {p}
+              </button>
+            )
+          )}
+
+          <button
+            onClick={handleNextPage}
             disabled={page === totalPages || loading || totalPages === 0}
-            className="px-3 py-1 bg-white border border-[#E1E3E1] rounded-lg disabled:opacity-50 hover:bg-[#F0F4F9] transition-colors font-medium text-[#0B57D0]"
+            className="w-9 h-9 flex items-center justify-center bg-white border border-[#E1E3E1] rounded-full disabled:opacity-40 hover:bg-[#F0F4F9] transition-colors text-[#0B57D0] shrink-0"
+            title="Sonraki sayfa"
           >
-            Sonraki
+            <ChevronRight className="w-4 h-4" />
           </button>
         </div>
       </div>
@@ -250,12 +311,12 @@ const AdminAllReceiptsTable = () => {
                     </button>
                   )}
                   <div>
-                    <p className="text-[10px] font-semibold text-[#747775] uppercase tracking-widest mb-1">Mağaza</p>
+                    <p className="text-[12px] font-semibold text-[#747775] uppercase tracking-widest mb-1">Mağaza</p>
                     <div className="flex items-center gap-2.5">
                       <BrandLogo
                         name={selectedReceipt.brandName || brandName(selectedReceipt.brandId)}
                         logoUrl={brands.find((b) => b.id === selectedReceipt.brandId)?.logoUrl}
-                        size={28}
+                        size={40}
                       />
                       <h3 className="text-2xl font-bold text-[#1F1F1F] leading-tight">
                         {selectedReceipt.brandName || brandName(selectedReceipt.brandId)}
@@ -265,13 +326,13 @@ const AdminAllReceiptsTable = () => {
                 </div>
                 <div className="text-right shrink-0">
                   <h4 className="text-xl font-extrabold text-[#0B57D0] tracking-wide">FİŞ</h4>
-                  <p className="text-xs text-[#747775] mt-1">No: {selectedReceipt.id.substring(0, 8).toUpperCase()}</p>
-                  <p className="text-xs text-[#747775]">{new Date(selectedReceipt.receiptDate).toLocaleDateString('tr-TR')}</p>
+                  <p className="text-sm text-[#747775] mt-1">No: {selectedReceipt.id.substring(0, 8).toUpperCase()}</p>
+                  <p className="text-sm text-[#747775]">{new Date(selectedReceipt.receiptDate).toLocaleDateString('tr-TR')}</p>
                 </div>
               </div>
 
               <div className="flex justify-between items-center py-5">
-                <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold border ${
+                <span className={`inline-block px-3 py-1 rounded-full text-sm font-bold border ${
                   selectedReceipt.status === 'Approved' ? 'ga4-badge-green'
                   : selectedReceipt.status === 'Pending' ? 'ga4-badge-amber'
                   : 'ga4-badge-red'
@@ -282,7 +343,7 @@ const AdminAllReceiptsTable = () => {
 
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-[#E1E3E1] text-[11px] font-bold text-[#747775] uppercase tracking-wider">
+                  <tr className="border-b border-[#E1E3E1] text-[13px] font-bold text-[#747775] uppercase tracking-wider">
                     <th className="py-2">Ürün Açıklaması</th>
                     <th className="py-2 text-center">Adet</th>
                     <th className="py-2 text-right">Fiyat</th>
@@ -294,7 +355,7 @@ const AdminAllReceiptsTable = () => {
                     <tr key={item.id} className="border-b border-[#F0F4F9]">
                       <td className="py-3">
                         <span className="text-sm font-medium text-[#1F1F1F]">{item.productName}</span>
-                        <span className="block text-[11px] text-[#747775]">{item.category}</span>
+                        <span className="block text-[13px] text-[#747775]">{item.category}</span>
                       </td>
                       <td className="py-3 text-center text-sm text-[#5E5E5E]">{item.quantity}</td>
                       <td className="py-3 text-right text-sm text-[#5E5E5E]">₺{item.unitPrice}</td>
@@ -302,7 +363,7 @@ const AdminAllReceiptsTable = () => {
                     </tr>
                   )) : (
                     <tr>
-                      <td colSpan="4" className="py-8 text-center text-xs text-[#747775]">Ürün kalemi eklenmemiş.</td>
+                      <td colSpan="4" className="py-8 text-center text-sm text-[#747775]">Ürün kalemi eklenmemiş.</td>
                     </tr>
                   )}
                 </tbody>

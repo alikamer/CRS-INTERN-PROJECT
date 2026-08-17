@@ -17,7 +17,7 @@ const CITIES = [
 
 const ReadOnlyField = ({ label, value }) => (
   <div>
-    <label className="block text-xs font-medium text-[#747775] mb-1.5 uppercase tracking-wide">{label}</label>
+    <label className="block text-sm font-medium text-[#747775] mb-1.5 uppercase tracking-wide">{label}</label>
     <div className="w-full px-4 py-2.5 bg-[#F0F4F9] border border-[#E1E3E1] rounded-xl text-[#5E5E5E] text-sm cursor-not-allowed select-none">
       {value || <span className="text-[#C6C7C6] italic">Belirtilmemiş</span>}
     </div>
@@ -126,7 +126,7 @@ const Settings = () => {
   if (role !== 'Consumer') {
     return (
       <div className="ga4-card p-8 max-w-3xl">
-        <h2 className="text-xl font-bold text-[#1F1F1F] mb-2">Ayarlar</h2>
+        <h2 className="text-2xl font-bold text-[#1F1F1F] mb-2">Ayarlar</h2>
         <p className="text-[#5E5E5E] text-sm">Bu hesap türü için profil ayarları yapılandırılmamıştır.</p>
       </div>
     );
@@ -138,12 +138,12 @@ const Settings = () => {
         <div className="flex items-center justify-between px-8 py-5 border-b border-[#E1E3E1]">
           <div>
             <h2 className="text-base font-semibold text-[#1F1F1F]">Hesap &amp; Profil Bilgileri</h2>
-            <p className="text-xs text-[#747775] mt-0.5">E-posta adresi değiştirilemez.</p>
+            <p className="text-sm text-[#747775] mt-0.5">E-posta adresi değiştirilemez.</p>
           </div>
           {!editing ? (
             <button
               onClick={handleEdit}
-              className="flex items-center space-x-1.5 text-xs font-medium text-[#0B57D0] hover:bg-[#E8F0FE] px-3 py-1.5 rounded-xl transition-colors"
+              className="flex items-center space-x-1.5 text-sm font-medium text-[#0B57D0] hover:bg-[#E8F0FE] px-3 py-1.5 rounded-xl transition-colors"
             >
               <Edit2 className="w-3.5 h-3.5" />
               <span>Düzenle</span>
@@ -153,7 +153,7 @@ const Settings = () => {
               <button
                 onClick={handleCancel}
                 disabled={saving}
-                className="flex items-center space-x-1.5 text-xs font-medium text-[#5E5E5E] hover:bg-[#F0F4F9] px-3 py-1.5 rounded-xl transition-colors"
+                className="flex items-center space-x-1.5 text-sm font-medium text-[#5E5E5E] hover:bg-[#F0F4F9] px-3 py-1.5 rounded-xl transition-colors"
               >
                 <X className="w-3.5 h-3.5" />
                 <span>İptal</span>
@@ -161,7 +161,7 @@ const Settings = () => {
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="flex items-center space-x-1.5 text-xs font-medium text-white bg-[#0B57D0] hover:bg-[#0842A0] px-3 py-1.5 rounded-xl transition-colors disabled:opacity-70"
+                className="flex items-center space-x-1.5 text-sm font-medium text-white bg-[#0B57D0] hover:bg-[#0842A0] px-3 py-1.5 rounded-xl transition-colors disabled:opacity-70"
               >
                 <Check className="w-3.5 h-3.5" />
                 <span>{saving ? 'Kaydediliyor...' : 'Kaydet'}</span>
@@ -182,28 +182,28 @@ const Settings = () => {
             {editing ? (
               <>
                 <div>
-                  <label className="block text-xs font-medium text-[#747775] mb-1.5 uppercase tracking-wide">Ad</label>
+                  <label className="block text-sm font-medium text-[#747775] mb-1.5 uppercase tracking-wide">Ad</label>
                   <input type="text" className="w-full px-4 py-2.5 bg-white border border-[#E1E3E1] rounded-xl text-[#1F1F1F] text-sm focus:outline-none focus:ring-1 focus:ring-[#0B57D0] focus:border-[#0B57D0] transition-colors"
                     value={editData.firstName} onChange={e => setEditData({ ...editData, firstName: e.target.value })} />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-[#747775] mb-1.5 uppercase tracking-wide">Soyad</label>
+                  <label className="block text-sm font-medium text-[#747775] mb-1.5 uppercase tracking-wide">Soyad</label>
                   <input type="text" className="w-full px-4 py-2.5 bg-white border border-[#E1E3E1] rounded-xl text-[#1F1F1F] text-sm focus:outline-none focus:ring-1 focus:ring-[#0B57D0] focus:border-[#0B57D0] transition-colors"
                     value={editData.lastName} onChange={e => setEditData({ ...editData, lastName: e.target.value })} />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-[#747775] mb-1.5 uppercase tracking-wide">Telefon</label>
+                  <label className="block text-sm font-medium text-[#747775] mb-1.5 uppercase tracking-wide">Telefon</label>
                   <input type="tel" className="w-full px-4 py-2.5 bg-white border border-[#E1E3E1] rounded-xl text-[#1F1F1F] text-sm focus:outline-none focus:ring-1 focus:ring-[#0B57D0] focus:border-[#0B57D0] transition-colors"
                     value={editData.phoneNumber} onChange={e => setEditData({ ...editData, phoneNumber: e.target.value })} />
                 </div>
                 <ReadOnlyField label="E-posta" value={data.email} />
                 <div>
-                  <label className="block text-xs font-medium text-[#747775] mb-1.5 uppercase tracking-wide">Doğum Tarihi</label>
+                  <label className="block text-sm font-medium text-[#747775] mb-1.5 uppercase tracking-wide">Doğum Tarihi</label>
                   <input type="date" className="w-full px-4 py-2.5 bg-white border border-[#E1E3E1] rounded-xl text-[#1F1F1F] text-sm focus:outline-none focus:ring-1 focus:ring-[#0B57D0] focus:border-[#0B57D0] transition-colors"
                     value={editData.dateOfBirth} onChange={e => setEditData({ ...editData, dateOfBirth: e.target.value })} />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-[#747775] mb-1.5 uppercase tracking-wide">Cinsiyet</label>
+                  <label className="block text-sm font-medium text-[#747775] mb-1.5 uppercase tracking-wide">Cinsiyet</label>
                   <div className="grid grid-cols-2 gap-3">
                     {['Erkek', 'Kadın'].map(g => (
                       <button key={g} type="button"
@@ -215,12 +215,12 @@ const Settings = () => {
                   </div>
                 </div>
                 <div ref={cityDropdownRef} className="relative">
-                  <label className="block text-xs font-medium text-[#747775] mb-1.5 uppercase tracking-wide">Şehir</label>
+                  <label className="block text-sm font-medium text-[#747775] mb-1.5 uppercase tracking-wide">Şehir</label>
                   <div className="w-full px-4 py-2.5 bg-white border border-[#E1E3E1] rounded-xl flex items-center justify-between focus-within:ring-1 focus-within:ring-[#0B57D0] focus-within:border-[#0B57D0] transition-colors cursor-text"
                     onClick={() => setIsCityDropdownOpen(true)}>
                     <input type="text" placeholder="Şehir ara..." className="bg-transparent border-none outline-none w-full text-[#1F1F1F] text-sm"
                       value={citySearchTerm} onChange={e => { setCitySearchTerm(e.target.value); setIsCityDropdownOpen(true); }} />
-                    <span className="text-[#C6C7C6] text-xs ml-2">▼</span>
+                    <span className="text-[#C6C7C6] text-sm ml-2">▼</span>
                   </div>
                   {isCityDropdownOpen && (
                     <div className="absolute z-10 w-full mt-2 bg-white border border-[#E1E3E1] rounded-xl shadow-xl max-h-52 overflow-y-auto py-1">
@@ -235,7 +235,7 @@ const Settings = () => {
                   )}
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-[#747775] mb-1.5 uppercase tracking-wide">Aylık Gelir</label>
+                  <label className="block text-sm font-medium text-[#747775] mb-1.5 uppercase tracking-wide">Aylık Gelir</label>
                   <select className="w-full px-4 py-2.5 bg-white border border-[#E1E3E1] rounded-xl text-[#1F1F1F] text-sm focus:outline-none focus:ring-1 focus:ring-[#0B57D0] focus:border-[#0B57D0] transition-colors"
                     value={editData.incomeLevel} onChange={e => setEditData({ ...editData, incomeLevel: e.target.value })}>
                     <option value="">Belirtmek İstemiyorum</option>

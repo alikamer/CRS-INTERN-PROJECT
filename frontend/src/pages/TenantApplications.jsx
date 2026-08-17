@@ -62,7 +62,7 @@ const TenantApplications = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-bold text-[#1F1F1F] tracking-tight">Onay Bekleyen Şirket Başvuruları</h1>
+        <h1 className="text-2xl font-bold text-[#1F1F1F] tracking-tight">Onay Bekleyen Şirket Başvuruları</h1>
         <p className="text-sm text-[#5E5E5E] mt-1">
           Yeni şirket başvurularını inceleyip onaylayın veya reddedin.
         </p>
@@ -79,13 +79,13 @@ const TenantApplications = () => {
         <div className="lg:col-span-1 ga4-card p-5 space-y-4">
           <h3 className="font-bold text-[#1F1F1F] text-sm border-b border-[#E1E3E1] pb-3 flex items-center justify-between">
             <span>Bekleyen Başvurular</span>
-            <span className="ga4-badge-amber text-[10px] font-bold px-2 py-0.5 rounded-full">{pendingTenants.length}</span>
+            <span className="ga4-badge-amber text-[12px] font-bold px-2 py-0.5 rounded-full">{pendingTenants.length}</span>
           </h3>
 
           {loading ? (
-            <p className="text-[#747775] text-xs py-4 text-center">Yükleniyor...</p>
+            <p className="text-[#747775] text-sm py-4 text-center">Yükleniyor...</p>
           ) : pendingTenants.length === 0 ? (
-            <div className="py-8 text-center text-[#747775] text-xs space-y-1">
+            <div className="py-8 text-center text-[#747775] text-sm space-y-1">
               <Check className="w-7 h-7 mx-auto text-[#137333]" />
               <p>Onay bekleyen başvuru yok!</p>
             </div>
@@ -101,8 +101,8 @@ const TenantApplications = () => {
                       : 'border-[#E1E3E1] hover:border-[#C6C7C6] bg-white'
                   }`}
                 >
-                  <p className="font-bold text-xs text-[#1F1F1F]">{t.companyName}</p>
-                  <p className="text-[11px] text-[#747775]">{new Date(t.createdAt).toLocaleDateString('tr-TR')}</p>
+                  <p className="font-bold text-sm text-[#1F1F1F]">{t.companyName}</p>
+                  <p className="text-[13px] text-[#747775]">{new Date(t.createdAt).toLocaleDateString('tr-TR')}</p>
                 </div>
               ))}
             </div>
@@ -113,18 +113,18 @@ const TenantApplications = () => {
           {!selectedTenant ? (
             <div className="py-20 text-center text-[#747775] space-y-3">
               <Building2 className="w-10 h-10 mx-auto text-[#C6C7C6]" />
-              <p className="text-xs font-medium">Detay ve onay için soldaki listeden bir başvuru seçin.</p>
+              <p className="text-sm font-medium">Detay ve onay için soldaki listeden bir başvuru seçin.</p>
             </div>
           ) : (
             <div className="space-y-6">
               <div className="border-b border-[#E1E3E1] pb-4">
                 <h3 className="text-base font-bold text-[#1F1F1F]">{selectedTenant.companyName}</h3>
-                <p className="text-[11px] text-[#747775]">Başvuru ID: {selectedTenant.tenantId}</p>
+                <p className="text-[13px] text-[#747775]">Başvuru ID: {selectedTenant.tenantId}</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div className="bg-[#F0F4F9] rounded-xl p-3.5">
-                  <p className="text-[10px] font-bold text-[#747775] uppercase tracking-wider mb-1">İletişim Kişisi</p>
+                  <p className="text-[12px] font-bold text-[#747775] uppercase tracking-wider mb-1">İletişim Kişisi</p>
                   <p className="font-semibold text-[#1F1F1F]">{selectedTenant.contactFirstName} {selectedTenant.contactLastName}</p>
                 </div>
                 <div className="bg-[#F0F4F9] rounded-xl p-3.5 flex items-center gap-2.5">
@@ -138,12 +138,12 @@ const TenantApplications = () => {
               </div>
 
               <div className="border-t border-[#E1E3E1] pt-4 space-y-3">
-                <h5 className="text-[10px] font-bold text-[#747775] uppercase tracking-wider">Onay Bilgileri</h5>
+                <h5 className="text-[12px] font-bold text-[#747775] uppercase tracking-wider">Onay Bilgileri</h5>
                 <div className="grid grid-cols-2 gap-3">
                   <select
                     value={brandId}
                     onChange={(e) => setBrandId(e.target.value)}
-                    className="px-3 py-2 border border-[#E1E3E1] rounded-xl text-xs bg-white outline-none focus:border-[#0B57D0]"
+                    className="px-3 py-2 border border-[#E1E3E1] rounded-xl text-sm bg-white outline-none focus:border-[#0B57D0]"
                   >
                     <option value="">Marka Seçin</option>
                     {brands.map((b) => (
@@ -153,7 +153,7 @@ const TenantApplications = () => {
                   <select
                     value={subscriptionTier}
                     onChange={(e) => setSubscriptionTier(e.target.value)}
-                    className="px-3 py-2 border border-[#E1E3E1] rounded-xl text-xs bg-white outline-none focus:border-[#0B57D0]"
+                    className="px-3 py-2 border border-[#E1E3E1] rounded-xl text-sm bg-white outline-none focus:border-[#0B57D0]"
                   >
                     <option value="Basic">Basic</option>
                     <option value="Normal">Normal</option>
@@ -164,13 +164,13 @@ const TenantApplications = () => {
                 <div className="flex gap-3 pt-1">
                   <button
                     onClick={handleReject}
-                    className="flex-1 bg-white border border-[#FAD2CF] hover:bg-[#FCE8E6] text-[#C5221F] px-4 py-2 rounded-full font-bold text-xs transition-all flex items-center justify-center gap-1.5"
+                    className="flex-1 bg-white border border-[#FAD2CF] hover:bg-[#FCE8E6] text-[#C5221F] px-4 py-2 rounded-full font-bold text-sm transition-all flex items-center justify-center gap-1.5"
                   >
                     <X className="w-4 h-4" /> Reddet
                   </button>
                   <button
                     onClick={handleApprove}
-                    className="flex-1 bg-[#137333] hover:bg-[#0F5C29] text-white px-4 py-2 rounded-full font-bold text-xs transition-all flex items-center justify-center gap-1.5"
+                    className="flex-1 bg-[#137333] hover:bg-[#0F5C29] text-white px-4 py-2 rounded-full font-bold text-sm transition-all flex items-center justify-center gap-1.5"
                   >
                     <Check className="w-4 h-4" /> Onayla & Aktif Et
                   </button>

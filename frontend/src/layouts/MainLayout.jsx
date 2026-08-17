@@ -253,7 +253,7 @@ const MainLayout = () => {
         </header>
 
         {/* Dashboard Viewport Area */}
-        <div className="flex-1 overflow-auto p-6 md:p-8 max-w-7xl w-full mx-auto">
+        <div className="flex-1 overflow-auto p-6 md:p-10 max-w-[1680px] w-full mx-auto">
           <Outlet />
         </div>
       </main>

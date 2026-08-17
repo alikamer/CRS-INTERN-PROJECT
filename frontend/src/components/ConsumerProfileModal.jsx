@@ -76,7 +76,7 @@ const ConsumerProfileModal = ({ isOpen, onClose, onSuccess }) => {
 
         <div className="bg-[#F0F4F9] border-b border-[#E1E3E1] px-6 py-4 flex justify-between items-center">
           <div>
-            <h2 className="text-xl font-bold text-[#1F1F1F]">Profilini Tamamla</h2>
+            <h2 className="text-2xl font-bold text-[#1F1F1F]">Profilini Tamamla</h2>
             <p className="text-sm text-[#5E5E5E] mt-1">Sana özel kampanyalar için seni daha iyi tanıyalım.</p>
           </div>
         </div>
@@ -145,7 +145,7 @@ const ConsumerProfileModal = ({ isOpen, onClose, onSuccess }) => {
                   onFocus={() => setIsCityDropdownOpen(true)}
                   className="w-full bg-transparent outline-none text-[#1F1F1F]"
                 />
-                <span className="text-[#747775] text-xs">▼</span>
+                <span className="text-[#747775] text-sm">▼</span>
               </div>
 
               {isCityDropdownOpen && (

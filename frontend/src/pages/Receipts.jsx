@@ -13,7 +13,7 @@ const Receipts = () => {
     return (
       <div className="space-y-4">
         <div>
-          <h1 className="text-xl font-bold text-[#1F1F1F] tracking-tight">Tüm Fiş Kayıtları</h1>
+          <h1 className="text-2xl font-bold text-[#1F1F1F] tracking-tight">Tüm Fiş Kayıtları</h1>
           <p className="text-sm text-[#5E5E5E] mt-1">Sistemdeki tüm fişleri görüntüleyin ve filtreleyin.</p>
         </div>
         <AdminAllReceiptsTable />
@@ -59,8 +59,8 @@ const Receipts = () => {
     <div className="ga4-card p-6 space-y-6">
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 border-b border-[#E1E3E1] pb-4">
         <div>
-          <h2 className="text-xl font-bold text-[#1F1F1F]">Fiş Listesi Raporu</h2>
-          <p className="text-xs text-[#5E5E5E] mt-0.5">Sisteme kaydedilmiş dijital fişlerin tam dökümü.</p>
+          <h2 className="text-2xl font-bold text-[#1F1F1F]">Fiş Listesi Raporu</h2>
+          <p className="text-sm text-[#5E5E5E] mt-0.5">Sisteme kaydedilmiş dijital fişlerin tam dökümü.</p>
         </div>
         <div className="flex items-center space-x-2">
           <form onSubmit={handleSearch} className="relative flex-1 md:w-64">
@@ -70,12 +70,12 @@ const Receipts = () => {
               placeholder="Fiş veya Mağaza ara..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-4 py-1.5 border border-[#E1E3E1] rounded-full focus:outline-none focus:border-[#0B57D0] text-xs bg-[#F0F4F9]"
+              className="w-full pl-9 pr-4 py-1.5 border border-[#E1E3E1] rounded-full focus:outline-none focus:border-[#0B57D0] text-sm bg-[#F0F4F9]"
             />
           </form>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center px-4 py-2 bg-[#0B57D0] text-white rounded-full hover:bg-[#0842A0] text-xs font-bold transition-all shadow-xs shrink-0"
+            className="flex items-center px-4 py-2 bg-[#0B57D0] text-white rounded-full hover:bg-[#0842A0] text-sm font-bold transition-all shadow-xs shrink-0"
           >
             <Plus className="w-4 h-4 mr-1.5" /> Yeni Fiş Ekle
           </button>
@@ -91,14 +91,14 @@ const Receipts = () => {
           <div className="overflow-x-auto border border-[#E1E3E1] rounded-2xl">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-[#F0F4F9] border-b border-[#E1E3E1] text-xs font-bold text-[#5E5E5E]">
+                <tr className="bg-[#F0F4F9] border-b border-[#E1E3E1] text-sm font-bold text-[#5E5E5E]">
                   <th className="py-3 px-4">Fiş No</th>
                   <th className="py-3 px-4">Tarih</th>
                   <th className="py-3 px-4">Tutar</th>
                   <th className="py-3 px-4">Durum</th>
                 </tr>
               </thead>
-              <tbody className="text-xs">
+              <tbody className="text-sm">
                 {receipts.length > 0 ? (
                   receipts.map((receipt) => (
                     <tr key={receipt.id} className="border-b border-[#E1E3E1] hover:bg-[#F8F9FA] transition-colors">
@@ -106,7 +106,7 @@ const Receipts = () => {
                       <td className="py-3 px-4 text-[#5E5E5E]">{new Date(receipt.receiptDate).toLocaleDateString('tr-TR')}</td>
                       <td className="py-3 px-4 text-[#1F1F1F] font-bold">₺{receipt.totalAmount.toFixed(2)}</td>
                       <td className="py-3 px-4">
-                        <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                        <span className={`px-2.5 py-0.5 rounded-full text-[12px] font-bold ${
                           receipt.status === 'Approved' ? 'ga4-badge-green' :
                           receipt.status === 'Pending' ? 'ga4-badge-amber' :
                           'ga4-badge-red'
@@ -118,7 +118,7 @@ const Receipts = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="4" className="py-10 text-center text-[#747775] text-xs">
+                    <td colSpan="4" className="py-10 text-center text-[#747775] text-sm">
                       {searchTerm ? 'Arama kriterlerinize uygun fiş bulunamadı.' : 'Henüz hiç fiş eklenmemiş.'}
                     </td>
                   </tr>
@@ -128,7 +128,7 @@ const Receipts = () => {
           </div>
 
           {/* Pagination */}
-          <div className="flex flex-col sm:flex-row justify-between items-center mt-4 gap-4 text-xs">
+          <div className="flex flex-col sm:flex-row justify-between items-center mt-4 gap-4 text-sm">
             <div className="text-[#5E5E5E]">
               Toplam <span className="font-bold text-[#1F1F1F]">{totalCount}</span> kayıttan gösteriliyor
             </div>
@@ -136,17 +136,17 @@ const Receipts = () => {
               <button
                 disabled={currentPage === 1}
                 onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                className="px-3 py-1 border border-[#E1E3E1] rounded-full disabled:opacity-50 hover:bg-[#F0F4F9] text-xs font-semibold text-[#1F1F1F]"
+                className="px-3 py-1 border border-[#E1E3E1] rounded-full disabled:opacity-50 hover:bg-[#F0F4F9] text-sm font-semibold text-[#1F1F1F]"
               >
                 Önceki
               </button>
-              <div className="flex items-center justify-center px-3 py-1 bg-[#F0F4F9] text-[#1F1F1F] rounded-full text-xs font-bold">
+              <div className="flex items-center justify-center px-3 py-1 bg-[#F0F4F9] text-[#1F1F1F] rounded-full text-sm font-bold">
                 {currentPage} / {totalPages || 1}
               </div>
               <button
                 disabled={currentPage === totalPages || totalPages === 0}
                 onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                className="px-3 py-1 border border-[#E1E3E1] rounded-full disabled:opacity-50 hover:bg-[#F0F4F9] text-xs font-semibold text-[#1F1F1F]"
+                className="px-3 py-1 border border-[#E1E3E1] rounded-full disabled:opacity-50 hover:bg-[#F0F4F9] text-sm font-semibold text-[#1F1F1F]"
               >
                 Sonraki
               </button>
