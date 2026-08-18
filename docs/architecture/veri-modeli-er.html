@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CRS-INTERN-PROJECT · Veri Modeli</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-paper:   #f5f5f5;
+      --color-ink:     #2d3142;
+      --color-muted:   #4f5d75;
+      --color-accent:  #eb6c36;
+      --font-sans:     'Geist', system-ui, sans-serif;
+      --font-serif:    'Instrument Serif', serif;
+      --font-mono:     'Geist Mono', ui-monospace, monospace;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-paper);
+      color: var(--color-ink);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 2rem;
+    }
+
+    .frame { max-width: 1280px; width: 100%; }
+
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      color: var(--color-ink);
+      margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      color: var(--color-muted);
+      margin-bottom: 1.5rem;
+      max-width: 760px;
+    }
+
+    svg { width: 100%; min-width: 1040px; display: block; }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">ER / Veri Modeli · CRS-INTERN-PROJECT</p>
+    <h1>Veri modeli</h1>
+    <p class="subtitle">Platformun 8 tablolu çekirdek iş şeması — kullanıcı kimlikleri, tenant/brand yapısı ve merkezi iş nesnesi olan Receipt (fiş). Oturum ve yardımcı tablolar (RefreshToken, TenantInvite, ConsumerLoyalty) ayrı bir eşlik eden diyagramda (yardimci-tablolar-er.html).</p>
+
+    <svg viewBox="0 0 1160 1080" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="crs-er-title crs-er-desc">
+      <title id="crs-er-title">CRS-INTERN-PROJECT — veri modeli (ER diyagramı)</title>
+      <desc id="crs-er-desc">Varlık-ilişki diyagramı: AppUser, Consumer/Corporate profilleri, Tenant, Brand, Receipt, ReceiptItem ve Coupon arasındaki tam sütun listeleriyle ilişkileri gösterir; Receipt platformun merkezi iş nesnesidir.</desc>
+      <defs>
+        <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#4f5d75"/></marker>
+        <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#eb6c36"/></marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#f5f5f5"/>
+
+      <!-- ============ Relationship lines (drawn before boxes) ============ -->
+
+      <!-- R1: AppUser -> ConsumerProfile (1-1) -->
+      <line x1="160" y1="260" x2="160" y2="300" stroke="#4f5d75" stroke-width="1" marker-end="url(#arrow)"/>
+
+      <!-- R2: AppUser -> CorporateProfile (1-1), right-side corridor to clear ConsumerProfile -->
+      <path d="M280,100 H332 Q340,100 340,108 V592 Q340,600 332,600 H280"
+            fill="none" stroke="#4f5d75" stroke-width="1" marker-end="url(#arrow)"/>
+
+      <!-- R3: CorporateProfile -> Tenant (N-1) -->
+      <line x1="280" y1="620" x2="440" y2="620" stroke="#4f5d75" stroke-width="1" marker-end="url(#arrow)"/>
+
+      <!-- R4: Tenant -> Brand (N-1, optional / nullable BrandId) -->
+      <line x1="560" y1="700" x2="560" y2="740" stroke="#4f5d75" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow)"/>
+
+      <!-- R5: Receipt -> ConsumerProfile (N-1, optional / SetNull), bridges R2's corridor at x=340 -->
+      <path d="M840,340 H348 a8,8 0 0,0 -16,0 H280"
+            fill="none" stroke="#4f5d75" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow)"/>
+
+      <!-- R6: Receipt -> Brand (N-1), left-side corridor between column B and column C -->
+      <path d="M840,460 H768 Q760,460 760,468 V792 Q760,800 768,800 H680"
+            fill="none" stroke="#4f5d75" stroke-width="1" marker-end="url(#arrow)"/>
+
+      <!-- R7: ReceiptItem -> Receipt (N-1) -->
+      <line x1="960" y1="580" x2="960" y2="540" stroke="#4f5d75" stroke-width="1" marker-end="url(#arrow)"/>
+
+      <!-- R8: Coupon -> ConsumerProfile (N-1), far-left corridor -->
+      <path d="M40,760 H32 Q24,760 24,752 V408 Q24,400 32,400 H40"
+            fill="none" stroke="#4f5d75" stroke-width="1" marker-end="url(#arrow)"/>
+
+      <!-- R9: Coupon -> Brand (N-1, optional / nullable BrandId) -->
+      <line x1="280" y1="800" x2="440" y2="800" stroke="#4f5d75" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow)"/>
+
+      <!-- ============ Relationship labels ============ -->
+
+      <rect x="176" y="274" width="28" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="190" y="283" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" font-weight="600">1—1</text>
+
+      <rect x="296" y="584" width="32" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="312" y="593" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" font-weight="600">1—1</text>
+
+      <rect x="344" y="604" width="32" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="360" y="613" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" font-weight="600">N—1</text>
+
+      <rect x="576" y="714" width="32" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="592" y="723" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" font-weight="600">N—1</text>
+
+      <rect x="584" y="324" width="32" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="600" y="333" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" font-weight="600">N—1</text>
+
+      <rect x="728" y="324" width="64" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="760" y="333" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">SET NULL</text>
+
+      <rect x="776" y="624" width="32" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="792" y="633" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" font-weight="600">N—1</text>
+
+      <rect x="976" y="554" width="32" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="992" y="563" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" font-weight="600">N—1</text>
+
+      <rect x="10" y="394" width="28" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="24" y="403" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" font-weight="600">N—1</text>
+
+      <rect x="344" y="784" width="32" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="360" y="793" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" font-weight="600">N—1</text>
+
+      <!-- ============ Entities ============ -->
+
+      <!-- Entity: AppUser -->
+      <rect x="40" y="40" width="240" height="220" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <rect x="40" y="40" width="240" height="40" rx="6" fill="rgba(45,49,66,0.04)" stroke="none"/>
+      <rect x="40" y="72" width="240" height="8" fill="rgba(45,49,66,0.04)"/>
+      <line x1="40" y1="80" x2="280" y2="80" stroke="rgba(45,49,66,0.22)" stroke-width="1"/>
+      <text x="56" y="56" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">ENTITY</text>
+      <text x="56" y="72" fill="#2d3142" font-size="14" font-weight="600" font-family="'Geist', sans-serif">AppUser</text>
+      <text x="56" y="100" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace"># Id</text>
+      <text x="264" y="100" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">uuid</text>
+      <text x="56" y="120" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">FirstName</text>
+      <text x="264" y="120" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">text</text>
+      <text x="56" y="140" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">LastName</text>
+      <text x="264" y="140" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">text</text>
+      <text x="56" y="160" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">PhoneNumber</text>
+      <text x="264" y="160" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">text</text>
+      <text x="56" y="180" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">Email</text>
+      <text x="264" y="180" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">text</text>
+      <text x="56" y="200" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">PasswordHash</text>
+      <text x="264" y="200" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">text</text>
+      <text x="56" y="220" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">Role</text>
+      <text x="264" y="220" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">enum</text>
+      <text x="56" y="240" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">CreatedAt</text>
+      <text x="264" y="240" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">timestamp</text>
+
+      <!-- Entity: ConsumerProfile -->
+      <rect x="40" y="300" width="240" height="180" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <rect x="40" y="300" width="240" height="40" rx="6" fill="rgba(45,49,66,0.04)" stroke="none"/>
+      <rect x="40" y="332" width="240" height="8" fill="rgba(45,49,66,0.04)"/>
+      <line x1="40" y1="340" x2="280" y2="340" stroke="rgba(45,49,66,0.22)" stroke-width="1"/>
+      <text x="56" y="316" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">ENTITY</text>
+      <text x="56" y="332" fill="#2d3142" font-size="14" font-weight="600" font-family="'Geist', sans-serif">ConsumerProfile</text>
+      <text x="56" y="360" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace"># Id</text>
+      <text x="264" y="360" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">uuid</text>
+      <text x="56" y="380" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">→ AppUserId</text>
+      <text x="264" y="380" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">uuid</text>
+      <text x="56" y="400" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">DateOfBirth</text>
+      <text x="264" y="400" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">timestamp · null</text>
+      <text x="56" y="420" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">Gender</text>
+      <text x="264" y="420" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">text · null</text>
+      <text x="56" y="440" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">City</text>
+      <text x="264" y="440" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">text · null</text>
+      <text x="56" y="460" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">IncomeLevel</text>
+      <text x="264" y="460" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">text · null</text>
+
+      <!-- Entity: CorporateProfile -->
+      <rect x="40" y="520" width="240" height="160" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <rect x="40" y="520" width="240" height="40" rx="6" fill="rgba(45,49,66,0.04)" stroke="none"/>
+      <rect x="40" y="552" width="240" height="8" fill="rgba(45,49,66,0.04)"/>
+      <line x1="40" y1="560" x2="280" y2="560" stroke="rgba(45,49,66,0.22)" stroke-width="1"/>
+      <text x="56" y="536" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">ENTITY</text>
+      <text x="56" y="552" fill="#2d3142" font-size="14" font-weight="600" font-family="'Geist', sans-serif">CorporateProfile</text>
+      <text x="56" y="580" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace"># Id</text>
+      <text x="264" y="580" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">uuid</text>
+      <text x="56" y="600" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">→ AppUserId</text>
+      <text x="264" y="600" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">uuid</text>
+      <text x="56" y="620" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">→ TenantId</text>
+      <text x="264" y="620" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">uuid</text>
+      <text x="56" y="640" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">Role</text>
+      <text x="264" y="640" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">enum</text>
+      <text x="56" y="660" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">Department</text>
+      <text x="264" y="660" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">text · null</text>
+
+      <!-- Entity: Coupon -->
+      <rect x="40" y="720" width="240" height="240" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <rect x="40" y="720" width="240" height="40" rx="6" fill="rgba(45,49,66,0.04)" stroke="none"/>
+      <rect x="40" y="752" width="240" height="8" fill="rgba(45,49,66,0.04)"/>
+      <line x1="40" y1="760" x2="280" y2="760" stroke="rgba(45,49,66,0.22)" stroke-width="1"/>
+      <text x="56" y="736" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">ENTITY</text>
+      <text x="56" y="752" fill="#2d3142" font-size="14" font-weight="600" font-family="'Geist', sans-serif">Coupon</text>
+      <text x="56" y="780" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace"># Id</text>
+      <text x="264" y="780" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">uuid</text>
+      <text x="56" y="800" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">→ ConsumerProfileId</text>
+      <text x="264" y="800" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">uuid</text>
+      <text x="56" y="820" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">→ BrandId</text>
+      <text x="264" y="820" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">uuid · null</text>
+      <text x="56" y="840" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">Code</text>
+      <text x="264" y="840" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">text</text>
+      <text x="56" y="860" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">DiscountPercentage</text>
+      <text x="264" y="860" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">int</text>
+      <text x="56" y="880" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">Status</text>
+      <text x="264" y="880" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">enum</text>
+      <text x="56" y="900" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">IssuedAt</text>
+      <text x="264" y="900" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">timestamp</text>
+      <text x="56" y="920" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">ExpiresAt</text>
+      <text x="264" y="920" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">timestamp</text>
+      <text x="56" y="940" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">RedeemedAt</text>
+      <text x="264" y="940" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">timestamp · null</text>
+
+      <!-- Entity: Tenant -->
+      <rect x="440" y="520" width="240" height="180" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <rect x="440" y="520" width="240" height="40" rx="6" fill="rgba(45,49,66,0.04)" stroke="none"/>
+      <rect x="440" y="552" width="240" height="8" fill="rgba(45,49,66,0.04)"/>
+      <line x1="440" y1="560" x2="680" y2="560" stroke="rgba(45,49,66,0.22)" stroke-width="1"/>
+      <text x="456" y="536" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">ENTITY</text>
+      <text x="456" y="552" fill="#2d3142" font-size="14" font-weight="600" font-family="'Geist', sans-serif">Tenant</text>
+      <text x="456" y="580" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace"># Id</text>
+      <text x="664" y="580" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">uuid</text>
+      <text x="456" y="600" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">CompanyName</text>
+      <text x="664" y="600" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">text</text>
+      <text x="456" y="620" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">Status</text>
+      <text x="664" y="620" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">enum</text>
+      <text x="456" y="640" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">SubscriptionTier</text>
+      <text x="664" y="640" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">enum</text>
+      <text x="456" y="660" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">→ BrandId</text>
+      <text x="664" y="660" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">uuid · null</text>
+      <text x="456" y="680" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">CreatedAt</text>
+      <text x="664" y="680" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">timestamp</text>
+
+      <!-- Entity: Brand -->
+      <rect x="440" y="740" width="240" height="140" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <rect x="440" y="740" width="240" height="40" rx="6" fill="rgba(45,49,66,0.04)" stroke="none"/>
+      <rect x="440" y="772" width="240" height="8" fill="rgba(45,49,66,0.04)"/>
+      <line x1="440" y1="780" x2="680" y2="780" stroke="rgba(45,49,66,0.22)" stroke-width="1"/>
+      <text x="456" y="756" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">ENTITY</text>
+      <text x="456" y="772" fill="#2d3142" font-size="14" font-weight="600" font-family="'Geist', sans-serif">Brand</text>
+      <text x="456" y="800" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace"># Id</text>
+      <text x="664" y="800" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">uuid</text>
+      <text x="456" y="820" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">Name</text>
+      <text x="664" y="820" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">text</text>
+      <text x="456" y="840" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">LogoUrl</text>
+      <text x="664" y="840" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">text · null</text>
+      <text x="456" y="860" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">IsActive</text>
+      <text x="664" y="860" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">bool</text>
+
+      <!-- Entity: Receipt (focal / aggregate root) -->
+      <rect x="840" y="300" width="240" height="240" rx="6" fill="rgba(235,108,54,0.04)" stroke="#eb6c36" stroke-width="1"/>
+      <rect x="840" y="300" width="240" height="40" rx="6" fill="rgba(235,108,54,0.10)" stroke="none"/>
+      <rect x="840" y="332" width="240" height="8" fill="rgba(235,108,54,0.10)"/>
+      <line x1="840" y1="340" x2="1080" y2="340" stroke="rgba(235,108,54,0.40)" stroke-width="1"/>
+      <text x="856" y="316" fill="#eb6c36" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">ENTITY · AGGREGATE ROOT</text>
+      <text x="856" y="332" fill="#2d3142" font-size="14" font-weight="600" font-family="'Geist', sans-serif">Receipt</text>
+      <text x="856" y="360" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace"># Id</text>
+      <text x="1064" y="360" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">uuid</text>
+      <text x="856" y="380" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">→ ConsumerProfileId</text>
+      <text x="1064" y="380" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">uuid · null</text>
+      <text x="856" y="400" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">→ BrandId</text>
+      <text x="1064" y="400" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">uuid</text>
+      <text x="856" y="420" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">ReceiptDate</text>
+      <text x="1064" y="420" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">timestamp</text>
+      <text x="856" y="440" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">TotalAmount</text>
+      <text x="1064" y="440" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">decimal</text>
+      <text x="856" y="460" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">ImageUrl</text>
+      <text x="1064" y="460" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">text · null</text>
+      <text x="856" y="480" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">Status</text>
+      <text x="1064" y="480" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">enum</text>
+      <text x="856" y="500" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">CreatedAt</text>
+      <text x="1064" y="500" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">timestamp</text>
+      <text x="856" y="520" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">IsRewarded</text>
+      <text x="1064" y="520" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">bool</text>
+
+      <!-- Entity: ReceiptItem -->
+      <rect x="840" y="580" width="240" height="220" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <rect x="840" y="580" width="240" height="40" rx="6" fill="rgba(45,49,66,0.04)" stroke="none"/>
+      <rect x="840" y="612" width="240" height="8" fill="rgba(45,49,66,0.04)"/>
+      <line x1="840" y1="620" x2="1080" y2="620" stroke="rgba(45,49,66,0.22)" stroke-width="1"/>
+      <text x="856" y="596" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">ENTITY</text>
+      <text x="856" y="612" fill="#2d3142" font-size="14" font-weight="600" font-family="'Geist', sans-serif">ReceiptItem</text>
+      <text x="856" y="640" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace"># Id</text>
+      <text x="1064" y="640" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">uuid</text>
+      <text x="856" y="660" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">→ ReceiptId</text>
+      <text x="1064" y="660" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">uuid</text>
+      <text x="856" y="680" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">ProductName</text>
+      <text x="1064" y="680" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">text</text>
+      <text x="856" y="700" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">ProductCategory</text>
+      <text x="1064" y="700" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">text · null</text>
+      <text x="856" y="720" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">Quantity</text>
+      <text x="1064" y="720" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">int</text>
+      <text x="856" y="740" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">UnitPrice</text>
+      <text x="1064" y="740" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">decimal</text>
+      <text x="856" y="760" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">TotalPrice</text>
+      <text x="1064" y="760" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">decimal</text>
+      <text x="856" y="780" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace">AttributesJson</text>
+      <text x="1064" y="780" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" text-anchor="end">jsonb · null</text>
+
+      <!-- ============ Legend ============ -->
+      <line x1="40" y1="1000" x2="1120" y2="1000" stroke="rgba(45,49,66,0.10)" stroke-width="0.8"/>
+      <text x="40" y="1016" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.18em">LEGEND</text>
+
+      <rect x="40" y="1032" width="14" height="10" rx="2" fill="rgba(235,108,54,0.04)" stroke="#eb6c36" stroke-width="1"/>
+      <text x="60" y="1040" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">Aggregate root</text>
+
+      <rect x="190" y="1032" width="14" height="10" rx="2" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="210" y="1040" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">Entity</text>
+
+      <text x="290" y="1040" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace" font-weight="600">#</text>
+      <text x="306" y="1040" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">Primary key</text>
+
+      <text x="410" y="1040" fill="#2d3142" font-size="10" font-family="'Geist Mono', monospace" font-weight="600">→</text>
+      <text x="426" y="1040" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">Foreign key</text>
+
+      <text x="530" y="1040" fill="#4f5d75" font-size="10" font-family="'Geist Mono', monospace" font-weight="600">1 / N</text>
+      <text x="562" y="1040" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">Cardinality</text>
+
+      <line x1="660" y1="1036" x2="688" y2="1036" stroke="#4f5d75" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow)"/>
+      <text x="696" y="1040" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">Optional / nullable FK</text>
+    </svg>
+  </div>
+</body>
+</html>

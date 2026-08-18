@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CRS-INTERN-PROJECT · Tenant onay süreci</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-paper:   #f5f5f5;
+      --color-ink:     #2d3142;
+      --color-muted:   #4f5d75;
+      --color-accent:  #eb6c36;
+      --font-sans:     'Geist', system-ui, sans-serif;
+      --font-serif:    'Instrument Serif', serif;
+      --font-mono:     'Geist Mono', ui-monospace, monospace;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-paper);
+      color: var(--color-ink);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 2rem;
+    }
+
+    .frame { max-width: 1200px; width: 100%; }
+
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      color: var(--color-ink);
+      margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+      font-family: var(--font-sans);
+      font-size: 0.9rem;
+      color: var(--color-muted);
+      margin-bottom: 1.5rem;
+      max-width: 640px;
+    }
+
+    svg { width: 100%; max-width: 640px; display: block; margin: 0 auto; }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">Flowchart · CRS-INTERN-PROJECT</p>
+    <h1>Tenant onay süreci</h1>
+    <p class="subtitle">Şirketin kendi kendine kayıt olması (self-service) ile başlayıp SystemAdmin onayında sonlanan akış.</p>
+
+    <svg viewBox="0 0 640 780" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="crs-flow-title crs-flow-desc">
+      <title id="crs-flow-title">Tenant onay süreci</title>
+      <desc id="crs-flow-desc">Flowchart showing a company self-registering, landing in WaitingForApproval, and a SystemAdmin either approving it into an active tenant with an assigned brand and subscription tier, or rejecting it.</desc>
+      <defs>
+        <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#4f5d75"/></marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#f5f5f5"/>
+
+      <!-- Arrows first (behind boxes) -->
+      <line x1="180" y1="96" x2="180" y2="152" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <line x1="180" y1="216" x2="180" y2="252" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <line x1="180" y1="316" x2="180" y2="356" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+      <!-- Decision -> approved (right, EVET) -->
+      <line x1="320" y1="420" x2="360" y2="420" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <!-- Decision -> rejected (down, HAYIR) -->
+      <line x1="180" y1="484" x2="180" y2="524" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+      <!-- Approved column -->
+      <line x1="480" y1="452" x2="480" y2="492" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+      <line x1="480" y1="556" x2="480" y2="596" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+      <!-- Rejected trunk -->
+      <line x1="180" y1="588" x2="180" y2="628" stroke="#4f5d75" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+      <!-- Branch labels -->
+      <rect x="324" y="400" width="32" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="340" y="409" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">EVET</text>
+
+      <rect x="188" y="496" width="40" height="12" rx="2" fill="#f5f5f5"/>
+      <text x="208" y="505" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">HAYIR</text>
+
+      <!-- Node: Start (oval) -->
+      <rect x="80" y="40" width="200" height="56" rx="20" fill="#f5f5f5"/>
+      <rect x="80" y="40" width="200" height="56" rx="20" fill="rgba(79,93,117,0.10)" stroke="#7a8399" stroke-width="1"/>
+      <text x="180" y="64" fill="#2d3142" font-size="11" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Şirket kayıt formu</text>
+      <text x="180" y="80" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">RegisterTenantDto</text>
+
+      <!-- Node: Process 1 -->
+      <rect x="60" y="152" width="240" height="64" rx="6" fill="#f5f5f5"/>
+      <rect x="60" y="152" width="240" height="64" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="180" y="180" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Tenant oluşturulur</text>
+      <text x="180" y="196" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">WaitingForApproval</text>
+
+      <!-- Node: Process 2 -->
+      <rect x="60" y="252" width="240" height="64" rx="6" fill="#f5f5f5"/>
+      <rect x="60" y="252" width="240" height="64" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="180" y="280" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Admin'e listelenir</text>
+      <text x="180" y="296" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">PendingTenantDto</text>
+
+      <!-- Node: Decision (diamond, focal) -->
+      <polygon points="180,356 320,420 180,484 40,420" fill="#f5f5f5"/>
+      <polygon points="180,356 320,420 180,484 40,420" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" stroke-width="1.2"/>
+      <text x="180" y="424" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Onaylandı mı?</text>
+
+      <!-- Node: Process 3a (approved) -->
+      <rect x="360" y="388" width="240" height="64" rx="6" fill="#f5f5f5"/>
+      <rect x="360" y="388" width="240" height="64" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="480" y="416" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Plan ve marka atanır</text>
+      <text x="480" y="432" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">ApproveTenantDto</text>
+
+      <!-- Node: Process 4a (approved) -->
+      <rect x="360" y="492" width="240" height="64" rx="6" fill="#f5f5f5"/>
+      <rect x="360" y="492" width="240" height="64" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="480" y="520" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Tenant aktif olur</text>
+      <text x="480" y="536" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">TenantStatus = Active</text>
+
+      <!-- Node: End approved (oval) -->
+      <rect x="360" y="596" width="240" height="64" rx="20" fill="#f5f5f5"/>
+      <rect x="360" y="596" width="240" height="64" rx="20" fill="rgba(79,93,117,0.10)" stroke="#7a8399" stroke-width="1"/>
+      <text x="480" y="624" fill="#2d3142" font-size="11" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Takım daveti açılır</text>
+      <text x="480" y="640" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">Owner davet edebilir</text>
+
+      <!-- Node: Process 3b (rejected) -->
+      <rect x="60" y="524" width="240" height="64" rx="6" fill="#f5f5f5"/>
+      <rect x="60" y="524" width="240" height="64" rx="6" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="180" y="552" fill="#2d3142" font-size="12" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Başvuru reddedilir</text>
+      <text x="180" y="568" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">TenantStatus = Rejected</text>
+
+      <!-- Node: End rejected (oval) -->
+      <rect x="60" y="628" width="240" height="64" rx="20" fill="#f5f5f5"/>
+      <rect x="60" y="628" width="240" height="64" rx="20" fill="rgba(79,93,117,0.10)" stroke="#7a8399" stroke-width="1"/>
+      <text x="180" y="656" fill="#2d3142" font-size="11" font-weight="600" font-family="'Geist', sans-serif" text-anchor="middle">Şirkete bildirilir</text>
+      <text x="180" y="672" fill="#4f5d75" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">Red e-postası</text>
+
+      <!-- Legend strip -->
+      <line x1="40" y1="712" x2="600" y2="712" stroke="rgba(45,49,66,0.10)" stroke-width="0.8"/>
+      <text x="40" y="728" fill="#4f5d75" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.18em">LEGEND</text>
+
+      <rect x="40" y="744" width="14" height="10" rx="2" fill="rgba(235,108,54,0.08)" stroke="#eb6c36" stroke-width="1"/>
+      <text x="60" y="752" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">Karar noktası</text>
+
+      <rect x="220" y="744" width="14" height="10" rx="2" fill="#ffffff" stroke="#2d3142" stroke-width="1"/>
+      <text x="240" y="752" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">İşlem adımı</text>
+
+      <rect x="400" y="744" width="14" height="10" rx="2" fill="rgba(79,93,117,0.10)" stroke="#7a8399" stroke-width="1"/>
+      <text x="420" y="752" fill="#4f5d75" font-size="8.5" font-family="'Geist', sans-serif">Başlangıç / Bitiş</text>
+    </svg>
+  </div>
+</body>
+</html>
