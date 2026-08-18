@@ -2,6 +2,10 @@ import { useState, useEffect } from 'react';
 import { Loader2, AlertCircle } from 'lucide-react';
 import api from '../services/api';
 
+const CATEGORICAL_PALETTE = ['#0B57D0', '#eb6834', '#1baf7a', '#eda100', '#e87ba4', '#4a3aa7', '#e34948'];
+const OVERFLOW_COLOR = '#C6C7C6';
+const categoricalColor = (index) => CATEGORICAL_PALETTE[index] ?? OVERFLOW_COLOR;
+
 const CorporateAnalytics = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -105,7 +109,10 @@ const CorporateAnalytics = () => {
               {data.categoryBreakdown.map((cat, idx) => (
                 <div key={idx} className="space-y-1.5">
                   <div className="flex justify-between text-sm">
-                    <span className="font-medium text-[#1F1F1F]">{cat.categoryName}</span>
+                    <span className="flex items-center gap-2 font-medium text-[#1F1F1F]">
+                      <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: categoricalColor(idx) }} />
+                      {cat.categoryName}
+                    </span>
                     <span className="text-[#1F1F1F]">
                       ₺{Number(cat.totalAmount).toLocaleString('tr-TR', { minimumFractionDigits: 2 })}
                       <span className="text-[#747775] text-sm ml-1.5">%{cat.percentage}</span>
@@ -113,8 +120,8 @@ const CorporateAnalytics = () => {
                   </div>
                   <div className="w-full bg-[#F0F4F9] h-1.5 rounded-full overflow-hidden">
                     <div
-                      className="bg-[#0B57D0] h-full rounded-full transition-all duration-500"
-                      style={{ width: `${Math.min(cat.percentage, 100)}%` }}
+                      className="h-full rounded-full transition-all duration-500"
+                      style={{ width: `${Math.min(cat.percentage, 100)}%`, backgroundColor: categoricalColor(idx) }}
                     />
                   </div>
                 </div>
@@ -140,27 +147,38 @@ const CorporateAnalytics = () => {
 
           {data.marketShareAnalysis && data.marketShareAnalysis.length > 0 ? (
             <div className="space-y-3.5">
-              {data.marketShareAnalysis.map((item, idx) => (
-                <div key={idx} className="space-y-1.5">
-                  <div className="flex items-baseline justify-between text-sm">
-                    <div className="flex items-baseline gap-2">
-                      <span className={`font-medium ${item.isCurrentBrand ? 'text-[#0B57D0]' : 'text-[#1F1F1F]'}`}>
-                        {item.brandName}
-                      </span>
-                      {item.isCurrentBrand && (
-                        <span className="text-[13px] text-[#0B57D0]">· sizin markanız</span>
-                      )}
+              {(() => {
+                const isPremium = data.subscriptionPlan === 'Premium';
+                let competitorIdx = 0;
+                return data.marketShareAnalysis.map((item, idx) => {
+                  const barColor = item.isCurrentBrand
+                    ? '#0B57D0'
+                    : isPremium
+                    ? categoricalColor(++competitorIdx)
+                    : '#C6C7C6';
+                  return (
+                  <div key={idx} className="space-y-1.5">
+                    <div className="flex items-baseline justify-between text-sm">
+                      <div className="flex items-baseline gap-2">
+                        <span className={`font-medium ${item.isCurrentBrand ? 'text-[#0B57D0]' : 'text-[#1F1F1F]'}`}>
+                          {item.brandName}
+                        </span>
+                        {item.isCurrentBrand && (
+                          <span className="text-[13px] text-[#0B57D0]">· sizin markanız</span>
+                        )}
+                      </div>
+                      <span className="text-[#1F1F1F]">%{item.marketSharePercentage}</span>
                     </div>
-                    <span className="text-[#1F1F1F]">%{item.marketSharePercentage}</span>
+                    <div className="w-full bg-[#F0F4F9] h-1.5 rounded-full overflow-hidden">
+                      <div
+                        className="h-full rounded-full transition-all duration-500"
+                        style={{ width: `${Math.min(item.marketSharePercentage, 100)}%`, backgroundColor: barColor }}
+                      />
+                    </div>
                   </div>
-                  <div className="w-full bg-[#F0F4F9] h-1.5 rounded-full overflow-hidden">
-                    <div
-                      className={`h-full rounded-full transition-all duration-500 ${item.isCurrentBrand ? 'bg-[#0B57D0]' : 'bg-[#C6C7C6]'}`}
-                      style={{ width: `${Math.min(item.marketSharePercentage, 100)}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
+                  );
+                });
+              })()}
             </div>
           ) : (
             <p className="text-sm text-[#747775] py-6 text-center">Pazar payı verisi bulunmuyor.</p>

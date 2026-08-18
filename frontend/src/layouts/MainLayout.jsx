@@ -19,7 +19,9 @@ import {
   Building2,
   Briefcase,
   Tag,
-  Users
+  Users,
+  UserCog,
+  LayoutGrid
 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 
@@ -87,7 +89,9 @@ const MainLayout = () => {
         return [
           { path: '/', label: 'Rapor Özeti (Analiz)', icon: BarChart3, category: 'Analiz' },
           { path: '/customer-insights', label: 'Kitle Analizi', icon: Users, category: 'Analiz' },
-          { path: '/settings', label: 'Yönetim & Ayarlar', icon: Settings, category: 'Yapılandırma' },
+          { path: '/segmentation', label: 'Segmentasyon', icon: LayoutGrid, category: 'Analiz' },
+          { path: '/team', label: 'Ekip Yönetimi', icon: UserCog, category: 'Yapılandırma' },
+          { path: '/settings', label: 'Ayarlar', icon: Settings, category: 'Yapılandırma' },
         ];
       case 'SystemAdmin':
         return [
@@ -109,6 +113,16 @@ const MainLayout = () => {
   };
 
   const navItems = getNavItems();
+
+  const navGroups = navItems.reduce((groups, item) => {
+    const lastGroup = groups[groups.length - 1];
+    if (lastGroup && lastGroup.category === item.category) {
+      lastGroup.items.push(item);
+    } else {
+      groups.push({ category: item.category, items: [item] });
+    }
+    return groups;
+  }, []);
 
   return (
     <div className="h-screen overflow-hidden bg-[#F8F9FA] text-[#1F1F1F] flex font-sans antialiased">
@@ -134,30 +148,34 @@ const MainLayout = () => {
         </div>
 
         {/* Navigation Section */}
-        <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
-          {sidebarOpen && (
-            <div className="px-3 pt-3 pb-1.5 text-[11px] font-semibold text-[#8E918F] uppercase tracking-wider">
-              Menü
+        <nav className="flex-1 p-3 space-y-3 overflow-y-auto">
+          {navGroups.map((group) => (
+            <div key={group.category} className="space-y-1">
+              {sidebarOpen && (
+                <div className="px-3 pt-1 pb-1.5 text-[11px] font-semibold text-[#8E918F] uppercase tracking-wider">
+                  {group.category}
+                </div>
+              )}
+              {group.items.map((item) => {
+                const isActive = location.pathname === item.path;
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className={`flex items-center space-x-3.5 px-4 py-2.5 rounded-full text-xs font-medium transition-all ${
+                      isActive
+                        ? 'bg-[#D3E3FD] text-[#041E49] font-bold shadow-xs'
+                        : 'text-[#C4C7C5] hover:bg-[#2A3345] hover:text-white'
+                    }`}
+                  >
+                    <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-[#041E49]' : 'text-[#A8C7FA]'}`} />
+                    {sidebarOpen && <span className="truncate">{item.label}</span>}
+                  </Link>
+                );
+              })}
             </div>
-          )}
-          {navItems.map((item) => {
-            const isActive = location.pathname === item.path;
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`flex items-center space-x-3.5 px-4 py-2.5 rounded-full text-xs font-medium transition-all ${
-                  isActive 
-                    ? 'bg-[#D3E3FD] text-[#041E49] font-bold shadow-xs' 
-                    : 'text-[#C4C7C5] hover:bg-[#2A3345] hover:text-white'
-                }`}
-              >
-                <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-[#041E49]' : 'text-[#A8C7FA]'}`} />
-                {sidebarOpen && <span className="truncate">{item.label}</span>}
-              </Link>
-            );
-          })}
+          ))}
         </nav>
 
         {/* GA4 Bottom Admin & Role Quick Switcher */}

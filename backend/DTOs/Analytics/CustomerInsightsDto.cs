@@ -6,6 +6,10 @@ namespace CRS_INTERN_PROJECT.DTOs.Analytics
         public string? ViewedBrandName { get; set; }
         public DemographicsDto Demographics { get; set; } = new();
         public IncomeLevelDto IncomeLevel { get; set; } = new();
+        // güncelleme
+        public List<TrendItemDto> SalesTrend { get; set; } = new();
+        public List<BreakdownItemDto> RepeatCustomerRate { get; set; } = new();
+        public List<RfmSegmentDto> RfmSegments { get; set; } = new();
     }
 
     public class BrandOptionDto
@@ -33,5 +37,18 @@ namespace CRS_INTERN_PROJECT.DTOs.Analytics
         public string Label { get; set; } = string.Empty;
         public int Count { get; set; }
         public double Percentage { get; set; }
+    }
+    public class TrendItemDto
+    {
+        public string Label{get;set;} =string.Empty;
+        public double Value { get; set; }
+    }
+
+    public class RfmSegmentDto
+    {
+        public string Label { get; set; } = string.Empty;
+        public int Count { get; set; }
+        public double Percentage { get; set; }
+        public double AvgMonetary { get; set; }
     }
 }

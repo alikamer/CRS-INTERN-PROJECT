@@ -1,15 +1,27 @@
 import { useState, useEffect } from 'react';
 import { Loader2, AlertCircle } from 'lucide-react';
-import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { getCustomerInsights, getInsightsBrands } from '../services/api';
+import BrandScopeSelector from '../components/BrandScopeSelector';
 
 const SEQUENTIAL_BLUE = ['#b7d3f6', '#86b6ef', '#5598e7', '#2a78d6', '#1c5cab', '#104281'];
 const NEUTRAL_GRAY = '#C6C7C6';
 const GENDER_COLORS = { Erkek: '#A8C7FA', Kadın: '#F4A6C6' };
+const REPEAT_RATE_COLORS = { 'Tekrar Eden': '#1baf7a', 'Tek Seferlik': '#eda100' };
 
 const barColor = (label, index) => (label === 'Bilinmiyor' ? NEUTRAL_GRAY : SEQUENTIAL_BLUE[index] || NEUTRAL_GRAY);
 
-const OrderedDistributionList = ({ items }) => (
+const MONTH_LABELS = ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'];
+
+const formatMonthLabel = (label) => {
+  const [year, month] = label.split('-');
+  const monthName = MONTH_LABELS[Number(month) - 1] ?? month;
+  return `${monthName} ${year}`;
+};
+
+const formatCurrency = (value) => `₺${Number(value).toLocaleString('tr-TR', { minimumFractionDigits: 2 })}`;
+
+const OrderedDistributionList = ({ items, getColor = barColor }) => (
   <div className="space-y-4">
     {items.map((item, index) => (
       <div key={item.label} className="space-y-1.5">
@@ -20,7 +32,7 @@ const OrderedDistributionList = ({ items }) => (
         <div className="w-full bg-[#F0F4F9] h-1.5 rounded-full overflow-hidden">
           <div
             className="h-full rounded-full transition-all duration-500"
-            style={{ width: `${Math.min(item.percentage, 100)}%`, backgroundColor: barColor(item.label, index) }}
+            style={{ width: `${Math.min(item.percentage, 100)}%`, backgroundColor: getColor(item.label, index) }}
           />
         </div>
       </div>
@@ -92,7 +104,7 @@ const renderSliceLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percenta
   );
 };
 
-const GenderPieChart = ({ items }) => {
+const CategoricalDonutChart = ({ items, colors }) => {
   if (items.length === 0) {
     return <p className="text-sm text-[#747775] py-6 text-center">Veri bulunmuyor.</p>;
   }
@@ -113,7 +125,7 @@ const GenderPieChart = ({ items }) => {
           labelLine={false}
         >
           {items.map((item) => (
-            <Cell key={item.label} fill={GENDER_COLORS[item.label] || NEUTRAL_GRAY} />
+            <Cell key={item.label} fill={colors[item.label] || NEUTRAL_GRAY} />
           ))}
         </Pie>
         <Tooltip content={<GenderTooltip />} />
@@ -129,38 +141,67 @@ const GenderPieChart = ({ items }) => {
   );
 };
 
-const BrandScopeSelector = ({ mode, onModeChange, brands, selectedBrandId, onSelectedBrandChange }) => (
-  <div className="ga4-card p-4 flex flex-col sm:flex-row sm:items-center gap-3">
-    <span className="text-sm font-semibold text-[#1F1F1F] shrink-0">Kapsam:</span>
-    <div className="flex items-center gap-1 bg-[#F0F4F9] rounded-full p-1">
-      {[
-        { key: 'own', label: 'Kendi Markam' },
-        { key: 'all', label: 'Tüm Markalar' },
-        { key: 'select', label: 'Marka Seç' },
-      ].map((option) => (
-        <button
-          key={option.key}
-          onClick={() => onModeChange(option.key)}
-          className={`px-3.5 py-1.5 rounded-full text-sm font-medium transition-colors ${
-            mode === option.key ? 'bg-white text-[#0B57D0] shadow-xs' : 'text-[#5E5E5E] hover:text-[#1F1F1F]'
-          }`}
-        >
-          {option.label}
-        </button>
-      ))}
+const SalesTrendTooltip = ({ active, payload }) => {
+  if (!active || !payload?.length) return null;
+  const item = payload[0].payload;
+  return (
+    <div className="bg-white border border-[#E1E3E1] rounded-lg shadow-md px-3 py-2 text-sm">
+      <p className="font-semibold text-[#1F1F1F]">{formatMonthLabel(item.label)}</p>
+      <p className="text-[#5E5E5E]">{formatCurrency(item.value)}</p>
     </div>
-    {mode === 'select' && (
-      <select
-        value={selectedBrandId}
-        onChange={(e) => onSelectedBrandChange(e.target.value)}
-        className="px-3 py-1.5 border border-[#E1E3E1] rounded-lg text-sm bg-white outline-none focus:border-[#0B57D0]"
+  );
+};
+
+const SalesTrendChart = ({ items }) => {
+  if (!items || items.length === 0) {
+    return <p className="text-sm text-[#747775] py-6 text-center">Satış trendi verisi bulunmuyor.</p>;
+  }
+
+  return (
+    <ResponsiveContainer width="100%" height={300}>
+      <LineChart data={items} margin={{ top: 8, right: 12, left: 0, bottom: 16 }}>
+        <CartesianGrid stroke="#E1E3E1" vertical={false} />
+        <XAxis
+          dataKey="label"
+          tickFormatter={formatMonthLabel}
+          interval={0}
+          angle={-35}
+          textAnchor="end"
+          height={60}
+          tick={{ fontSize: 12, fontWeight: 600, fill: '#3C4043' }}
+          axisLine={{ stroke: '#E1E3E1' }}
+          tickLine={false}
+        />
+        <YAxis
+          tickFormatter={(v) => `₺${Number(v).toLocaleString('tr-TR')}`}
+          tick={{ fontSize: 12, fill: '#5E5E5E' }}
+          axisLine={false}
+          tickLine={false}
+          width={70}
+        />
+        <Tooltip content={<SalesTrendTooltip />} />
+        <Line type="monotone" dataKey="value" stroke="#0B57D0" strokeWidth={2.5} dot={{ r: 3, fill: '#0B57D0' }} activeDot={{ r: 5 }} />
+      </LineChart>
+    </ResponsiveContainer>
+  );
+};
+
+const InsightsTabSelector = ({ activeTab, onTabChange }) => (
+  <div className="flex items-center gap-1 bg-[#F0F4F9] rounded-full p-1 w-fit">
+    {[
+      { key: 'demographics', label: 'Demografi' },
+      { key: 'behavior', label: 'Davranış' },
+    ].map((tab) => (
+      <button
+        key={tab.key}
+        onClick={() => onTabChange(tab.key)}
+        className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+          activeTab === tab.key ? 'bg-white text-[#0B57D0] shadow-xs' : 'text-[#5E5E5E] hover:text-[#1F1F1F]'
+        }`}
       >
-        <option value="">Marka seçin</option>
-        {brands.map((b) => (
-          <option key={b.id} value={b.id}>{b.name}</option>
-        ))}
-      </select>
-    )}
+        {tab.label}
+      </button>
+    ))}
   </div>
 );
 
@@ -169,6 +210,7 @@ const CustomerInsights = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [activeTab, setActiveTab] = useState('demographics');
   const [mode, setMode] = useState('own');
   const [brands, setBrands] = useState([]);
   const [selectedBrandId, setSelectedBrandId] = useState('');
@@ -246,14 +288,43 @@ const CustomerInsights = () => {
   const hasCustomers = demographics && demographics.totalCustomers > 0;
   const isPremium = data?.subscriptionPlan === 'Premium';
 
+  const topAgeBand = hasCustomers
+    ? [...demographics.ageDistribution].sort((a, b) => b.count - a.count)[0]
+    : null;
+  const repeatRate = hasCustomers
+    ? (data.repeatCustomerRate ?? []).find((r) => r.label === 'Tekrar Eden')
+    : null;
+
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-[#1F1F1F] tracking-tight">Kitle Analizi</h1>
         <p className="text-sm text-[#5E5E5E] mt-1">
-          {data?.viewedBrandName ? `${data.viewedBrandName} müşterilerinin` : 'Markanızdan alışveriş yapan müşterilerin'} yaş, cinsiyet, şehir ve gelir seviyesi dağılımı.
+          {data?.viewedBrandName ? `${data.viewedBrandName} müşterilerinin` : 'Markanızdan alışveriş yapan müşterilerin'} yaş, cinsiyet, şehir, gelir seviyesi dağılımı, satış trendi ve tekrar eden müşteri oranı.
         </p>
       </div>
+
+      {hasCustomers && (
+        <div className="ga4-card p-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-[#E1E3E1]">
+            <div className="pb-4 md:pb-0 md:pr-6">
+              <p className="text-sm text-[#5E5E5E] mb-1">Toplam Müşteri</p>
+              <p className="text-3xl font-bold text-[#1F1F1F] tracking-tight">{demographics.totalCustomers.toLocaleString('tr-TR')}</p>
+              <p className="text-sm text-[#747775] mt-1">Analiz kapsamındaki benzersiz müşteri</p>
+            </div>
+            <div className="py-4 md:py-0 md:px-6">
+              <p className="text-sm text-[#5E5E5E] mb-1">En Yoğun Yaş Grubu</p>
+              <p className="text-3xl font-bold text-[#1F1F1F] tracking-tight">{topAgeBand?.label ?? '—'}</p>
+              <p className="text-sm text-[#747775] mt-1">{topAgeBand ? `Müşterilerin %${topAgeBand.percentage}'i` : ''}</p>
+            </div>
+            <div className="pt-4 md:pt-0 md:pl-6">
+              <p className="text-sm text-[#5E5E5E] mb-1">Tekrar Eden Müşteri Oranı</p>
+              <p className="text-3xl font-bold text-[#1F1F1F] tracking-tight">%{repeatRate?.percentage ?? 0}</p>
+              <p className="text-sm text-[#747775] mt-1">Birden fazla onaylı fişi olanlar</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {isPremium && (
         <BrandScopeSelector
@@ -265,13 +336,15 @@ const CustomerInsights = () => {
         />
       )}
 
+      {hasCustomers && <InsightsTabSelector activeTab={activeTab} onTabChange={setActiveTab} />}
+
       {!hasCustomers ? (
         <div className="ga4-card p-6">
           <p className="text-sm text-[#747775] py-6 text-center">
             Henüz analiz için yeterli müşteri verisi bulunmuyor.
           </p>
         </div>
-      ) : (
+      ) : activeTab === 'demographics' ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
           <div className="ga4-card p-6 space-y-5">
             <h2 className="text-base font-bold text-[#1F1F1F] border-b border-[#E1E3E1] pb-3">
@@ -284,7 +357,7 @@ const CustomerInsights = () => {
             <h2 className="text-base font-bold text-[#1F1F1F] border-b border-[#E1E3E1] pb-3">
               Cinsiyet Dağılımı
             </h2>
-            <GenderPieChart items={demographics.genderDistribution} />
+            <CategoricalDonutChart items={demographics.genderDistribution} colors={GENDER_COLORS} />
           </div>
 
           <div className="ga4-card p-6 space-y-5">
@@ -299,6 +372,22 @@ const CustomerInsights = () => {
               Gelir Seviyesi Dağılımı
             </h2>
             <OrderedDistributionList items={incomeLevel.incomeDistribution} />
+          </div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+          <div className="lg:col-span-2 ga4-card p-6 space-y-5">
+            <h2 className="text-base font-bold text-[#1F1F1F] border-b border-[#E1E3E1] pb-3">
+              Aylık Satış Trendi
+            </h2>
+            <SalesTrendChart items={data.salesTrend} />
+          </div>
+
+          <div className="ga4-card p-6 space-y-5">
+            <h2 className="text-base font-bold text-[#1F1F1F] border-b border-[#E1E3E1] pb-3">
+              Tekrar Eden Müşteri Oranı
+            </h2>
+            <CategoricalDonutChart items={data.repeatCustomerRate ?? []} colors={REPEAT_RATE_COLORS} />
           </div>
         </div>
       )}
