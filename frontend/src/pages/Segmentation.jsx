@@ -2,20 +2,7 @@ import { useState, useEffect } from 'react';
 import { Loader2, AlertCircle } from 'lucide-react';
 import { getCustomerInsights, getInsightsBrands } from '../services/api';
 import BrandScopeSelector from '../components/BrandScopeSelector';
-
-const SEGMENT_COLORS = {
-  'Kaybetmek Üzereyiz': '#D3564C',
-  'Riskli': '#C97A3D',
-  'Uykuda': '#7C93A3',
-  'Sadık Müşteri': '#7C6B85',
-  'İlgi Bekleyen': '#B98A2E',
-  'Uykuya Dalıyor': '#5A9791',
-  'Şampiyon': '#0B57D0',
-  'Potansiyel Sadık': '#4E9B63',
-  'Umut Vaadeden': '#A6832E',
-  'Yeni Müşteri': '#8FA23E',
-  'Kayıp': '#8B3A32',
-};
+import SegmentDistributionList, { SEGMENT_COLORS } from '../components/SegmentDistributionList';
 
 const SEGMENT_GRID = {
   'Kaybetmek Üzereyiz': { colStart: 1, colEnd: 3, rowStart: 1, rowEnd: 2 },
@@ -30,21 +17,6 @@ const SEGMENT_GRID = {
   'Yeni Müşteri': { colStart: 5, colEnd: 6, rowStart: 5, rowEnd: 6 },
 };
 
-// Şampiyon (en değerli) → Kayıp (en değersiz) sırasıyla, RFM segment hiyerarşisi
-const SEGMENT_ORDER = [
-  'Şampiyon',
-  'Sadık Müşteri',
-  'Potansiyel Sadık',
-  'Yeni Müşteri',
-  'Umut Vaadeden',
-  'İlgi Bekleyen',
-  'Uykuya Dalıyor',
-  'Uykuda',
-  'Riskli',
-  'Kaybetmek Üzereyiz',
-  'Kayıp',
-];
-
 const SegmentGridChart = ({ items }) => {
   if (!items || items.length === 0) {
     return <p className="text-sm text-[#747775] py-6 text-center">Segment verisi bulunmuyor.</p>;
@@ -52,13 +24,16 @@ const SegmentGridChart = ({ items }) => {
 
   return (
     <div className="flex gap-2">
-      <div className="flex flex-col justify-between text-[11px] text-[#747775] py-1" style={{ writingMode: 'vertical-rl' }}>
+      <div
+        className="flex items-center justify-center shrink-0 text-[11px] font-medium text-[#5E5E5E]"
+        style={{ writingMode: 'vertical-rl', height: 320 }}
+      >
         <span className="rotate-180 tracking-wide">Frequency Score</span>
       </div>
 
       <div className="flex-1 space-y-1.5">
         <div className="flex gap-1.5">
-          <div className="flex flex-col justify-between text-[11px] text-[#747775] w-4 py-1" style={{ height: 320 }}>
+          <div className="flex flex-col justify-between text-[11px] text-[#747775] w-4 shrink-0 py-1" style={{ height: 320 }}>
             <span>5</span>
             <span>4</span>
             <span>3</span>
@@ -100,8 +75,9 @@ const SegmentGridChart = ({ items }) => {
           </div>
         </div>
 
-        <div className="flex gap-1.5 pl-[calc(1rem+0.375rem)]">
-          <div className="flex-1 flex justify-between text-[11px] text-[#747775] px-1">
+        <div className="flex gap-1.5">
+          <div className="w-4 shrink-0" />
+          <div className="flex-1 flex justify-between text-[11px] text-[#747775]">
             <span>0</span>
             <span>1</span>
             <span>2</span>
@@ -110,47 +86,11 @@ const SegmentGridChart = ({ items }) => {
             <span>5</span>
           </div>
         </div>
-        <p className="text-[11px] text-[#747775] text-center pl-[calc(1rem+0.375rem)]">Recency Score</p>
+        <div className="flex gap-1.5">
+          <div className="w-4 shrink-0" />
+          <p className="flex-1 text-[11px] font-medium text-[#5E5E5E] text-center">Recency Score</p>
+        </div>
       </div>
-    </div>
-  );
-};
-
-const SegmentDistributionList = ({ items }) => {
-  if (!items || items.length === 0) {
-    return <p className="text-sm text-[#747775] py-6 text-center">Segment verisi bulunmuyor.</p>;
-  }
-
-  const ordered = [...items].sort(
-    (a, b) => SEGMENT_ORDER.indexOf(a.label) - SEGMENT_ORDER.indexOf(b.label)
-  );
-  const maxPercentage = Math.max(...items.map((item) => item.percentage));
-
-  return (
-    <div className="space-y-4">
-      {ordered.map((item) => {
-        const color = SEGMENT_COLORS[item.label] ?? '#8E918F';
-        return (
-          <div key={item.label} className="space-y-1.5">
-            <div className="flex items-center justify-between text-sm">
-              <span className="flex items-center gap-2 font-medium text-[#1F1F1F]">
-                <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: color }} />
-                {item.label}
-              </span>
-              <span className="text-[#1F1F1F]">
-                {item.count.toLocaleString('tr-TR')}
-                <span className="text-[#747775] text-sm ml-1.5">%{item.percentage}</span>
-              </span>
-            </div>
-            <div className="w-full bg-[#F0F4F9] h-1.5 rounded-full overflow-hidden">
-              <div
-                className="h-full rounded-full transition-all duration-500"
-                style={{ width: `${(item.percentage / maxPercentage) * 100}%`, backgroundColor: color }}
-              />
-            </div>
-          </div>
-        );
-      })}
     </div>
   );
 };

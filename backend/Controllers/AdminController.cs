@@ -2,6 +2,7 @@ using CRS_INTERN_PROJECT.DTOs.Admin;
 using CRS_INTERN_PROJECT.Services.Admin;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using CRS_INTERN_PROJECT.Constants;
 
 namespace CRS_INTERN_PROJECT.Controllers;
 
@@ -70,7 +71,7 @@ public class AdminController : ControllerBase
     /// Onay bekleyen şirket başvurularını, admin telefonla doğrulasın diye iletişim bilgileriyle getirir.
     /// </summary>
     [HttpGet("pending-tenants")]
-    [Authorize(Roles = "SystemAdmin")]
+    [Authorize(Roles = UserRoles.SystemAdmin)]
     public async Task<IActionResult> GetPendingTenants()
     {
         try
@@ -88,7 +89,7 @@ public class AdminController : ControllerBase
     /// Telefonla doğrulanan şirket başvurusunu onaylar; marka ve abonelik paketi burada atanır.
     /// </summary>
     [HttpPost("tenants/{tenantId}/approve")]
-    [Authorize(Roles = "SystemAdmin")]
+    [Authorize(Roles = UserRoles.SystemAdmin)]
     public async Task<IActionResult> ApproveTenant(Guid tenantId, [FromBody] ApproveTenantDto dto)
     {
         try
@@ -106,7 +107,7 @@ public class AdminController : ControllerBase
     /// Uygun görülmeyen şirket başvurusunu reddeder.
     /// </summary>
     [HttpPost("tenants/{tenantId}/reject")]
-    [Authorize(Roles = "SystemAdmin")]
+    [Authorize(Roles = UserRoles.SystemAdmin)]
     public async Task<IActionResult> RejectTenant(Guid tenantId)
     {
         try
@@ -124,7 +125,7 @@ public class AdminController : ControllerBase
     Onay formundaki marka dropdown'ı için sade marka listesi.
     */
     [HttpGet("brands")]
-    [Authorize(Roles = "SystemAdmin")]
+    [Authorize(Roles = UserRoles.SystemAdmin)]
     public async Task<IActionResult> GetBrands()
     {
         try
@@ -143,7 +144,7 @@ public class AdminController : ControllerBase
     /// tüm şirketleri listeler
     /// </summary>
     [HttpGet("tenants")]
-    [Authorize(Roles = "SystemAdmin")]
+    [Authorize(Roles = UserRoles.SystemAdmin)]
     public async Task<IActionResult> GetAllTenants()
     {
         try
@@ -161,7 +162,7 @@ public class AdminController : ControllerBase
     /// Aktif bir tenant'ın abonelik paketini sonradan değiştirir.
     /// </summary>
     [HttpPost("tenants/{tenantId}/subscription")]
-    [Authorize(Roles = "SystemAdmin")]
+    [Authorize(Roles = UserRoles.SystemAdmin)]
     public async Task<IActionResult> UpdateTenantSubscription(Guid tenantId, [FromBody] UpdateTenantSubscriptionDto dto)
     {
         try
@@ -176,7 +177,7 @@ public class AdminController : ControllerBase
     }
 //aktif-> pasif
     [HttpPost("tenants/{tenantId}/deactivate")]
-    [Authorize(Roles = "SystemAdmin")]
+    [Authorize(Roles = UserRoles.SystemAdmin)]
     public async Task<IActionResult> DeactivateTenant(Guid tenantId)
     {
         try
@@ -194,7 +195,7 @@ public class AdminController : ControllerBase
     // pasif--> aktif
   
     [HttpPost("tenants/{tenantId}/activate")]
-    [Authorize(Roles = "SystemAdmin")]
+    [Authorize(Roles = UserRoles.SystemAdmin)]
     public async Task<IActionResult> ActivateTenant(Guid tenantId)
     {
         try
@@ -212,7 +213,7 @@ public class AdminController : ControllerBase
     /// Marka Yönetimi ekranı için, aktif/pasif ayrımı yapmadan tüm markaları listeler.
     /// </summary>
     [HttpGet("brands/all")]
-    [Authorize(Roles = "SystemAdmin")]
+    [Authorize(Roles = UserRoles.SystemAdmin)]
     public async Task<IActionResult> GetAllBrandsForManagement()
     {
         try
@@ -228,7 +229,7 @@ public class AdminController : ControllerBase
 
     // create new brand
     [HttpPost("brands")]
-    [Authorize(Roles = "SystemAdmin")]
+    [Authorize(Roles = UserRoles.SystemAdmin)]
     public async Task<IActionResult> CreateBrand([FromBody] BrandInputDto dto)
     {
         try
@@ -244,7 +245,7 @@ public class AdminController : ControllerBase
 
     //brand edit
     [HttpPut("brands/{brandId}")]
-    [Authorize(Roles = "SystemAdmin")]
+    [Authorize(Roles = UserRoles.SystemAdmin)]
     public async Task<IActionResult> UpdateBrand(Guid brandId, [FromBody] BrandInputDto dto)
     {
         try
@@ -260,7 +261,7 @@ public class AdminController : ControllerBase
 
     
     [HttpPost("brands/{brandId}/deactivate")]
-    [Authorize(Roles = "SystemAdmin")]
+    [Authorize(Roles = UserRoles.SystemAdmin)]
     public async Task<IActionResult> DeactivateBrand(Guid brandId)
     {
         try
@@ -276,7 +277,7 @@ public class AdminController : ControllerBase
 
     
     [HttpPost("brands/{brandId}/activate")]
-    [Authorize(Roles = "SystemAdmin")]
+    [Authorize(Roles = UserRoles.SystemAdmin)]
     public async Task<IActionResult> ActivateBrand(Guid brandId)
     {
         try

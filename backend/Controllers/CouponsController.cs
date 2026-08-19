@@ -2,12 +2,13 @@ using System.Security.Claims;
 using CRS_INTERN_PROJECT.Services.Coupon;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using CRS_INTERN_PROJECT.Constants;
 
 namespace CRS_INTERN_PROJECT.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize(Roles = "Consumer")]
+[Authorize(Roles = UserRoles.Consumer)]
 public class CouponsController : ControllerBase
 {
     private readonly ICouponService _couponService;

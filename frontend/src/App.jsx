@@ -7,6 +7,7 @@ import ConsumerDashboard from './pages/ConsumerDashboard';
 import CorporateAnalytics from './pages/CorporateAnalytics';
 import CustomerInsights from './pages/CustomerInsights';
 import Segmentation from './pages/Segmentation';
+import GeneralDashboard from './pages/GeneralDashboard';
 import TeamManagement from './pages/TeamManagement';
 import AdminQueue from './pages/AdminQueue';
 import TenantApplications from './pages/TenantApplications';
@@ -41,6 +42,7 @@ function App() {
             <Route path="/" element={<RoleBasedHome />} />
             <Route path="/customer-insights" element={<CustomerInsights />} />
             <Route path="/segmentation" element={<Segmentation />} />
+            <Route path="/general-dashboard" element={<GeneralDashboard />} />
             <Route path="/team" element={<TeamManagement />} />
             <Route path="/tenant-applications" element={<TenantApplications />} />
             <Route path="/tenant-management" element={<TenantManagement />} />

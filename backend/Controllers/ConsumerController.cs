@@ -3,12 +3,13 @@ using CRS_INTERN_PROJECT.DTOs.Consumer;
 using CRS_INTERN_PROJECT.Services.Consumer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using CRS_INTERN_PROJECT.Constants;
 
 namespace CRS_INTERN_PROJECT.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize(Roles = "Consumer")] // Sadece Consumer yetkisine sahip olanlar bu isteği atabilir
+[Authorize(Roles = UserRoles.Consumer)] // Sadece Consumer yetkisine sahip olanlar bu isteği atabilir
 public class ConsumerController : ControllerBase
 {
     private readonly IConsumerService _consumerService;

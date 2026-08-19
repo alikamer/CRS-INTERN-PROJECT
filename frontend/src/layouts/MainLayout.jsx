@@ -90,6 +90,7 @@ const MainLayout = () => {
           { path: '/', label: 'Rapor Özeti (Analiz)', icon: BarChart3, category: 'Analiz' },
           { path: '/customer-insights', label: 'Kitle Analizi', icon: Users, category: 'Analiz' },
           { path: '/segmentation', label: 'Segmentasyon', icon: LayoutGrid, category: 'Analiz' },
+          { path: '/general-dashboard', label: 'Genel Dashboard', icon: LayoutDashboard, category: 'Analiz' },
           { path: '/team', label: 'Ekip Yönetimi', icon: UserCog, category: 'Yapılandırma' },
           { path: '/settings', label: 'Ayarlar', icon: Settings, category: 'Yapılandırma' },
         ];

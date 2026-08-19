@@ -3,6 +3,7 @@ using CRS_INTERN_PROJECT.DTOs.Receipt;
 using CRS_INTERN_PROJECT.Services.Receipts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using CRS_INTERN_PROJECT.Constants;
 
 namespace CRS_INTERN_PROJECT.Controllers;
 
@@ -69,7 +70,7 @@ public class ReceiptsController : ControllerBase
  //Pagination güncellemesi
 
     [HttpGet("all")]
-    [Authorize(Roles = "SystemAdmin")] // Sadece admin yetkisi ile all receipts getirilebilir !! 
+    [Authorize(Roles = UserRoles.SystemAdmin)] // Sadece admin yetkisi ile all receipts getirilebilir !! 
 /*
 FromQuery !! , URL deki parametreleri oto okur ve  tür dönüşümlerini yapar
 string-intvs. new ReceiptFilterDto() oto oluşturup içine değerleri doldurur .

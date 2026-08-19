@@ -180,6 +180,16 @@ export const inviteTeamMember = async (email) => {
   return response.data;
 };
 
+export const removeTeamMember = async (appUserId) => {
+  const response = await api.delete(`/Corporate/team/members/${appUserId}`);
+  return response.data;
+};
+
+export const cancelTeamInvite = async (inviteId) => {
+  const response = await api.delete(`/Corporate/team/invites/${inviteId}`);
+  return response.data;
+};
+
 export const getCustomerInsights = async ({ brandId, allBrands } = {}) => {
   const params = new URLSearchParams();
   if (allBrands) params.set('allBrands', 'true');
