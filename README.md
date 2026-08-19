@@ -62,7 +62,6 @@ Ali Kamer
 
 * 0.1
     * Initial Release (MVP) - Manuel Fiş Girişi, RFM Analizi, JWT Auth
-    * Bkz. [İlk Commit]()
 
 ## License
 
